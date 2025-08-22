@@ -1,0 +1,49 @@
+@startuml SISTEMA DE URNA ELETRONICA
+
+left to right direction
+actor "Administrador" as admin
+actor "Eleitor" as eleitor
+actor "Calculador de Resultados" as calc
+
+rectangle "Sistema de Urna Eletrônica" {
+  
+  package "Gestão da Eleição" {
+    (Criar Eleição) as UC1
+    (Fechar Eleição) as UC2
+    (Cadastrar Candidato) as UC3
+  }
+
+  package "Participação do Eleitor" {
+    (Registrar-se) as UC4
+    (Verificar-se) as UC5
+    (Emitir Voto) as UC6
+  }
+
+  package "Resultados" {
+    (Calcular Totais) as UC7
+    (Obter Vencedor) as UC8
+    (Exportar Resultados) as UC9
+  }
+}
+
+'--- Relações de atores
+admin --> UC1
+admin --> UC2
+admin --> UC3
+
+eleitor --> UC4
+eleitor --> UC5
+eleitor --> UC6
+
+calc --> UC7
+calc --> UC8
+calc --> UC9
+
+'--- Relações de dependência
+UC6 .> UC5 : <<include>> // Emitir Voto inclui Verificar-se
+UC2 .> UC1 : <<extend>>  // Fechar Eleição só ocorre após Criar Eleição
+UC7 .> UC2 : <<include>> // Calcular Totais depende de Eleição fechada
+UC8 .> UC7 : <<include>> // Obter Vencedor depende \nde Calcular Totais
+UC9 .> UC7 : <<include>> // Exportar Resultados \ndepende de Calcular Totais
+
+@enduml

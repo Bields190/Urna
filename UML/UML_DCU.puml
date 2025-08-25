@@ -1,6 +1,8 @@
 @startuml SISTEMA DE URNA ELETRONICA
+skinparam actorstyle awesome
 
 left to right direction
+
 actor "Administrador" as admin
 actor "Eleitor" as eleitor
 actor "Calculador de Resultados" as calc
@@ -8,42 +10,40 @@ actor "Calculador de Resultados" as calc
 rectangle "Sistema de Urna Eletrônica" {
   
   package "Gestão da Eleição" {
-    (Criar Eleição) as UC1
-    (Fechar Eleição) as UC2
-    (Cadastrar Candidato) as UC3
+    (Criar Eleição) as CE
+    (Fechar Eleição) as FE
+    (Cadastrar Chapa) as CC
   }
 
   package "Participação do Eleitor" {
-    (Registrar-se) as UC4
-    (Verificar-se) as UC5
-    (Emitir Voto) as UC6
+    (Verificar-se) as VER
+    (Emitir Voto) as EV
   }
 
   package "Resultados" {
-    (Calcular Totais) as UC7
-    (Obter Vencedor) as UC8
-    (Exportar Resultados) as UC9
+    (Calcular Totais) as CT
+    (Obter Vencedor) as OV
+    (Exportar Resultados) as ER
   }
 }
 
 '--- Relações de atores
-admin --> UC1
-admin --> UC2
-admin --> UC3
+admin --> CE
+admin --> FE
+admin --> CC
 
-eleitor --> UC4
-eleitor --> UC5
-eleitor --> UC6
+eleitor --> VER
+eleitor --> EV
 
-calc --> UC7
-calc --> UC8
-calc --> UC9
+calc --> CT
+calc --> OV
+calc --> ER
 
 '--- Relações de dependência
-UC6 .> UC5 : <<include>> // Emitir Voto inclui Verificar-se
-UC2 .> UC1 : <<extend>>  // Fechar Eleição só ocorre após Criar Eleição
-UC7 .> UC2 : <<include>> // Calcular Totais depende de Eleição fechada
-UC8 .> UC7 : <<include>> // Obter Vencedor depende \nde Calcular Totais
-UC9 .> UC7 : <<include>> // Exportar Resultados \ndepende de Calcular Totais
+EV .> VER : <<include>> // Emitir Voto inclui \nVerificar-se
+FE .> CE : <<extend>>  // Fechar Eleição só ocorre \napós Criar Eleição
+CT .> FE : <<include>> // Calcular Totais depende de Eleição fechada
+OV .> CT : <<include>> // Obter Vencedor depende \nde Calcular Totais
+ER <. CT : <<include>> // Exportar resultados \ndepende de Calcular totais
 
 @enduml

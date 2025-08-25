@@ -1,10 +1,13 @@
---@startuml SISTEMA DE URNA ELETRONICA
+@startuml
+left to right direction
 
-class Eleicao {
-        +id: int
-        +titulo: string
-        +data_inicio: datetime
-        +data_fim: datetime
+rectangle "Sistema de Urna Eletrônica" {
+
+    class Eleicao {
+        -id: int
+        -titulo: string
+        -data_inicio: datetime
+        -data_fim: datetime
 
         +esta_ativa(): bool
         +ja_iniciou(): bool
@@ -14,48 +17,57 @@ class Eleicao {
     }
 
     class Cargo {
-        +id: int
-        +nome: string
-        +descricao: string
+        -id: int
+        -nome: string
+        -descricao: string
     }
 
     class Candidato {
-        +id: int
-        +nome: string
-        +int cargo_id
+        -id: int
+        -nome: string
+        -int cargo_id
+    }
+
+    class Chapa{
+        -id: int
+        -nome: string
+        -slogan: string
+        -quantidade_candidados: int
     }
 
     class Eleitor {
-        +matricula: int
-        +nome: string
-        +curso: string
-        +data_nasc: datetime
-        +email_institucional: string
-        +verificado: bool
-        +registrar()
+        -matricula: int
+        -nome: string
+        -curso: string
+        -data_nasc: datetime
+        -email_institucional: string
+        -verificado: bool
+
         +verificar()
     }
 
     class Voto {
-        +id: int
-        +cargo_id: int
-        +candidato_id: int
+        -id: int
+        -cargo_id: int
+        -candidato_id: int
     }
 
     class Cedula {
-        +id: int
-        +eleicao_id: int
-        +eleitor_id: int
-        +votado_em: datetime
-        +e_valida: bool
-        +registrar_voto(escolhas)
+        -id: int
+        -eleicao_id: int
+        -eleitor_id: int
+        -votado_em: datetime
+        -e_valida: bool
+
+        +registrar_voto(escolha)
     }
 
 
     class Administrador {
-        +id: int
-        +usuario: string
-        +senha: string
+        -id: int
+        -usuario: string
+        -senha: string
+
         +criar_eleicao()
         +fechar_eleicao()
         +cadastrar_candidato()
@@ -67,14 +79,15 @@ class Eleicao {
         +exportar_resultados(eleicao_id) : (?)
     }
 
-    Eleicao "1..*" o-- "1..*" Cargo : Contem
-    Cargo "1..*" o-- "1..1" Candidato : Tem
-    Eleicao "1..0" -o "*..*" Candidato : Possui
-    Eleitor "1..1" -- "0..1" Cedula : emite
-    Cedula "1..1" -- "1..1" Voto : contém
-    Administrador "1..*" *-- "1..1" Eleicao : Gerencia
-    CalculadorResultados "1..*" --> "1..1" Eleicao : Calcula
-    Administrador "1..*" *-  "1..*" Candidato : Cadastra
-    Eleicao "1..*" *-  "1..1" Voto: Contém
+    Chapa "1..*" *-- "1..*" Cargo : > Contem
+    Cargo "1..*" *-- "1..1" Candidato : Candidata-se <
+    Eleicao "1..0" *-- "*..*" Chapa : > Possui
+    Eleitor "1..1" -- "0..1" Cedula : > Emite
+    Cedula "1..1" -- "1..1" Voto : > Contém
+    Administrador "1..*" *-- "1..1" Eleicao : > Gerencia
+    CalculadorResultados "1..*" --> "1..1" Eleicao : > Calcula
+    Administrador "1..*" *-  "1..*" Chapa : > Cadastra
+    Eleicao "1..* " *--  "1..1 " Voto: > Contém
+}
 
 @enduml

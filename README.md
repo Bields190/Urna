@@ -10,7 +10,8 @@ Foi nesse contexto que nasceu a proposta do nosso projeto de Urna Eletrônica. O
 
 A relevância desse projeto se torna ainda mais evidente pelo fato de dois integrantes da equipe serem membros ativos do Centro Acadêmico de Sistemas de Informação, o que nos dá uma visão direta dos desafios enfrentados na prática. Essa vivência nos motivou a buscar uma solução tecnológica que, além de servir como um projeto na disciplina de Tópicos Especiais em Sistemas de Informação(TESI), que utiliza o Tkinter como principal interface gráfica, também tenha impacto real dentro da comunidade universitária.
 
-### UML(Classes e Caso de uso):
+## UML:
+### Diagrama de Classes:
 ![Classes](UML/classes.jpg)
 
 Nosso diagrama de classes representa a estrutura básica do sistema de Urna Eletrônica.
@@ -26,6 +27,8 @@ Quando o eleitor vota, ele gera uma *Cédula*. Essa classe como se fosse o compr
 A classe *Administrador* representa quem organiza a eleição: *cria eleições, cadastra chapas e candidatos e fecha o processo quando necessário*. Já o *CalculadorResultados* é a parte que faz a apuração: ele soma os votos, identifica o vencedor e permite exportar os resultados pra dar transparência.
 
 No geral, esse diagrama mostra bem como cada parte do sistema se conecta: da criação da eleição, passando pelo cadastro das chapas, até o momento do eleitor votar e o sistema calcular o resultado. Tudo foi pensado pra ser simples, confiável e adaptado ao contexto das eleições acadêmicas.
+
+### Diagrama de Caso de Uso:
 
 ![Casos de uso](UML/casodeuso.jpg)
 

@@ -32,6 +32,7 @@ rectangle "Sistema de Urna Eletrônica" {
         -id: int
         -nome: string
         -slogan: string
+        -logo: picture[?]
         -quantidade_candidados: int
     }
 
@@ -48,8 +49,7 @@ rectangle "Sistema de Urna Eletrônica" {
 
     class Voto {
         -id: int
-        -cargo_id: int
-        -candidato_id: int
+        -chapa_id: int
     }
 
     class Cedula {

@@ -86,7 +86,7 @@ rectangle "Sistema de Urna Eletrônica" {
     Cedula "1..1" -- "1..1" Voto : > Contém
     Administrador "1..*" *-- "1..1" Eleicao : > Gerencia
     CalculadorResultados "1..*" --> "1..1" Eleicao : > Calcula
-    Administrador "1..*" *-  "1..*" Chapa : > Cadastra
+    Administrador "1..1" *-  "1..*" Chapa : > Cadastra
     Eleicao "1..* " *--  "1..1 " Voto: > Contém
 }
 

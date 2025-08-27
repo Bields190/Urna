@@ -3,15 +3,14 @@ skinparam actorstyle awesome
 
 left to right direction
 
-actor "Administrador" as admin
-actor "Eleitor" as eleitor
-actor "Calculador de Resultados" as calc
-
 rectangle "Sistema de Urna Eletrônica" {
-  
+  actor "Administrador" as admin
+  actor "Eleitor" as eleitor
+  actor "Calculador de Resultados" as calc
+
   package "Gestão da Eleição" {
     (Criar Eleição) as CE
-    (Fechar Eleição) as FE
+    (Apurar Eleição) as AE
     (Cadastrar Chapa) as CC
   }
 
@@ -21,29 +20,23 @@ rectangle "Sistema de Urna Eletrônica" {
   }
 
   package "Resultados" {
-    (Calcular Totais) as CT
-    (Obter Vencedor) as OV
-    (Exportar Resultados) as ER
+    (Apurar Votos) as AV
+    (Declarar Vencedor) as DV
   }
+  '--- Relações de atores
+  admin --> CE
+  admin --> AE
+  admin --> CC
+
+  eleitor --> VER
+  eleitor --> EV
+
+  calc --> AV
+  calc --> DV
+  '--- Relações de dependência
+  EV .> VER : <<include>> // Emitir Voto inclui \nVerificar-se
+  AE .> CE : <<extend>>  // Apurar Eleição só ocorre \napós Criar Eleição
+  AV .> AE : <<include>> // Apurar Votos depende de Apurar Eleição
+  DV .> AV : <<include>> // Declarar Vencedor depende de Apurar Votos
 }
-
-'--- Relações de atores
-admin --> CE
-admin --> FE
-admin --> CC
-
-eleitor --> VER
-eleitor --> EV
-
-calc --> CT
-calc --> OV
-calc --> ER
-
-'--- Relações de dependência
-EV .> VER : <<include>> // Emitir Voto inclui \nVerificar-se
-FE .> CE : <<extend>>  // Fechar Eleição só ocorre \napós Criar Eleição
-CT .> FE : <<include>> // Calcular Totais depende de Eleição fechada
-OV .> CT : <<include>> // Obter Vencedor depende \nde Calcular Totais
-ER <. CT : <<include>> // Exportar resultados \ndepende de Calcular totais
-
 @enduml

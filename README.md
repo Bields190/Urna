@@ -55,11 +55,11 @@ A relevância desse projeto se torna ainda mais evidente pelo fato de dois integ
 
 O diagrama de casos de uso representa as funcionalidades principais do sistema de Urna Eletrônica e os atores que interagem com ele.
 
-Na parte de **Gestão da Eleição**, o ator *Administrador* é responsável por _criar, cadastrar chapas e fechar eleições_. A relação entre os casos de uso mostra a ordem lógica do processo: só é possível fechar uma eleição depois que ela foi criada, e o cadastro de chapas ocorre nesse intervalo.
+Na parte de **Gestão da Eleição**, o ator *Administrador* é responsável por _criar, cadastrar chapas e apurar eleição_. A relação entre os casos de uso mostra a ordem lógica do processo: só é possível apurar os votos de uma eleição depois que ela foi criada, e o cadastro de chapas ocorre nesse intervalo.
 
 Na seção de **Participação do Eleitor**, o ator *Eleitor* precisa primeiro se verificar no sistema para validar seus dados institucionais. Esse passo é obrigatório, pois o caso de uso Emitir Voto inclui a verificação, garantindo que apenas eleitores autorizados possam participar.
 
-Já em **Resultados**, o ator Calculador de Resultados entra em cena após o *encerramento da eleição*. Ele é responsável por calcular os totais de votos, obter o vencedor e exportar os resultados. As dependências deixam claro o fluxo: primeiro a eleição precisa estar fechada, depois os votos são contabilizados, e só então é possível divulgar o vencedor ou exportar os dados.
+Já em **Resultados**, o ator Calculador de Resultados entra em cena após o *encerramento da eleição*. Ele é responsável por calcular os totais de votos através da apuração deles, declarando assim o vencedor. As dependências deixam claro o fluxo: primeiro a eleição precisa estar finalizada, depois os votos são apurados, calculados, e só então é possível divulgar o vencedor.
 
 De forma geral, o diagrama organiza bem a lógica do sistema: do controle da eleição pelo administrador, passando pela participação do eleitor, até a etapa final de apuração e divulgação de resultados.
 

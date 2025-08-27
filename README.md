@@ -51,7 +51,7 @@ A relevância desse projeto se torna ainda mais evidente pelo fato de dois integ
 ## UML:
 ### Diagrama de Caso de Uso:
 
-![Casos de uso](UML/casodeuso.jpg)
+![Casos de uso](UML/imagens%20(para%20o%20readme)/casodeuso.jpg)
 
 O diagrama de casos de uso representa as funcionalidades principais do sistema de Urna Eletrônica e os atores que interagem com ele.
 
@@ -64,7 +64,7 @@ Já em **Resultados**, o ator Calculador de Resultados entra em cena após o *en
 De forma geral, o diagrama organiza bem a lógica do sistema: do controle da eleição pelo administrador, passando pela participação do eleitor, até a etapa final de apuração e divulgação de resultados.
 
 ### Diagrama de Classes:
-![Classes](UML/classes.jpg)
+![Classes](UML/imagens%20(para%20o%20readme)/classes.jpg)
 
 Nosso diagrama de classes representa a estrutura básica do sistema de Urna Eletrônica.
 

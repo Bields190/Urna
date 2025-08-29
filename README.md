@@ -65,7 +65,7 @@ Já em **Resultados**, o ator Calculador de Resultados entra em cena após o *en
 De forma geral, o diagrama organiza bem a lógica do sistema: do controle da eleição pelo administrador, passando pela participação do eleitor, até a etapa final de apuração e divulgação de resultados.
 
 ### Diagrama de Classes:
-![Classes](UML/imagens%20(para%20o%20readme)/classes.jpg)
+![Classes](UML/imagens%20(para%20o%20readme)/diagraclassesatt.jpg)
 
 Nosso diagrama de classes representa a estrutura básica do sistema de Urna Eletrônica.
 

@@ -1,6 +1,16 @@
 # Urna Eletrônica
 
 Repositorio criado como complemento de andamento de projeto na disciplina de Tópicos Especiais em Sistemas de Informação, ministrado por [@mlimeira](https://github.com/mlimeira)
+
+## Descrição:
+
+### Problema
+Dentro da Universidade Federal do Acre (UFAC), os processos de votação estudantil ainda enfrentam dificuldades que comprometem tanto a transparência quanto a praticidade. Em muitos casos, as eleições de representantes estudantis, como as do Centro Acadêmico acabam sendo realizadas de forma manual, com cédulas de papel ou "registros" pouco estruturados. Isso pode gerar problemas de organização, riscos de extravio de votos, demora na apuração e até questionamentos sobre a legitimidade do resultado. ~coisa que já acontece bastante dentro do meio político dentro da universidade~
+
+Foi nesse contexto que nasceu a proposta do nosso projeto de Urna Eletrônica. O objetivo é desenvolver um sistema digital acessível, seguro e eficiente, que possa ser aplicado em eleições acadêmicas, facilitando a participação dos estudantes e garantindo maior confiabilidade e agilidade no processo.
+
+A relevância desse projeto se torna ainda mais evidente pelo fato de dois integrantes da equipe serem membros ativos do Centro Acadêmico de Sistemas de Informação, o que nos dá uma visão direta dos desafios enfrentados na prática. Essa vivência nos motivou a buscar uma solução tecnológica que, além de servir como um projeto na disciplina de Tópicos Especiais em Sistemas de Informação(TESI), que utiliza o Tkinter como principal interface gráfica, também tenha impacto real dentro da comunidade universitária.
+
 ## Documentação
 
 Propósito: Permitir a gestão de eleições acadêmicas/institucionais, contemplando 
@@ -38,15 +48,6 @@ eleições, possibilitar o cadastro de *Chapas* e *Candidatos*, garantir que o *
 **RNF02** – A interface deve ser intuitiva e fácil de ser usada por conta de seu design simples, sem elementos desnecessários e uso de linguagem direta e familiar para o usuário.
 
 **RNF03** – O sistema deve persistir as Chapas utilizadas em uma base de dados relacional para possibilitar sua recuperação e reutilização em operações futuras.
-
-## Descrição:
-
-### Problema
-Dentro da Universidade Federal do Acre (UFAC), os processos de votação estudantil ainda enfrentam dificuldades que comprometem tanto a transparência quanto a praticidade. Em muitos casos, as eleições de representantes estudantis, como as do Centro Acadêmico acabam sendo realizadas de forma manual, com cédulas de papel ou "registros" pouco estruturados. Isso pode gerar problemas de organização, riscos de extravio de votos, demora na apuração e até questionamentos sobre a legitimidade do resultado. ~coisa que já acontece bastante dentro do meio político dentro da universidade~
-
-Foi nesse contexto que nasceu a proposta do nosso projeto de Urna Eletrônica. O objetivo é desenvolver um sistema digital acessível, seguro e eficiente, que possa ser aplicado em eleições acadêmicas, facilitando a participação dos estudantes e garantindo maior confiabilidade e agilidade no processo.
-
-A relevância desse projeto se torna ainda mais evidente pelo fato de dois integrantes da equipe serem membros ativos do Centro Acadêmico de Sistemas de Informação, o que nos dá uma visão direta dos desafios enfrentados na prática. Essa vivência nos motivou a buscar uma solução tecnológica que, além de servir como um projeto na disciplina de Tópicos Especiais em Sistemas de Informação(TESI), que utiliza o Tkinter como principal interface gráfica, também tenha impacto real dentro da comunidade universitária.
 
 ## UML:
 ### Diagrama de Caso de Uso:

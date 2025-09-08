@@ -33,7 +33,6 @@ rectangle "Sistema de Urna Eletrônica" {
         -nome: string
         -slogan: string
         -logo: picture[?]
-        -quantidade_candidados: int
     }
 
     class Eleitor {

@@ -7,7 +7,7 @@ Repositorio criado como complemento de andamento de projeto na disciplina de Tó
 ### Problema
 Dentro da Universidade Federal do Acre (UFAC), os processos de votação estudantil ainda enfrentam dificuldades que comprometem tanto a transparência quanto a praticidade. Em muitos casos, as eleições de representantes estudantis, como as do Centro Acadêmico acabam sendo realizadas de forma manual, com cédulas de papel ou "registros" pouco estruturados. Isso pode gerar problemas de organização, riscos de extravio de votos, demora na apuração e até questionamentos sobre a legitimidade do resultado.
 
-Foi nesse contexto que nasceu a proposta domprojeto de Urna Eletrônica. O objetivo é desenvolver um sistema digital acessível, seguro e eficiente, que possa ser aplicado em eleições acadêmicas, facilitando a participação dos estudantes e garantindo confiabilidade e agilidade no processo.
+Foi nesse contexto que nasceu a proposta do projeto de Urna Eletrônica. O objetivo é desenvolver um sistema digital acessível, seguro e eficiente, que possa ser aplicado em eleições acadêmicas, facilitando a participação dos estudantes e garantindo confiabilidade e agilidade no processo.
 
 A relevância desse projeto se torna ainda mais evidente pelo fato de dois integrantes da equipe serem membros ativos do Centro Acadêmico de Sistemas de Informação, o que nos dá uma visão direta dos desafios enfrentados na prática. Essa vivência nos motivou a buscar uma solução tecnológica que, além de servir como um projeto na disciplina de Tópicos Especiais em Sistemas de Informação(TESI), que utiliza o Tkinter como principal interface gráfica, também tenha impacto real dentro da comunidade universitária.
 
@@ -65,7 +65,7 @@ De forma geral, o diagrama organiza bem a lógica do sistema: do controle da ele
 ### Diagrama de Classes:
 ![Classes](UML/imagens%20(para%20o%20readme)/diagraclassesatt.jpg)
 
-Nosso diagrama de classes representa a estrutura básica do sistema de Urna Eletrônica.
+O diagrama de classes representa a estrutura básica do sistema de Urna Eletrônica.
 
 A classe Eleição é o ponto central: nela ficam guardados os dados principais (id, título, data de início e fim) e os métodos que controlam o status, tipo `iniciar()` e `finalizar()`.
 

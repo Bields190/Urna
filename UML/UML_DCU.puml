@@ -1,4 +1,4 @@
-@startuml SISTEMA DE URNA ELETRONICA
+@startuml SISTEMA DE URNA ELETRONICA - DIAGRAMA DE CLASSES
 skinparam actorstyle awesome
 
 left to right direction

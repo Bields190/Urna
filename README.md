@@ -69,7 +69,7 @@ O diagrama de classes representa a estrutura básica do sistema de Urna Eletrôn
 
 A classe Eleição é o ponto central: nela ficam guardados os dados principais (id, título, data de início e fim) e os métodos que controlam o status, tipo `iniciar()` e `finalizar()`.
 
-A Chapa agrupa os candidatos. Ela tem atributos como nome, slogan e logo, funcionando como a identidade do grupo que disputa. **Uma chapa** contém *Cargos*, e cada cargo pode ter um *Candidato associado*, o que dá flexibilidade pra representar funções diferentes dentro da mesma chapa.
+A Chapa agrupa os candidatos. Ela tem atributos como nome, slogan e logo, funcionando como a identidade do grupo que disputa. **Uma chapa** contém no*Cargos* (sendo no mínimo um, e no máximo vários), e cada cargo pode ter um *Candidato associado*, o que dá flexibilidade pra representar funções diferentes dentro da mesma chapa.
 
 O **Eleitor** é quem participa da *eleição*. Ele tem dados de matrícula, curso, data de nascimento e e-mail institucional (pra validar que é realmente um aluno). O método `verificar()` serve para checar se o eleitor pode ou não votar.
 

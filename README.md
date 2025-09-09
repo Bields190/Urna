@@ -50,7 +50,7 @@ eleições, possibilitar o cadastro de *Chapas* e *Candidatos*, garantir que o *
 ## UML:
 ### Diagrama de Caso de Uso:
 
-![Casos de uso](UML/imagens%20(para%20o%20readme)/casodeuso.jpg)
+![Casos de uso](UML/imagens%20(para%20o%20readme)/casodeuso.png)
 
 O diagrama de casos de uso representa as funcionalidades principais do sistema de Urna Eletrônica e os atores que interagem com ele.
 

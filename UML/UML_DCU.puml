@@ -1,28 +1,33 @@
 @startuml SISTEMA DE URNA ELETRONICA - DIAGRAMA DE CASOS DE USO
 skinparam actorstyle awesome
-
 left to right direction
 
 rectangle "Sistema de Urna Eletrônica" {
-  actor "Administrador" as admin
-  actor "Eleitor" as eleitor
-  actor "Calculador de Resultados" as calc
-
-  package "Gestão da Eleição" {
-    (Criar Eleição) as CE
-    (Apurar Eleição) as AE
-    (Cadastrar Chapa) as CC
+  
+  '--- Primeira coluna:
+  together {
+    actor "Administrador" as admin
+    package "Gestão da Eleição" {
+      (Criar Eleição) as CE
+      (Apurar Eleição) as AE
+      (Cadastrar Chapa) as CC
+    }
+    actor "Eleitor" as eleitor
   }
 
-  package "Participação do Eleitor" {
-    (Verificar-se) as VER
-    (Emitir Voto) as EV
+  '--- Segunda coluna:
+  together {
+    package "Participação do Eleitor" {
+      (Verificar-se) as VER
+      (Emitir Voto) as EV
+    }
+    actor "Calculador de Resultados" as calc
+    package "Resultados" {
+      (Apurar Votos) as AV
+      (Declarar Vencedor) as DV
+    }
   }
 
-  package "Resultados" {
-    (Apurar Votos) as AV
-    (Declarar Vencedor) as DV
-  }
   '--- Relações de atores
   admin --> CE
   admin --> AE
@@ -33,10 +38,11 @@ rectangle "Sistema de Urna Eletrônica" {
 
   calc --> AV
   calc --> DV
+
   '--- Relações de dependência
-  EV .> VER : <<include>> // Emitir Voto inclui \nVerificar-se
-  AE .> CE : <<extend>>  // Apurar Eleição só ocorre \napós Criar Eleição
-  AV .> AE : <<include>> // Apurar Votos depende de Apurar Eleição
-  DV .> AV : <<include>> // Declarar Vencedor depende de Apurar Votos
+  EV .> VER : <<include>>
+  AE .> CE : <<extend>>
+  AV .> AE : <<include>>
+  DV .> AV : <<include>>
 }
 @enduml

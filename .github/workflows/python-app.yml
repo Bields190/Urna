@@ -33,9 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: Merge Branch
-        uses: devmasx/merge-branch@master
+        uses: devmasx/merge-branch@1.4.0
         with:
           type: now
           label_name: Merge Automático para a Main

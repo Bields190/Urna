@@ -2,11 +2,8 @@ name: Python application
 
 on:
   push:
-    branches:
-      - '**'
-      - '!main'
-    paths:
-      - 'app/**'
+    branches-ignore:
+      - 'main'
 
 jobs:
   build:
@@ -42,4 +39,4 @@ jobs:
         with:
           type: now
           target_branch: main 
-          github_token: ${{ github.token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

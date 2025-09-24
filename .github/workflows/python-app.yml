@@ -2,14 +2,11 @@ name: Python application
 
 on:
   push:
-    branches-ignore:
-      - main
-  pull_request:
     branches:
-      - '*'  # Aciona para pull requests de qualquer branch
-
-permissions:
-  contents: write  # Permissão para fazer push de volta para o repositório
+      - '**'
+      - '!main'
+    paths:
+      - 'app/**'
 
 jobs:
   build:
@@ -34,18 +31,15 @@ jobs:
         flake8 app/ --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 app/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Commit e push automático para a branch main
-      if: success()
-      run: |
-        # Configuração do Git
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-
-        # Adiciona todas as alterações no repositório
-        git add .
-
-        # Cria um commit com as mudanças
-        git commit -m "Automated commit from CI for branch ${GITHUB_REF#refs/heads/}"
-
-        # Faz push para a branch main
-        git push origin HEAD:main
+  merge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Merge Branch
+        uses: devmasx/merge-branch@1.4.0
+        with:
+          type: now
+          target_branch: main 
+          github_token: ${{ github.token }}

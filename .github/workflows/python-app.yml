@@ -33,10 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@master
       - name: Merge Branch
-        uses: devmasx/merge-branch@1.4.0
+        uses: devmasx/merge-branch@master
         with:
           type: now
+          label_name: Merge Automático para a Main
           target_branch: main 
           github_token: ${{ secrets.GITHUB_TOKEN }}

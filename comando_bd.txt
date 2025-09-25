@@ -3,27 +3,27 @@
 -- ===============================
 
 CREATE TABLE Eleicao (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
-    data_inicio TEXT NOT NULL,  -- formato: YYYY-MM-DD HH:MM:SS
-    data_fim TEXT NOT NULL
+    data_inicio DATE NOT NULL,  -- formato: YYYY-MM-DD
+    data_fim DATE NOT NULL
 );
 
 CREATE TABLE Cargo (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     descricao TEXT
 );
 
 CREATE TABLE Chapa (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     slogan TEXT,
-    logo BLOB
+    logo TEXT -- pra colocar o endereço da imagem
 );
 
 CREATE TABLE Candidato (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     cargo_id INTEGER NOT NULL,
     chapa_id INTEGER,
@@ -32,16 +32,16 @@ CREATE TABLE Candidato (
 );
 
 CREATE TABLE Eleitor (
-    matricula INTEGER PRIMARY KEY,
+    matricula INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     curso TEXT,
     data_nasc TEXT NOT NULL,  -- formato: YYYY-MM-DD
-    email_institucional TEXT UNIQUE NOT NULL,
+    email_institucional TEXT NOT NULL,
     verificado INTEGER DEFAULT 0  -- 0 = falso, 1 = verdadeiro
 );
 
 CREATE TABLE Voto (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapa_id INTEGER NOT NULL,
     eleitor_matricula INTEGER NOT NULL,
     eleicao_id INTEGER NOT NULL,
@@ -51,10 +51,10 @@ CREATE TABLE Voto (
 );
 
 CREATE TABLE Cedula (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
     eleitor_matricula INTEGER NOT NULL,
-    data_emissao TEXT NOT NULL, -- formato: YYYY-MM-DD HH:MM:SS
+    data_emissao DATE NOT NULL, -- formato: YYYY-MM-DD HH:MM:SS
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
     FOREIGN KEY (eleitor_matricula) REFERENCES Eleitor(matricula)
 );

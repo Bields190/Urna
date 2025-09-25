@@ -7,13 +7,14 @@ class Tela:
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Login')
+        self.janela.geometry("1920x1080")
 
         self.frm_principal = tk.Frame(self.janela,bg='white')
         self.frm_principal.pack(fill='both',expand=True)
         self.frm = tk.Frame(self.frm_principal,bg='white')
         self.frm.pack(expand=True)
         
-        self.imagem = tk.PhotoImage()
+        self.imagem = tk.PhotoImage(file="src\Logo.png")
         self.imagem = self.imagem.subsample(3,3)
         self.lbl = tk.Label(self.frm, image=self.imagem, bg='white')
         self.lbl.image = self.imagem

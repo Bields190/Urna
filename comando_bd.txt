@@ -1,0 +1,60 @@
+-- ===============================
+-- BANCO DE DADOS: URNA ELETRÔNICA
+-- ===============================
+
+CREATE TABLE Eleicao (
+    id INTEGER PRIMARY KEY,
+    titulo TEXT NOT NULL,
+    data_inicio TEXT NOT NULL,  -- formato: YYYY-MM-DD HH:MM:SS
+    data_fim TEXT NOT NULL
+);
+
+CREATE TABLE Cargo (
+    id INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    descricao TEXT
+);
+
+CREATE TABLE Chapa (
+    id INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    slogan TEXT,
+    logo BLOB
+);
+
+CREATE TABLE Candidato (
+    id INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    cargo_id INTEGER NOT NULL,
+    chapa_id INTEGER,
+    FOREIGN KEY (cargo_id) REFERENCES Cargo(id),
+    FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
+);
+
+CREATE TABLE Eleitor (
+    matricula INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    curso TEXT,
+    data_nasc TEXT NOT NULL,  -- formato: YYYY-MM-DD
+    email_institucional TEXT UNIQUE NOT NULL,
+    verificado INTEGER DEFAULT 0  -- 0 = falso, 1 = verdadeiro
+);
+
+CREATE TABLE Voto (
+    id INTEGER PRIMARY KEY,
+    chapa_id INTEGER NOT NULL,
+    eleitor_matricula INTEGER NOT NULL,
+    eleicao_id INTEGER NOT NULL,
+    FOREIGN KEY (chapa_id) REFERENCES Chapa(id),
+    FOREIGN KEY (eleitor_matricula) REFERENCES Eleitor(matricula),
+    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
+);
+
+CREATE TABLE Cedula (
+    id INTEGER PRIMARY KEY,
+    eleicao_id INTEGER NOT NULL,
+    eleitor_matricula INTEGER NOT NULL,
+    data_emissao TEXT NOT NULL, -- formato: YYYY-MM-DD HH:MM:SS
+    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
+    FOREIGN KEY (eleitor_matricula) REFERENCES Eleitor(matricula)
+);

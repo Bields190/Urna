@@ -80,7 +80,7 @@ CREATE TABLE Resultado (
 -- INSERÇÕES:
 
 -- ===============================
--- DADOS FICTÍCIOS PARA TESTE
+-- DADOS FICTÍCIOS PARA TESTE:::
 -- ===============================
 
 INSERT INTO Administrador (id, usuario, senha) VALUES

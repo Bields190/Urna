@@ -26,11 +26,12 @@ class Tela:
         self.lbl.image = self.imagem
         self.lbl.pack()
         
-#------entry e label de matricula---------
+#------entry e label de user---------
         self.lbl1 = tk.Label(self.frm, text='Usuário:', bg='white',font=("Arial",18))
         self.lbl1.pack(pady=(40, 0))
         self.entry1 = tk.Entry(self.frm, width=40)
         self.entry1.pack()
+        self.entry1.bind('<Return>', lambda event: event.widget.event_generate("<Tab>"))
         
 #------entry e label de senha---------
         self.lbl2 = tk.Label(self.frm, text='Senha:',bg='white',font=("Arial",18))

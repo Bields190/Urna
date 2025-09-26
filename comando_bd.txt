@@ -76,3 +76,45 @@ CREATE TABLE Resultado (
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
 );
+
+-- INSERÇÕES:
+
+-- ===============================
+-- DADOS FICTÍCIOS PARA TESTE
+-- ===============================
+
+INSERT INTO Administrador (id, usuario, senha) VALUES
+(1, 'limeira', 'tesi25');
+
+-- Eleição
+INSERT INTO Eleicao (id, titulo, data_inicio, data_fim, administrador_id) VALUES
+(1, 'Eleição CASI 2025', '2025-10-01', '2025-10-05', 1);
+
+-- Cargos
+INSERT INTO Cargo (id, nome, descricao) VALUES
+(1, 'Presidente', 'Responsável geral pelo Centro Acadêmico'),
+(2, 'Vice-Presidente', 'Substitui o presidente quando necessário'),
+(3, 'Diretor de Cultura', 'Coordena atividades culturais e eventos');
+
+-- Chapas
+INSERT INTO Chapa (id, nome, slogan, logo, administrador_id) VALUES
+(1, 'Core 2 Quad', 'Renovar com atitude', '/images/core2quad.png', 1),
+(2, 'Nova Ordem', 'Juntos pelo futuro', '/images/nova_ordem.png', 1);
+
+-- Candidatos
+INSERT INTO Candidato (id, nome, cargo_id, chapa_id) VALUES
+(1, 'Ana Souza', 1, 1),
+(2, 'Bruno Silva', 1, 2),
+(3, 'Carla Mendes', 2, 1),
+(4, 'Diego Ramos', 2, 2),
+(5, 'Eduardo Lima', 3, 1);
+
+-- Eleitores
+INSERT INTO Eleitor (matricula, nome, email_institucional) VALUES
+(20230300040, 'Mariana Alves', 'mariana.alves@sou.ufac.br'),
+(20220300005, 'Lucas Pereira',  'lucas.pereira@sou.ufac.br'),
+(20250300021, 'Isabela Freitas','isabela.freitas@sou.ufac.br'),
+(20210300078, 'Gustavo Costa',  'gustavo.costa@sou.ufac.br'),
+(20170300016, 'Fernanda Rocha', 'fernanda.rocha@sou.ufac.br'),
+(20250300001, 'Rafael Nunes',   'rafael.nunes@sou.ufac.br');
+

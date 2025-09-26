@@ -1,6 +1,12 @@
-
 import tkinter as tk
 from PIL import Image, ImageTk
+
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
+
+import c_administrador
 
 class Tela:
 
@@ -21,7 +27,7 @@ class Tela:
         self.lbl.pack()
         
 #------entry e label de matricula---------
-        self.lbl1 = tk.Label(self.frm, text='Matricula:', bg='white',font=("Arial",18))
+        self.lbl1 = tk.Label(self.frm, text='Usuário:', bg='white',font=("Arial",18))
         self.lbl1.pack(pady=(40, 0))
         self.entry1 = tk.Entry(self.frm, width=40)
         self.entry1.pack()
@@ -29,12 +35,20 @@ class Tela:
 #------entry e label de senha---------
         self.lbl2 = tk.Label(self.frm, text='Senha:',bg='white',font=("Arial",18))
         self.lbl2.pack()
-        self.entry2 = tk.Entry(self.frm, show='*', width=40)
+        self.entry2 = tk.Entry(self.frm, show='*', width=40)    
         self.entry2.pack(pady=5)
-        
-        self.btn_entrar = tk.Button(self.frm, text='Entrar',bg='black',fg='white', width=10,font=("Arial",14))
+
+        self.btn_entrar = tk.Button(self.frm, text='Entrar',bg='black',fg='white', width=10,font=("Arial",14), command=self.login)
         self.btn_entrar.pack(pady=10)
 
+
+    def login(self):
+        usuario = str(self.entry1.get())
+        senha = str(self.entry2.get())
+        if c_administrador.Control(self).login(usuario, senha):
+                tk.messagebox.showinfo("Login", "Login bem-sucedido!")
+        else:
+                tk.messagebox.showerror("Login", "Usuário ou senha incorretos.")
 
 app = tk.Tk()
 Tela(app)

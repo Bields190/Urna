@@ -1,5 +1,11 @@
 from sqlite3 import Error
-import conexao.conexao as conexao
+import sys
+import os
+
+# adiciona a pasta 'conexao' no caminho do Python
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+
+import conexao
 
 class Model:
     def __init__(self):

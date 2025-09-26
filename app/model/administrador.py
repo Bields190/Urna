@@ -1,4 +1,4 @@
-from model.model import Model
+from model import Model
 
 class Admin(Model):
     def __init__(self, usuario, senha, id=None):
@@ -18,6 +18,6 @@ class Admin(Model):
             print("Usuário ou Senha incorretos!")
             return False
         
-u1 = Admin('limeira', 'tesi2025')
+u1 = Admin('limeira', 'tesi25')
 
-print(u1.verificar())
+u1.verificar()

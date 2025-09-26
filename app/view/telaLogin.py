@@ -37,16 +37,16 @@ class Tela:
         self.lbl2.pack()
         self.entry2 = tk.Entry(self.frm, show='*', width=40)    
         self.entry2.pack(pady=5)
+        self.entry2.bind('<Return>', self.login)
 
         self.btn_entrar = tk.Button(self.frm, text='Entrar',bg='black',fg='white', width=10,font=("Arial",14), command=self.login)
         self.btn_entrar.pack(pady=10)
 
 
-    def login(self):
-        usuario = str(self.entry1.get())
-        senha = str(self.entry2.get())
-        if c_administrador.Control(self).login(usuario, senha):
+    def login(self, event=None):
+        if c_administrador.Control(self).login():
                 tk.messagebox.showinfo("Login", "Login bem-sucedido!")
+                self.janela.destroy()
         else:
                 tk.messagebox.showerror("Login", "Usuário ou senha incorretos.")
 

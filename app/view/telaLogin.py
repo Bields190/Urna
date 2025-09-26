@@ -47,6 +47,8 @@ class Tela:
         if c_administrador.Control(self).login():
                 tk.messagebox.showinfo("Login", "Login bem-sucedido!")
                 self.janela.destroy()
+                import telaEleicoes
+
         else:
                 tk.messagebox.showerror("Login", "Usuário ou senha incorretos.")
 

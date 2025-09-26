@@ -1,5 +1,5 @@
 from sqlite3 import Error
-import app.conexao.conexao as conexao
+import conexao.conexao as conexao
 
 class Model:
     def __init__(self):
@@ -50,16 +50,3 @@ class Model:
             return cursor.rowcount
         except Error as er:
             print(er)
-
-    class Admin:
-        def __init__(self, id, usuario, senha):
-            self.id = id
-            self.usuario = usuario
-            self.senha = senha
-
-        def get_admin(self):
-            sql = f"SELECT * FROM admin;"
-            model = Model()
-            result = model.get(sql)
-            return result
-

@@ -21,7 +21,7 @@ class Tela:
         self.lbl.pack()
         
 #------entry e label de matricula---------
-        self.lbl1 = tk.Label(self.frm, text='Matricula', bg='white',font=("Arial",18))
+        self.lbl1 = tk.Label(self.frm, text='Matricula:', bg='white',font=("Arial",18))
         self.lbl1.pack(pady=(40, 0))
         self.entry1 = tk.Entry(self.frm, width=40)
         self.entry1.pack()

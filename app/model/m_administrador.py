@@ -17,7 +17,3 @@ class Admin(Model):
         else:
             print("Usuário ou Senha incorretos!")
             return False
-        
-u1 = Admin('limeira', 'tesi25')
-
-u1.verificar()

@@ -8,10 +8,10 @@ class Tela:
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Eleicoes')
-        self.janela.geometry("500x500")
+        self.janela.geometry("1920x1080")
         
 #-------menu hamburguer---------aaaaaaaaaaaaaaaaaaaaaaaaaaa
-        img = Image.open('/home/andrey/Documentos/Urna/app/src/hamburger.png')
+        img = Image.open('app/src/hamburger.png')
         img = img.resize((30,30))
         self.iconeHamburguer = ImageTk.PhotoImage(img)
         

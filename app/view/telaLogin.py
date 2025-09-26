@@ -14,7 +14,7 @@ class Tela:
         self.frm = tk.Frame(self.frm_principal,bg='white')
         self.frm.pack(expand=True)
         
-        self.imagem = tk.PhotoImage(file="src/Logo.png")
+        self.imagem = tk.PhotoImage(file="app/src/Logo.png")
         self.imagem = self.imagem.subsample(3,3)
         self.lbl = tk.Label(self.frm, image=self.imagem, bg='white')
         self.lbl.image = self.imagem

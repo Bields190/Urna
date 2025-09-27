@@ -42,7 +42,7 @@ CREATE TABLE Candidato (
 );
 
 CREATE TABLE Eleitor (
-    matricula INTEGER PRIMARY KEY AUTOINCREMENT,
+    matricula INTEGER PRIMARY KEY,
     nome TEXT NOT NULL,
     email_institucional TEXT NOT NULL,
     verificado INTEGER DEFAULT 0  -- 0 = falso, 1 = verdadeiro

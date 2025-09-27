@@ -20,6 +20,7 @@ class Model:
             return result
         except Error as er:
             print(er)
+            return False
 
     def insert(self, sql):
         try:
@@ -29,9 +30,10 @@ class Model:
             if cursor.rowcount == 1: #Quantidade de linhas afetadas
                 con.commit()
             con.close()
-            return cursor.rowcount
+            return True
         except Error as er:
             print(er)
+            return False
 
     def delete(self, sql):
         try:
@@ -44,6 +46,7 @@ class Model:
             return cursor.rowcount
         except Error as er:
             print(er)
+            return False
 
     def update(self, sql):
         try:
@@ -53,6 +56,7 @@ class Model:
             if cursor.rowcount == 1:
                 con.commit()
             con.close()
-            return cursor.rowcount
+            return True
         except Error as er:
             print(er)
+            return False

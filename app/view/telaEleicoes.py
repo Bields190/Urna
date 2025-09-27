@@ -29,15 +29,14 @@ class Tela:
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
-        self.janela.columnconfigure(0, weight=1)
         
         self.lbl_ola = tk.Label(text="Olá! Administrador",font=("Arial",20,"bold"))
-        self.lbl_ola.grid(row=1,column=0, pady=(70, 10), padx=(20,0))
+        self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
         
         self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",15,"bold"))
-        self.btn_criar_eleicao.grid(row=2,column=0,pady=(30,0))
+        self.btn_criar_eleicao.grid(row=2,column=0,pady=(30,60))
 #-----sessão 2 das eleições----------      
-        self.frmEleicoes = tk.Frame(self.janela, bg="blue", bd=2, relief="solid", padx=5, pady=5)
+        self.frmEleicoes = tk.Frame(self.janela, bd=2, relief="solid", padx=5, pady=5)
         self.frmEleicoes.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
         self.frmEleicoes.columnconfigure(0, weight=1)
         self.frmEleicoes.columnconfigure(1, weight=1)
@@ -45,31 +44,31 @@ class Tela:
 
 #essas eleicoes sao apenas exemplos para dimensionar a tela
 #-----eleição 1------
-        eleicao1 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", padx=5, pady=5, bg="blue", width=150, height=200)
+        eleicao1 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", padx=5, pady=5, width=150, height=200)
         eleicao1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        tk.Label(eleicao1, text="Eleição 15", font=("Arial", 12, "bold"), bg="blue", fg="black").pack(anchor="nw")
-        tk.Label(eleicao1, text="●", fg="green", bg="blue", font=("Arial", 10, "bold")).pack(anchor="ne")
+        tk.Label(eleicao1, text="Eleição 15", font=("Arial", 12, "bold"), fg="black").pack(anchor="nw")
+        tk.Label(eleicao1, text="●", fg="green", font=("Arial", 10, "bold")).pack(anchor="ne")
         tk.Button(eleicao1, text="Abrir Urna").pack(fill="x", pady=2)
         tk.Button(eleicao1, text="Encerrar").pack(fill="x", pady=2)
         tk.Label(eleicao1, text="Ativa", bg="green", fg="white", font=("Arial", 10, "bold")).pack(fill="x", pady=2)
 
 #-----eleição 2------
-        eleicao2 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", padx=5, pady=5, bg="blue")
+        eleicao2 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", padx=5, pady=5)
         eleicao2.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
-        tk.Label(eleicao2, text="Eleição 14", font=("Arial", 12, "bold"), bg="blue", fg="black").pack(anchor="nw")
-        tk.Label(eleicao2, text="●", fg="red", bg="blue", font=("Arial", 10, "bold")).pack(anchor="ne")
+        tk.Label(eleicao2, text="Eleição 14", font=("Arial", 12, "bold"), fg="black").pack(anchor="nw")
+        tk.Label(eleicao2, text="●", fg="red", font=("Arial", 10, "bold")).pack(anchor="ne")
         tk.Button(eleicao2, text="Resultados").pack(fill="x", pady=2)
         tk.Button(eleicao2, text="Arquivar").pack(fill="x", pady=2)
         tk.Label(eleicao2, text="Encerrada", bg="red", fg="white", font=("Arial", 10, "bold")).pack(fill="x", pady=2)
 
 #-----eleição 3------
-        eleicao3 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", padx=5, pady=5, bg="blue")
+        eleicao3 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", padx=5, pady=5)
         eleicao3.grid(row=0, column=2, padx=10, pady=10, sticky="nsew")
 
-        tk.Label(eleicao3, text="Eleição 13", font=("Arial", 12, "bold"), bg="blue", fg="black").pack(anchor="nw")
-        tk.Label(eleicao3, text="●", fg="red", bg="blue", font=("Arial", 10, "bold")).pack(anchor="ne")
+        tk.Label(eleicao3, text="Eleição 13", font=("Arial", 12, "bold"), fg="black").pack(anchor="nw")
+        tk.Label(eleicao3, text="●", fg="red", font=("Arial", 10, "bold")).pack(anchor="ne")
         tk.Button(eleicao3, text="Resultados").pack(fill="x", pady=2)
         tk.Button(eleicao3, text="Arquivar").pack(fill="x", pady=2)
         tk.Label(eleicao3, text="Encerrada", bg="red", fg="white", font=("Arial", 10, "bold")).pack(fill="x", pady=2)

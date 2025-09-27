@@ -43,15 +43,20 @@ class Tela:
         self.btn_entrar = tk.Button(self.frm, text='Entrar',bg='black',fg='white', width=10,font=("Arial",14), command=self.login)
         self.btn_entrar.pack(pady=10)
 
-
+# PARA ELEITOR, O USUARIO EH A MATRICULA E A SENHA EH O PRIMEIRO NOME
+# ex: 20170300016, Fernanda
     def login(self, event=None):
-        if c_administrador.Control(self).login():
-                tk.messagebox.showinfo("Login", "Login bem-sucedido!")
+        if c_administrador.Control(self).login() == 1:
+                tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
                 self.janela.destroy()
                 import telaEleicoes
+        elif c_administrador.Control(self).login() == 2:
+                tk.messagebox.showinfo("Login - User", "Login bem-sucedido! Bem vindo, Usuário.")
+                self.janela.destroy()
+                #import telaUsuario
 
         else:
-                tk.messagebox.showerror("Login", "Usuário ou senha incorretos.")
+                tk.messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 
 app = tk.Tk()
 Tela(app)

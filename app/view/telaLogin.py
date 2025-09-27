@@ -6,7 +6,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 
-import c_administrador
+import c_administrador, c_eleitor
 
 class Tela:
 
@@ -46,12 +46,12 @@ class Tela:
 # PARA ELEITOR, O USUARIO EH A MATRICULA E A SENHA EH O PRIMEIRO NOME
 # ex: 20170300016, Fernanda
     def login(self, event=None):
-        if c_administrador.Control(self).login() == 1:
+        if c_administrador.Control(self).login():
                 tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
                 self.janela.destroy()
                 import telaEleicoes
-        elif c_administrador.Control(self).login() == 2:
-                tk.messagebox.showinfo("Login - User", "Login bem-sucedido! Bem vindo, Usuário.")
+        elif c_eleitor.Control(self).login():
+                tk.messagebox.showinfo("Login - Usuário", "Login bem-sucedido! Bem vindo, Usuário.")
                 self.janela.destroy()
                 #import telaUsuario
 

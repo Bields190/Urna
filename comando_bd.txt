@@ -5,16 +5,14 @@
 CREATE TABLE Administrador (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario TEXT UNIQUE NOT NULL,
-    senha TEXT NOT NULL -- ou hash?
+    senha HASH NOT NULL
 );
 
 CREATE TABLE Eleicao (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
     data_inicio DATE NOT NULL,  -- formato: YYYY-MM-DD
-    data_fim DATE NOT NULL,
-    administrador_id INTEGER NOT NULL,
-    FOREIGN KEY (administrador_id) REFERENCES Administrador(id)
+    data_fim DATE NOT NULL
 );
 
 CREATE TABLE Cargo (
@@ -28,8 +26,6 @@ CREATE TABLE Chapa (
     nome TEXT NOT NULL,
     slogan TEXT,
     logo TEXT, -- endereço da imagem
-    administrador_id INTEGER NOT NULL,
-    FOREIGN KEY (administrador_id) REFERENCES Administrador(id)
 );
 
 CREATE TABLE Candidato (
@@ -87,8 +83,8 @@ INSERT INTO Administrador (id, usuario, senha) VALUES
 (1, 'limeira', 'tesi25');
 
 -- Eleição
-INSERT INTO Eleicao (id, titulo, data_inicio, data_fim, administrador_id) VALUES
-(1, 'Eleição CASI 2025', '2025-10-01', '2025-10-05', 1);
+INSERT INTO Eleicao (id, titulo, data_inicio, data_fim) VALUES
+(1, 'Eleição CASI 2025', '2025-10-01', '2025-10-05');
 
 -- Cargos
 INSERT INTO Cargo (id, nome, descricao) VALUES
@@ -97,9 +93,9 @@ INSERT INTO Cargo (id, nome, descricao) VALUES
 (3, 'Diretor de Cultura', 'Coordena atividades culturais e eventos');
 
 -- Chapas
-INSERT INTO Chapa (id, nome, slogan, logo, administrador_id) VALUES
-(1, 'Core 2 Quad', 'Renovar com atitude', '/images/core2quad.png', 1),
-(2, 'Nova Ordem', 'Juntos pelo futuro', '/images/nova_ordem.png', 1);
+INSERT INTO Chapa (id, nome, slogan, logo) VALUES
+(1, 'Core 2 Quad', 'Renovar com atitude', '/images/core2quad.png'),
+(2, 'Nova Ordem', 'Juntos pelo futuro', '/images/nova_ordem.png');
 
 -- Candidatos
 INSERT INTO Candidato (id, nome, cargo_id, chapa_id) VALUES

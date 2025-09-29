@@ -54,7 +54,4 @@ class Eleicao(Model):
         else:
             print("Eleição não encontrada.")
             return None
-        
-e1 = Eleicao("Eleição 2024", "2024-11-01", "2024-11-30")
-e1.salvar()
 

@@ -1,0 +1,56 @@
+from model import Model
+
+class Chapa(Model):
+    def __init__(self, nome, slogan, logo, id=None):
+        super().__init__()  # CONSTRUTOR
+        self.id = id
+        self.nome = nome
+        self.slogan = slogan
+        self.logo = logo
+
+    def salvar(self):
+        sql_ver = f"SELECT * FROM chapa WHERE nome = '{self.nome}' AND slogan = '{self.slogan}' AND logo = '{self.logo}'"
+        ver = self.get(sql_ver)
+        if not ver:
+            sql = f"INSERT INTO chapa (nome, slogan, logo) VALUES ('{self.nome}', '{self.slogan}', '{self.logo}')"
+            result = self.insert(sql)
+            if result:
+                aux = self.get(f"SELECT id FROM CHAPA WHERE nome = '{self.nome}' and slogan = '{self.slogan}'")
+                self.id = aux[0][0]
+                print("Chapa salva com sucesso!")
+                return True
+            else:
+                print("Erro ao salvar chapa.")
+                return False
+        else:
+            print("Chapa já existe no sistema.")
+            return False
+    
+    def atualizar(self):
+        sql = f"UPDATE chapa SET nome = '{self.nome}', slogan = '{self.slogan}', logo = '{self.logo}' WHERE id = {self.id}"
+        result = self.update(sql)
+        if result:
+            print("Chapa atualizada com sucesso!")
+            return True
+        else:
+            print("Erro ao atualizar chapa.")
+            return False
+
+    def deletar(self):
+        sql = f"DELETE FROM chapa WHERE id = {self.id}"
+        result = self.delete(sql)
+        if result:
+            print("Chapa deletada com sucesso!")
+            return True
+        else:
+            print("Erro ao deletar chapa.")
+            return False
+
+    def ver(self, id):
+        sql = f"SELECT * FROM chapa WHERE id = {id}"
+        result = self.get(sql)
+        if result:
+            return result
+        else:
+            print("Chapa não encontrada.")
+            return None

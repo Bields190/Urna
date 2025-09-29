@@ -6,7 +6,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 
-import c_administrador, c_eleitor
+import c_administrador
 
 class Tela:
 
@@ -43,18 +43,12 @@ class Tela:
         self.btn_entrar = tk.Button(self.frm, text='Entrar',bg='black',fg='white', width=10,font=("Arial",14), command=self.login)
         self.btn_entrar.pack(pady=10)
 
-# PARA ELEITOR, O USUARIO EH A MATRICULA E A SENHA EH O PRIMEIRO NOME
-# ex: 20170300016, Fernanda
+
     def login(self, event=None):
         if c_administrador.Control(self).login():
                 tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
                 self.janela.destroy()
                 import telaEleicoes
-        elif c_eleitor.Control(self).login():
-                tk.messagebox.showinfo("Login - Usuário", "Login bem-sucedido! Bem vindo, Usuário.")
-                self.janela.destroy()
-                #import telaUsuario
-
         else:
                 tk.messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 

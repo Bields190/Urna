@@ -37,30 +37,20 @@ CREATE TABLE Candidato (
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
 );
 
-CREATE TABLE Eleitor (
-    matricula INTEGER PRIMARY KEY,
-    nome TEXT NOT NULL,
-    email_institucional TEXT NOT NULL,
-    verificado INTEGER DEFAULT 0  -- 0 = falso, 1 = verdadeiro
-);
 
 CREATE TABLE Voto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapa_id INTEGER NOT NULL,
-    eleitor_matricula INTEGER NOT NULL,
     eleicao_id INTEGER NOT NULL,
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id),
-    FOREIGN KEY (eleitor_matricula) REFERENCES Eleitor(matricula),
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
 );
 
 CREATE TABLE Cedula (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
-    eleitor_matricula INTEGER NOT NULL,
     data_emissao DATE NOT NULL, -- formato: YYYY-MM-DD HH:MM:SS
-    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
-    FOREIGN KEY (eleitor_matricula) REFERENCES Eleitor(matricula)
+    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
 );
 
 -- Tabela opcional para guardar resultados consolidados
@@ -104,13 +94,3 @@ INSERT INTO Candidato (id, nome, cargo_id, chapa_id) VALUES
 (3, 'Carla Mendes', 2, 1),
 (4, 'Diego Ramos', 2, 2),
 (5, 'Eduardo Lima', 3, 1);
-
--- Eleitores
-INSERT INTO Eleitor (matricula, nome, email_institucional) VALUES
-(20230300040, 'Mariana Alves', 'mariana.alves@sou.ufac.br'),
-(20220300005, 'Lucas Pereira',  'lucas.pereira@sou.ufac.br'),
-(20250300021, 'Isabela Freitas','isabela.freitas@sou.ufac.br'),
-(20210300078, 'Gustavo Costa',  'gustavo.costa@sou.ufac.br'),
-(20170300016, 'Fernanda Rocha', 'fernanda.rocha@sou.ufac.br'),
-(20250300001, 'Rafael Nunes',   'rafael.nunes@sou.ufac.br');
-

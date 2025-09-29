@@ -9,13 +9,21 @@ class Eleicao(Model):
         self.data_fim = data_fim
 
     def salvar(self):
-        sql = f"INSERT INTO eleicao (titulo, data_inicio, data_fim) VALUES ('{self.titulo}', '{self.data_inicio}', '{self.data_fim}')"
-        result = self.insert(sql)
-        if result:
-            print("Eleição salva com sucesso!")
-            return True
+        sql_ver = f"SELECT * FROM eleicao WHERE titulo = '{self.titulo}' AND data_inicio = '{self.data_inicio}' AND data_fim = '{self.data_fim}'"
+        ver = self.get(sql_ver)
+        if not ver:
+            sql = f"INSERT INTO eleicao (titulo, data_inicio, data_fim) VALUES ('{self.titulo}', '{self.data_inicio}', '{self.data_fim}')"
+            result = self.insert(sql)
+            if result:
+                aux = self.get(f"SELECT id FROM eleicao WHERE titulo = '{self.titulo}' and data_inicio = '{self.data_inicio}' and data_fim = '{self.data_fim}'")
+                self.id = aux[0][0]
+                print("Eleição salva com sucesso!")
+                return True
+            else:
+                print("Erro ao salvar eleição.")
+                return False
         else:
-            print("Erro ao salvar eleição.")
+            print("Eleição já existe no sistema.")
             return False
 
     def atualizar(self):
@@ -37,3 +45,16 @@ class Eleicao(Model):
         else:
             print("Erro ao deletar eleição.")
             return False
+        
+    def ver(self, id):
+        sql = f"SELECT * FROM eleicao WHERE id = {id}"
+        result = self.get(sql)
+        if result:
+            return result
+        else:
+            print("Eleição não encontrada.")
+            return None
+        
+e1 = Eleicao("Eleição 2024", "2024-11-01", "2024-11-30")
+e1.salvar()
+

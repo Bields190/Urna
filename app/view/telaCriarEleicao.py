@@ -2,6 +2,8 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
+import telaCriarChapas
+
 class Tela:
     def __init__(self, master):
         self.janela = master
@@ -63,7 +65,7 @@ class Tela:
         style = ttk.Style()
         style.configure("Preto.TButton", font=("Arial", 40, "bold"), foreground="white", background="black", borderwidth=0, focusthickness=0, focustcolor="black")
 
-        btn = ttk.Button(frm_card, text="+", style="Preto.TButton", command=self.abrir_tela_chapa)
+        btn = ttk.Button(frm_card, text="+", style="Preto.TButton", command=self.switch_Tela_criarChapas)
         btn.pack()
 
         return frm_card
@@ -83,42 +85,46 @@ class Tela:
 
         return frm_card
     
-    def abrir_tela_chapa(self):
-        self.janela_chapa = tk.Toplevel(self.janela)
-        self.janela_chapa.title("Cadastrar Chapa")
-        self.janela_chapa.geometry("1920x1080")
-        self.janela_chapa.configure(bg="white")
+    def switch_Tela_criarChapas(self):
+        self.janela.destroy()
+        telaCriarChapas.iniciarTela()
+    
+#     def abrir_tela_chapa(self):
+#         self.janela_chapa = tk.Toplevel(self.janela)
+#         self.janela_chapa.title("Cadastrar Chapa")
+#         self.janela_chapa.geometry("1920x1080")
+#         self.janela_chapa.configure(bg="white")
 
-        self.lbl_topo_tela_nova = tk.Label(self.janela_chapa, text="Adicionar Chapa", font=("Arial", 35, "bold"), bg="white")
-        self.lbl_topo_tela_nova.pack(pady=15)
+#         self.lbl_topo_tela_nova = tk.Label(self.janela_chapa, text="Adicionar Chapa", font=("Arial", 35, "bold"), bg="white")
+#         self.lbl_topo_tela_nova.pack(pady=15)
 
-        self.frm_tela2 = tk.Frame(self.janela_chapa, bg="white")
-        self.frm_tela2.pack(pady=10)
+#         self.frm_tela2 = tk.Frame(self.janela_chapa, bg="white")
+#         self.frm_tela2.pack(pady=10)
 
-        tk.Label(self.frm_tela2, text="Nome da Chapa:", font=("Arial", 25), bg="white").pack(pady=15)
-        self.entry_nome_chapa = tk.Entry(self.frm_tela2, width=40)
-        self.entry_nome_chapa.pack(pady=15)
+#         tk.Label(self.frm_tela2, text="Nome da Chapa:", font=("Arial", 25), bg="white").pack(pady=15)
+#         self.entry_nome_chapa = tk.Entry(self.frm_tela2, width=40)
+#         self.entry_nome_chapa.pack(pady=15)
 
-#-----função para o entry número da chapa aceitar somente número------
-        def validar_numero(texto):
-            if texto == "" or texto.isdigit():
-                return True
-            return False
+# #-----função para o entry número da chapa aceitar somente número------
+#         def validar_numero(texto):
+#             if texto == "" or texto.isdigit():
+#                 return True
+#             return False
 
-        vcmd = (self.frm_tela2.register(validar_numero), '%P')
+#         vcmd = (self.frm_tela2.register(validar_numero), '%P')
 
-        tk.Label(self.frm_tela2, text="Número da Chapa", font=("Arial", 25), bg="white").pack(pady=15)
-        self.entry_nmr_chapa = tk.Entry(self.frm_tela2, width=40, validate="key", validatecommand=vcmd)
-        self.entry_nmr_chapa.pack(pady=15)
+#         tk.Label(self.frm_tela2, text="Número da Chapa", font=("Arial", 25), bg="white").pack(pady=15)
+#         self.entry_nmr_chapa = tk.Entry(self.frm_tela2, width=40, validate="key", validatecommand=vcmd)
+#         self.entry_nmr_chapa.pack(pady=15)
 
-        tk.Label(self.frm_tela2, text="Slogan:", font=("Arial", 25), bg="white").pack(pady=15)
-        self.entry_slogan_chapa = tk.Entry(self.frm_tela2, width=40)
-        self.entry_slogan_chapa.pack(pady=15)
+#         tk.Label(self.frm_tela2, text="Slogan:", font=("Arial", 25), bg="white").pack(pady=15)
+#         self.entry_slogan_chapa = tk.Entry(self.frm_tela2, width=40)
+#         self.entry_slogan_chapa.pack(pady=15)
 
-        style = ttk.Style()
-        style.configure("Salvar.TButton", font=("Arial", 20, "bold"), foreground="white", background="black", borderwidth=0)
-        btn_salvar = ttk.Button(self.janela_chapa, text="Salvar", style="Salvar.TButton", command=self.salvar_chapa)
-        btn_salvar.pack(pady=20)
+#         style = ttk.Style()
+#         style.configure("Salvar.TButton", font=("Arial", 20, "bold"), foreground="white", background="black", borderwidth=0)
+#         btn_salvar = ttk.Button(self.janela_chapa, text="Salvar", style="Salvar.TButton", command=self.salvar_chapa)
+#         btn_salvar.pack(pady=20)
 
     def salvar_chapa(self):
         nome_chapa = self.entry_nome_chapa.get().strip()
@@ -135,6 +141,7 @@ class Tela:
         self.add_chapa_btn.grid(row=0, column=len(self.chapas), padx=10)
         self.janela_chapa.destroy()
 
-app = tk.Tk()
-Tela(app)
-app.mainloop()
+def iniciarTela():
+    app = tk.Tk()
+    Tela(app)
+    app.mainloop()

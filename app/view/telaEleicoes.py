@@ -9,6 +9,7 @@ class Tela:
         self.janela = master
         self.janela.title('Tela de Eleicoes')
         self.janela.geometry("1920x1080")
+        self.janela.configure(bg="white")
         
 #-------menu hamburguer---------aaaaaaaaaaaaaaaaaaaaaaaaaaa
         img = Image.open('app/src/hamburger.png')
@@ -33,11 +34,11 @@ class Tela:
         self.lbl_ola = tk.Label(text="Olá! Administrador",font=("Arial",20,"bold"))
         self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
         
-        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",15,"bold"))
+        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",16,"bold"))
         self.btn_criar_eleicao.grid(row=2,column=0,pady=(30,60))
 #-----sessão 2 das eleições----------      
         self.frmEleicoes = tk.Frame(self.janela, bd=2, relief="solid", padx=5, pady=5)
-        self.frmEleicoes.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+        self.frmEleicoes.grid(row=3, column=0, columnspan=3, padx=80, pady=50, sticky="nsew")
         self.frmEleicoes.columnconfigure(0, weight=1)
         self.frmEleicoes.columnconfigure(1, weight=1)
         self.frmEleicoes.columnconfigure(2, weight=1)
@@ -49,7 +50,7 @@ class Tela:
 
         tk.Label(eleicao1, text="Eleição 15", font=("Arial", 12, "bold"), fg="black").pack(anchor="nw")
         tk.Label(eleicao1, text="●", fg="green", font=("Arial", 10, "bold")).pack(anchor="ne")
-        tk.Button(eleicao1, text="Abrir Urna").pack(fill="x", pady=2)
+        tk.Button(eleicao1, text="Abrir Urna").pack(fill="x", pady=2) 
         tk.Button(eleicao1, text="Encerrar").pack(fill="x", pady=2)
         tk.Label(eleicao1, text="Ativa", bg="green", fg="white", font=("Arial", 10, "bold")).pack(fill="x", pady=2)
 

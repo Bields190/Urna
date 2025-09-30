@@ -4,6 +4,8 @@ from PIL import Image, ImageTk
 import sys
 import os
 
+import telaEleicoes
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 
 import c_administrador
@@ -44,13 +46,14 @@ class Tela:
         self.btn_entrar.pack(pady=10)
 
 
-    def login(self, event=None):
+    def login(self, event):
         if c_administrador.Control(self).login():
                 tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
                 self.janela.destroy()
-                import telaEleicoes
+                telaEleicoes.iniciarTela()
         else:
                 tk.messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
+
 
 app = tk.Tk()
 Tela(app)

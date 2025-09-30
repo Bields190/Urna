@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import Menu
 from PIL import Image, ImageTk
 
+import telaCriarEleicao
+
 class Tela:
     def mostrarMenu(self):
         self.menu.post(self.janela.winfo_x() + 50, self.janela.winfo_y() + 50)
@@ -34,7 +36,7 @@ class Tela:
         self.lbl_ola = tk.Label(text="Olá! Administrador",font=("Arial",20,"bold"), bg="white")
         self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
         
-        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",16,"bold"), fg="white",bg="black")
+        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",16,"bold"), command= lambda:(self.janela.destroy(), telaCriarEleicao.iniciarTela()))
         self.btn_criar_eleicao.grid(row=2,column=0,pady=(30,60))
 #-----sessão 2 das eleições----------      
         self.frmEleicoes = tk.Frame(self.janela, bd=2, padx=5, pady=5,bg="white",relief="solid")
@@ -79,6 +81,7 @@ class Tela:
         tk.Button(eleicao3, text="Arquivar",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
         tk.Button(eleicao3, text="Resultados",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)'''
      
-gui = tk.Tk()
-Tela(gui)
-gui.mainloop()
+def iniciarTela():
+        gui = tk.Tk()
+        Tela(gui)
+        gui.mainloop()

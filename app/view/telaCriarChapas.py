@@ -4,6 +4,8 @@ from ttkbootstrap.constants import *
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 
+import telaCriarEleicao
+
 class Tela:
     def __init__(self, master):
         self.janela = master
@@ -45,7 +47,7 @@ class Tela:
         self.entry_slogan=tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
         self.entry_slogan.pack(pady=(0), ipady=20)  
 
-        self.btn_entrar=tk.Button(self.janela, text='Salvar',bg='black',fg='white', width=10,font=("Arial",14))
+        self.btn_entrar=tk.Button(self.janela, text='Salvar',bg='black',fg='white', width=10,font=("Arial",14), command= self.salvar_chapa)
         self.btn_entrar.pack(pady=0)
 
         #Frame para adicionar cargos
@@ -108,6 +110,15 @@ class Tela:
             self.lbl_imagem.image = imagem_tk
             self.lbl_adcFoto.place_forget()
 
-app = tk.Tk()
-Tela(app)
-app.mainloop()
+    def salvar_chapa(self):
+        tk.messagebox.showinfo("Criação de chapas", "Os dados foram Salvos!")
+        #aq ele salva tudo no bd
+        self.janela.destroy()
+        telaCriarEleicao.iniciarTela()
+
+
+
+def iniciarTela():
+    app = tk.Tk()
+    Tela(app)
+    app.mainloop()

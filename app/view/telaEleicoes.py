@@ -5,8 +5,15 @@ from PIL import Image, ImageTk
 import telaCriarEleicao
 
 class Tela:
-    def mostrarMenu(self):
-        self.menu.post(self.janela.winfo_x() + 50, self.janela.winfo_y() + 50)
+    def AbrirFecharMenu(self):
+        if self.statusMenu:
+            self.menu.unpost()
+            self.statusMenu = False
+        else:
+            x = self.janela.winfo_rootx() + 50
+            y = self.janela.winfo_rooty() + 50
+            self.menu.post(x, y)
+            self.statusMenu = True
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Eleicoes')
@@ -18,14 +25,17 @@ class Tela:
         img = img.resize((30,30))
         self.iconeHamburguer = ImageTk.PhotoImage(img)
         
+        self.statusMenu = False
         
-        self.btn = tk.Button(self.janela, image=self.iconeHamburguer, command=self.mostrarMenu, bg="white")
+        self.btn = tk.Button(self.janela, image=self.iconeHamburguer, command=self.AbrirFecharMenu, bg="white")
         self.btn.image = self.iconeHamburguer  
         self.btn.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
         
         self.menu = Menu(self.janela, tearoff=0)
 
-        self.menu.add_command(label="Logout")
+        self.menu.add_command(label="Gerenciar Chapas", font=("Arial",13), background="grey", foreground="white")
+        self.menu.add_command(label="Gerenciar Cargos", font=("Arial",13), background="grey", foreground="white")
+        self.menu.add_command(label="Logout", font=("Arial",13), background="grey", foreground="white")
 
     
 #-----sessão das eleições----------
@@ -36,10 +46,10 @@ class Tela:
         self.lbl_ola = tk.Label(text="Olá! Administrador",font=("Arial",20,"bold"), bg="white")
         self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
         
-        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",16,"bold"), command= lambda:(self.janela.destroy(), telaCriarEleicao.iniciarTela()))
+        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Eleição", font=("Arial",16,"bold"),bg="black",fg="white", command= lambda:(self.janela.destroy(), telaCriarEleicao.iniciarTela()))
         self.btn_criar_eleicao.grid(row=2,column=0,pady=(30,60))
 #-----sessão 2 das eleições----------      
-        self.frmEleicoes = tk.Frame(self.janela, bd=2, padx=5, pady=5,bg="white",relief="solid")
+        self.frmEleicoes = tk.Frame(self.janela, bd=2, padx=5, pady=5,bg="white")
         self.frmEleicoes.grid(row=3, column=0, columnspan=3, padx=80, pady=(20,100), sticky="nsew")
         self.frmEleicoes.columnconfigure(0, weight=1)
         self.frmEleicoes.columnconfigure(1, weight=1)
@@ -57,7 +67,6 @@ class Tela:
         tk.Button(eleicao1, text="Encerrar",font=("Arial", 13, "bold"),height=3, bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
         tk.Button(eleicao1, text="Abrir Urna",font=("Arial", 13, "bold"),height=3, bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
         
-'''
 
 #-----eleição 2------
         eleicao2 = tk.Frame(self.frmEleicoes, bd=2, relief="solid", width=100, height=400,bg="white")
@@ -79,7 +88,7 @@ class Tela:
         tk.Label(eleicao3, text="Eleição 13", font=("Arial", 15, "bold"), fg="black",padx=15,pady=15,bg="white").pack(anchor="nw", side="top")
         tk.Label(eleicao3, text="Encerrada", bg="red", fg="white", font=("Arial", 13, "bold"),height=3).pack(fill="x", pady=5, side="bottom",padx=10)
         tk.Button(eleicao3, text="Arquivar",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
-        tk.Button(eleicao3, text="Resultados",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)'''
+        tk.Button(eleicao3, text="Resultados",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
      
 def iniciarTela():
         gui = tk.Tk()

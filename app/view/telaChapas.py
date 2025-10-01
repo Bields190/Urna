@@ -15,7 +15,7 @@ class Tela:
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
 
-        self.lbl_ola = tk.Label(text="Olá! Administrador",font=("Arial",20,"bold"), bg="white")
+        self.lbl_ola = tk.Label(text="Controle de Chapas",font=("Arial",20,"bold"), bg="white")
         self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
         
         self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Chapa", font=("Arial",16,"bold"), command= lambda:(self.janela.destroy(), telaCriarEleicao.iniciarTela()))

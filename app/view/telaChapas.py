@@ -5,25 +5,11 @@ from PIL import Image, ImageTk
 import telaCriarEleicao
 
 class Tela:
-    def mostrarMenu(self):
-        self.menu.post(self.janela.winfo_x() + 50, self.janela.winfo_y() + 50)
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Controle de Chapas')
         self.janela.geometry("1920x1080")
-        self.janela.configure(bg="white")    
-
-        img = Image.open('app/src/hamburger.png')
-        img = img.resize((30,30))
-        self.iconeHamburguer = ImageTk.PhotoImage(img)
-        
-        self.btn = tk.Button(self.janela, image=self.iconeHamburguer, command=self.mostrarMenu, bg="white")
-        self.btn.image = self.iconeHamburguer  
-        self.btn.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
-        
-        self.menu = Menu(self.janela, tearoff=0)
-
-        self.menu.add_command(label="Logout")    
+        self.janela.configure(bg="white")      
     
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)

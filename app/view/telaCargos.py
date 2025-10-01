@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import Menu
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from PIL import Image, ImageTk
 
 import telaCriarEleicao
@@ -65,7 +67,38 @@ class Tela:
         tk.Button(frm_botoes3, text="Excluir", bg="red", fg="white", font=("Arial", 13, "bold"), height=3).pack(side="left", fill="x", expand=True, padx=(5,0))
 
     def criarCargo(self):
-        pass
+        self.adcCargo=tk.Toplevel(self.janela)
+        self.adcCargo.grab_set()
+        self.adcCargo.title('Adicionar Cargo')
+        self.adcCargo.configure(bg="white")
+        self.janelaCentro(self.adcCargo, 450, 250)
+
+        self.lbl_tituloCargo=tk.Label(self.adcCargo, text="Adicionar Cargo", font=("Arial", 16, "bold"), bg="white")
+        self.lbl_tituloCargo.pack(pady=15)
+
+        self.frm_campos=tk.Frame(self.adcCargo, bg="white")
+        self.frm_campos.pack(padx=20)
+
+        self.lbl_cargo=tk.Label(self.frm_campos, text="Cargo:", font=("Arial", 10), bg="white")
+        self.lbl_cargo.pack(anchor="w")
+        self.ent_cargo=tk.Entry(self.frm_campos, width=50, highlightthickness=1, highlightbackground="black")
+        self.ent_cargo.pack(pady=(0, 10), ipady=3)
+
+        self.lbl_descricao=tk.Label(self.frm_campos, text="Descrição:", font=("Arial", 10), bg="white")
+        self.lbl_descricao.pack(anchor="w")
+        self.entry_descricao=tk.Entry(self.frm_campos, width=50, highlightthickness=1, highlightbackground="black")
+        self.entry_descricao.pack(pady=(0, 10), ipady=3)
+
+        self.btn_entrar=tk.Button(self.adcCargo, text='Adicionar', bg='black', fg='white', width=15, font=("Arial",14), command=self.salvarCargo)
+        self.btn_entrar.pack(pady=10)
+
+    def salvarCargo(self):
+        self.adcCargo.destroy()
+
+    def janelaCentro(self, window, largura, altura):
+        x=(window.winfo_screenwidth()-largura)//2
+        y=(window.winfo_screenheight()-altura)//2
+        window.geometry(f"{largura}x{altura}+{x}+{y}")
 
 app = tk.Tk()
 Tela(app)

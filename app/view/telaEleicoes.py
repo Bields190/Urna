@@ -5,39 +5,12 @@ from PIL import Image, ImageTk
 import telaCriarEleicao
 
 class Tela:
-    def AbrirFecharMenu(self):
-        if self.statusMenu:
-            self.menu.unpost()
-            self.statusMenu = False
-        else:
-            x = self.janela.winfo_rootx() + 50
-            y = self.janela.winfo_rooty() + 50
-            self.menu.post(x, y)
-            self.statusMenu = True
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Eleicoes')
         self.janela.geometry("1920x1080")
         self.janela.configure(bg="white")
-        
-#-------menu hamburguer---------aaaaaaaaaaaaaaaaaaaaaaaaaaa
-        img = Image.open('app/src/hamburger.png')
-        img = img.resize((30,30))
-        self.iconeHamburguer = ImageTk.PhotoImage(img)
-        
-        self.statusMenu = False
-        
-        self.btn = tk.Button(self.janela, image=self.iconeHamburguer, command=self.AbrirFecharMenu, bg="white")
-        self.btn.image = self.iconeHamburguer  
-        self.btn.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
-        
-        self.menu = Menu(self.janela, tearoff=0)
 
-        self.menu.add_command(label="Gerenciar Chapas", font=("Arial",13), background="grey", foreground="white")
-        self.menu.add_command(label="Gerenciar Cargos", font=("Arial",13), background="grey", foreground="white")
-        self.menu.add_command(label="Logout", font=("Arial",13), background="grey", foreground="white")
-
-    
 #-----sessão das eleições----------
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)

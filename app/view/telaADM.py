@@ -3,6 +3,7 @@ from tkinter import ttk
 import tkinter.font as tkFont   
 import ttkbootstrap as tb     
 
+import telaEleicoes, telaChapas, telaCargos, telaLogin #e a de cadastrar adm
 
 class Tela():
     def criarFramesDashboard(self,frmpai, titulo, valor, coluna):
@@ -23,7 +24,7 @@ class Tela():
         frmTopo.columnconfigure(1, weight=1)
         frmTopo.columnconfigure(2, weight=1)
 
-        ttk.Button(frmTopo, text="Logout", bootstyle="danger", width=15).grid(row=0, column=0, sticky="w", padx=20,pady=(0,70))
+        ttk.Button(frmTopo, text="Logout", bootstyle="danger", width=15, command= lambda:(self.janela.destroy(), telaLogin.iniciarTela())).grid(row=0, column=0, sticky="w", padx=20,pady=(0,70))
 
         ttk.Label(frmTopo, text="Dashboard", font=("Helvetica", 28, "bold")).grid(row=0, column=1, sticky="n", padx=(10,200),pady=(60,40))
 
@@ -44,17 +45,22 @@ class Tela():
         botoes_frame = ttk.Frame(self.janela)
         botoes_frame.pack(expand=True, pady=40)
 
-        ttk.Button(botoes_frame, text="Gerenciar Eleições", width=40, bootstyle="primary",style="Fonte.TButton").grid(row=0, column=0, pady=10)
+        self.btnEleicao = ttk.Button(botoes_frame, text="Gerenciar Eleições", width=40, bootstyle="primary",style="Fonte.TButton", command=lambda: (self.janela.destroy(), telaEleicoes.iniciarTela()))
+        self.btnEleicao.grid(row=0, column=0, pady=10)
 
-        ttk.Button(botoes_frame, text="Gerenciar Chapas", width=40, bootstyle="primary",style="Fonte.TButton").grid(row=1, column=0, pady=10)
+        self.btnChapas = ttk.Button(botoes_frame, text="Gerenciar Chapas", width=40, bootstyle="primary",style="Fonte.TButton", command=lambda: (self.janela.destroy(), telaChapas.iniciarTela()))
+        self.btnChapas.grid(row=1, column=0, pady=10)
 
-        ttk.Button(botoes_frame, text="Gerenciar Cargos",   width=40, bootstyle="primary",style="Fonte.TButton").grid(row=2, column=0, pady=10)
-        
-        ttk.Button(botoes_frame, text="Cadastrar Administradores", width=40, bootstyle="primary",style="Fonte.TButton").grid(row=3, column=0, pady=10)
+        self.btnCargos = ttk.Button(botoes_frame, text="Gerenciar Cargos", width=40, bootstyle="primary",style="Fonte.TButton", command=lambda: (self.janela.destroy(), telaCargos.iniciarTela()))
+        self.btnCargos.grid(row=2, column=0, pady=10)
+
+        self.btnCadastrarADM = ttk.Button(botoes_frame, text="Cadastrar Administradores", width=40, bootstyle="primary",style="Fonte.TButton", command=None) #telaCadastrarADM.iniciarTela()
+        self.btnCadastrarADM.grid(row=3, column=0, pady=10)
         
 
    
 
-app = tb.Window(themename='superhero')
-Tela(app)
-app.mainloop()
+def iniciarTela():
+        app = tb.Window(themename="litera")
+        Tela(app)
+        app.mainloop()

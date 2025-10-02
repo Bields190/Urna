@@ -2,10 +2,19 @@ import tkinter as tk
 from tkinter import Menu
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 import telaCriarEleicao
 
+import sys
+import os
+
+import telaADM
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
+
+import c_cargos # type: ignore
 class Tela:
     def __init__(self, master):
         self.janela = master
@@ -86,13 +95,15 @@ class Tela:
 
         self.lbl_descricao=tk.Label(self.frm_campos, text="Descrição:", font=("Arial", 10), bg="white")
         self.lbl_descricao.pack(anchor="w")
-        self.entry_descricao=tk.Entry(self.frm_campos, width=50, highlightthickness=1, highlightbackground="black")
-        self.entry_descricao.pack(pady=(0, 10), ipady=3)
+        self.ent_descricao=tk.Entry(self.frm_campos, width=50, highlightthickness=1, highlightbackground="black")
+        self.ent_descricao.pack(pady=(0, 10), ipady=3)
 
         self.btn_entrar=tk.Button(self.adcCargo, text='Adicionar', bg='black', fg='white', width=15, font=("Arial",14), command=self.salvarCargo)
         self.btn_entrar.pack(pady=10)
 
     def salvarCargo(self):
+        c_cargos.Control(self).adicionar_cargo()
+        messagebox.showinfo("Sucesso", "Cargo adicionado com sucesso!")
         self.adcCargo.destroy()
 
     def janelaCentro(self, window, largura, altura):

@@ -68,6 +68,7 @@ class Tela:
         tk.Button(chapa4, text="Editar",font=("Arial", 13, "bold"),height=3, bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
         tk.Label(chapa4, text="Ouricurey Mqs",font=("Arial", 18, "bold"), fg="black", padx=10, pady=10, bg="white").pack(anchor="nw", side="bottom")
 
-app = tk.Tk()
-Tela(app)
-app.mainloop()
+def iniciarTela():
+        gui = tk.Tk()
+        Tela(gui)
+        gui.mainloop()

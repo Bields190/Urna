@@ -1,13 +1,5 @@
-import ttkbootstrap as ttk
+#GENTE VAMO TER Q INICIAR TUDO A PARTIR DAQ A PARTIR DE AGORA:::::
 
-class Tela:
-    def __init__(self, master):
-        self.janela = master
-        self.janela.title("Urna Eletrônica")
-        self.janela.geometry("1920x1080")
-        self.oi = ttk.Label(self.janela, text="TÁ FUNCIONANDO", font=("Arial", 100))
-        self.oi.pack()
+import telaLogin
 
-gui = ttk.Window()
-tela = Tela(gui)
-gui.mainloop()
+telaLogin.iniciarTela()

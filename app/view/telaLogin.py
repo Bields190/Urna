@@ -1,14 +1,15 @@
 import tkinter as tk
 from PIL import Image, ImageTk
+import ttkbootstrap as tb
 
 import sys
 import os
 
-import telaEleicoes
+import telaADM
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 
-import c_administrador
+import c_administrador # type: ignore
 
 class Tela:
 
@@ -16,6 +17,7 @@ class Tela:
         self.janela = master
         self.janela.title('Tela de Login')
         self.janela.geometry("1920x1080")
+        self.janela.option_add("*Font", "Courier 14")
 
         self.frm_principal = tk.Frame(self.janela,bg='white')
         self.frm_principal.pack(fill='both',expand=True)
@@ -50,11 +52,11 @@ class Tela:
         if c_administrador.Control(self).login():
                 tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
                 self.janela.destroy()
-                telaEleicoes.iniciarTela()
+                telaADM.iniciarTela()
         else:
                 tk.messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 
-
-app = tk.Tk()
-Tela(app)
-app.mainloop()
+def iniciarTela():
+        app = tb.Window(themename="litera")
+        Tela(app)
+        app.mainloop()

@@ -100,6 +100,7 @@ class Tela:
         y=(window.winfo_screenheight()-altura)//2
         window.geometry(f"{largura}x{altura}+{x}+{y}")
 
-app = tk.Tk()
-Tela(app)
-app.mainloop()
+def iniciarTela():
+        gui = tk.Tk()
+        Tela(gui)
+        gui.mainloop()

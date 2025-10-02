@@ -64,7 +64,7 @@ class Tela:
         tk.Button(eleicao3, text="Arquivar",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
         tk.Button(eleicao3, text="Resultados",font=("Arial", 13, "bold"),height=3,bg="white",relief="solid").pack(fill="x", pady=5, side="bottom",padx=10)
      
-
-gui = tk.Tk()
-Tela(gui)
-gui.mainloop()
+def iniciarTela():
+        gui = tk.Tk()
+        Tela(gui)
+        gui.mainloop()

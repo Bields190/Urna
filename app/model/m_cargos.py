@@ -51,9 +51,10 @@ class Cargo(Model):
         if result:
             return result
         
+    @classmethod
     def listar(self):
         sql = f"SELECT * FROM cargo"
-        result = self.get(sql)
+        result = Model().get(sql)
         if result:
             return result
         return []

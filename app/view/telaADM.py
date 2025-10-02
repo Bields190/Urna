@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont   
-import ttkbootstrap as tb     
+import ttkbootstrap as tb
+from tkinter import messagebox
 
 import telaEleicoes, telaChapas, telaCargos, telaLogin #e a de cadastrar adm
 
@@ -24,7 +25,7 @@ class Tela():
         frmTopo.columnconfigure(1, weight=1)
         frmTopo.columnconfigure(2, weight=1)
 
-        self.btn_logout = ttk.Button(frmTopo, text="Logout", bootstyle="danger", width=15, command= lambda x:(self.janela.destroy(), telaLogin.iniciarTela()))
+        self.btn_logout = ttk.Button(frmTopo, text="Logout", bootstyle="danger", width=15, command=self.logout)
         self.btn_logout.grid(row=0, column=0, sticky="w", padx=20,pady=(0,70))
 
         ttk.Label(frmTopo, text="Dashboard", font=("Helvetica", 28, "bold")).grid(row=0, column=1, sticky="n", padx=(10,200),pady=(60,40))
@@ -58,8 +59,11 @@ class Tela():
         self.btnCadastrarADM = ttk.Button(botoes_frame, text="Cadastrar Administradores", width=40, bootstyle="primary",style="Fonte.TButton", command=None) #telaCadastrarADM.iniciarTela()
         self.btnCadastrarADM.grid(row=3, column=0, pady=10)
         
-
-   
+    def logout(self):
+        resposta = messagebox.askyesno("Logout", "Tem certeza que deseja fazer logout?")
+        if resposta:
+            self.janela.destroy()
+            telaLogin.iniciarTela()
 
 def iniciarTela():
         app = tb.Window(themename="litera")

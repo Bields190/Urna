@@ -20,7 +20,7 @@ class Tela:
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
-        self.janela.bind('<Escape>', lambda: (self.janela.destroy(), telaADM.iniciarTela()))
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
 
         self.lbl_ola = tk.Label(text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
         self.lbl_ola.grid(row=1, column=0, pady=(40, 10), padx=(20,0))
@@ -33,6 +33,11 @@ class Tela:
 
         # Renderiza os cargos na tela
         self.renderizar_cargos()
+
+    def voltar_tela_adm(self):
+        """Volta para a tela do administrador"""
+        self.janela.destroy()
+        telaADM.iniciarTela()
 
     # Criar novo cargo
     def criarCargo(self):
@@ -89,6 +94,7 @@ class Tela:
         self.ent_descricao_edit = tk.Entry(frm_campos, width=50, highlightthickness=1, highlightbackground="black")
         self.ent_descricao_edit.insert(0, descricao)
         self.ent_descricao_edit.pack(pady=(0, 10), ipady=3)
+        self.ent_descricao_edit.bind('<Return>', lambda x: self.salvarEdicao(id))
 
         tk.Button(self.editCargo, text='Salvar Alterações', bg='black', fg='white', width=18, font=("Arial",14),
                   command=lambda: self.salvarEdicao(id)).pack(pady=10)

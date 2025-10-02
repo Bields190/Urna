@@ -17,3 +17,4 @@ class Control:
             return True
         else:
             return False
+        

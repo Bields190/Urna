@@ -37,9 +37,11 @@ class Tela:
         self.entry_nome=tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
         self.entry_nome.pack(pady=(0), ipady=3)
 
+        #vcmd: Função de validação para aceitar somente número
         self.lbl_num=tk.Label(self.frm_entradas, text="Número da Chapa:", font=("Arial", 16), bg="white")
         self.lbl_num.pack(anchor="w")
-        self.entry_num=tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
+        vcmd = (self.janela.register(self.somente_numeros), "%P")
+        self.entry_num=tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black", validate="key", validatecommand=vcmd)
         self.entry_num.pack(pady=(0), ipady=3)
 
         self.lbl_slogan=tk.Label(self.frm_entradas, text="Slogan:", font=("Arial", 16), bg="white")
@@ -57,6 +59,9 @@ class Tela:
 
         self.btn_entrar=tk.Button(self.frm_cargos, text='Designar Cargo',bg='black',fg='white', width=15,font=("Arial",14), command=self.abrir)
         self.btn_entrar.pack(pady=10, anchor="w", padx=10)
+
+    def somente_numeros(self, texto):
+        return texto.isdigit() or texto == ""
 
     #PopUp de adicionar cargo
     def abrir(self):

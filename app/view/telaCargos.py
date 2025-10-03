@@ -184,7 +184,7 @@ class Tela:
         window.geometry(f"{largura}x{altura}+{x}+{y}")
 #gente tenq arrumar o lugar onde as telas vao ficar
 
-# def iniciarTela():
-gui = tk.Tk()
-Tela(gui)
-gui.mainloop()
+def iniciarTela():
+    gui = tk.Tk()
+    Tela(gui)
+    gui.mainloop()

@@ -22,9 +22,9 @@ class Tela:
         self.janela.rowconfigure(3, weight=1)
         self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
 
-        self.lbl_ola = tk.Label(text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
-        self.lbl_ola.grid(row=1, column=0, pady=(40, 10), padx=(20,0))
-        
+        self.lbl_nomeTela = tk.Label(text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
+        self.lbl_nomeTela.grid(row=1, column=0, pady=(40, 10), padx=(20,0))
+
         self.btn_criar_cargo = tk.Button(text="+ Criar Novo Cargo", font=("Arial",16,"bold"), command=self.criarCargo)
         self.btn_criar_cargo.grid(row=2, column=0, pady=(30,60))
    
@@ -116,28 +116,67 @@ class Tela:
 
     # Renderizar os cargos do banco
     def renderizar_cargos(self):
+        # Limpa frames existentes
         for widget in self.frmChapas.winfo_children():
             widget.destroy()
+
+        # Configura o grid para distribuir igualmente as 3 colunas
+        self.frmChapas.grid_columnconfigure(0, weight=1)
+        self.frmChapas.grid_columnconfigure(1, weight=1)
+        self.frmChapas.grid_columnconfigure(2, weight=1)
 
         cargos = c_cargos.Control(self).listar_cargos()
 
         for i, cargo in enumerate(cargos):
             id_cargo, nome, descricao = cargo
 
-            frame_cargo = tk.Frame(self.frmChapas, bd=2, relief="solid", width=200, height=150, bg="white")
-            frame_cargo.grid(row=i//3, column=i%3, padx=10, pady=10, sticky="nsew")  
-            frame_cargo.grid_propagate(False)
+            # Frame com tamanho fixo para cada cargo
+            frame_cargo = tk.Frame(self.frmChapas, bd=2, relief="solid", width=400, height=200, bg="white")
+            frame_cargo.grid(row=i//3, column=i%3, padx=20, pady=20, sticky="nsew")
+            frame_cargo.grid_propagate(False)  # Mantém tamanho fixo
+            frame_cargo.pack_propagate(False)  # Impede que o conteúdo altere o tamanho
 
-            tk.Label(frame_cargo, text=f"{id_cargo} - {nome}", font=("Arial", 15, "bold"), fg="black", bg="white").pack(anchor="nw", padx=10, pady=5)
-            tk.Label(frame_cargo, text=descricao, font=("Arial", 11), fg="gray", wraplength=180, justify="left", bg="white").pack(anchor="nw", padx=10, pady=5)
+            # Container para o conteúdo
+            container = tk.Frame(frame_cargo, bg="white")
+            container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.9)
 
-            frm_botoes = tk.Frame(frame_cargo, bg="white")
-            frm_botoes.pack(side="bottom", fill="x", padx=10, pady=5)
+            # Labels com wraplength para controlar quebra de texto
+            tk.Label(container, 
+                    text=f"{id_cargo} - {nome}", 
+                    font=("Arial", 15, "bold"), 
+                    fg="black", 
+                    bg="white",
+                    wraplength=350).pack(anchor="nw", pady=(5,0))
+            
+            tk.Label(container, 
+                    text=descricao, 
+                    font=("Arial", 11), 
+                    fg="gray", 
+                    bg="white",
+                    wraplength=350,
+                    justify="left").pack(anchor="nw", pady=5)
 
-            tk.Button(frm_botoes, text="Editar", font=("Arial", 12, "bold"), bg="white", relief="solid", height=2,
-                      command=lambda id=id_cargo, n=nome, d=descricao: self.editarCargo(id, n, d)).pack(side="left", fill="x", expand=True, padx=(0,5))
-            tk.Button(frm_botoes, text="Excluir", font=("Arial", 12, "bold"), bg="red", fg="white", height=2,
-                      command=lambda id=id_cargo: self.excluirCargo(id)).pack(side="left", fill="x", expand=True, padx=(5,0))
+            # Frame para os botões
+            frm_botoes = tk.Frame(container, bg="white")
+            frm_botoes.pack(side="bottom", fill="x", pady=5)
+
+            tk.Button(frm_botoes, 
+                     text="Editar",
+                     font=("Arial", 12, "bold"),
+                     bg="white",
+                     relief="solid",
+                     height=2,
+                     command=lambda id=id_cargo, n=nome, d=descricao: self.editarCargo(id, n, d)
+                     ).pack(side="left", fill="x", expand=True, padx=(0,5))
+            
+            tk.Button(frm_botoes,
+                     text="Excluir",
+                     font=("Arial", 12, "bold"),
+                     bg="red",
+                     fg="white",
+                     height=2,
+                     command=lambda id=id_cargo: self.excluirCargo(id)
+                     ).pack(side="left", fill="x", expand=True, padx=(5,0))
 
     # Centraliza janelaPOPUP
     def janelaCentro(self, window, largura, altura):
@@ -146,7 +185,7 @@ class Tela:
         window.geometry(f"{largura}x{altura}+{x}+{y}")
 #gente tenq arrumar o lugar onde as telas vao ficar
 
-def iniciarTela():
-    gui = tk.Tk()
-    Tela(gui)
-    gui.mainloop()
+# def iniciarTela():
+gui = tk.Tk()
+Tela(gui)
+gui.mainloop()

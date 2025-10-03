@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 import c_eleicao
 
-import telaADM, telaCriarEleicao, telaEditarEleicao
+import telaADM, telaCriarEleicao
 
 class Tela:
     def voltar_tela_adm(self):

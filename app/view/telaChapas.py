@@ -46,9 +46,9 @@ class Tela:
         telaCriarChapas.iniciarTela()
 
     # Navegar para tela de edição
-    def editarChapa(self, id, nome, slogan, logo):
+    def editarChapa(self, id, nome, slogan, logo, numero):
         self.janela.destroy()
-        telaCriarChapas.iniciarTela(modo_edicao=True, dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo})
+        telaCriarChapas.iniciarTela(modo_edicao=True, dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo, 'numero': numero})
 
     def carregar_imagem(self, caminho_imagem, tamanho=(80, 80)):
         """Carrega e redimensiona uma imagem"""
@@ -98,7 +98,12 @@ class Tela:
             return
 
         for i, chapa in enumerate(chapas):
-            id_chapa, nome, slogan, logo = chapa
+            # Mudança aqui para acomodar o número da chapa
+            if len(chapa) == 4:  # formato antigo sem número
+                id_chapa, nome, slogan, logo = chapa
+                numero = ""
+            else:  # formato novo com número
+                id_chapa, nome, slogan, numero, logo = chapa
 
             # Frame com tamanho fixo para cada chapa
             frame_chapa = tk.Frame(self.frmChapas, bd=2, relief="solid", width=300, height=300, bg="white")
@@ -111,8 +116,9 @@ class Tela:
             container.pack(fill="both", expand=True, padx=10, pady=10)
 
             # Label do número da chapa
+            numero_exibicao = numero if numero else str(id_chapa)
             tk.Label(container, 
-                text=f"Chapa {id_chapa}", 
+                text=f"Chapa {numero_exibicao}", 
                 font=("Arial", 15, "bold"), 
                 fg="black", 
                 bg="white").pack(anchor="n")
@@ -164,7 +170,7 @@ class Tela:
                 height=2, 
                 bg="white",
                 relief="solid",
-                command=lambda id=id_chapa, n=nome, s=slogan, l=logo: self.editarChapa(id, n, s, l)
+                command=lambda id=id_chapa, n=nome, s=slogan, l=logo, num=numero: self.editarChapa(id, n, s, l, num)
                 ).pack(side="left", fill="x", expand=True, padx=(0, 2))
             
             tk.Button(frame_botoes, 

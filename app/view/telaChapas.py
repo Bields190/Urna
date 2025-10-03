@@ -80,11 +80,10 @@ class Tela:
         for widget in self.frmChapas.winfo_children():
             widget.destroy()
 
-        # Configura o grid para distribuir igualmente as 4 colunas
+        # Configura o grid para distribuir igualmente as 3 colunas
         self.frmChapas.grid_columnconfigure(0, weight=1)
         self.frmChapas.grid_columnconfigure(1, weight=1)
         self.frmChapas.grid_columnconfigure(2, weight=1)
-        self.frmChapas.grid_columnconfigure(3, weight=1)
 
         chapas = c_chapas.Control(self).listar_chapas()
 
@@ -94,11 +93,10 @@ class Tela:
                 text="Nenhuma chapa cadastrada", 
                 font=("Arial", 16), 
                 fg="gray", 
-                bg="white").grid(row=0, column=0, columnspan=4, pady=50)
+                bg="white").grid(row=0, column=0, columnspan=3, pady=50)
             return
 
         for i, chapa in enumerate(chapas):
-            # Mudança aqui para acomodar o número da chapa
             if len(chapa) == 4:  # formato antigo sem número
                 id_chapa, nome, slogan, logo = chapa
                 numero = ""
@@ -106,14 +104,14 @@ class Tela:
                 id_chapa, nome, slogan, numero, logo = chapa
 
             # Frame com tamanho fixo para cada chapa
-            frame_chapa = tk.Frame(self.frmChapas, bd=2, relief="solid", width=300, height=300, bg="white")
-            frame_chapa.grid(row=i//4, column=i%4, padx=10, pady=10, sticky="nsew")
+            frame_chapa = tk.Frame(self.frmChapas, bd=2, relief="solid", width=400, height=300, bg="white")
+            frame_chapa.grid(row=i//3, column=i%3, padx=20, pady=20, sticky="nsew")
             frame_chapa.grid_propagate(False)
             frame_chapa.pack_propagate(False)
 
             # Container principal
             container = tk.Frame(frame_chapa, bg="white")
-            container.pack(fill="both", expand=True, padx=10, pady=10)
+            container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.9)
 
             # Label do número da chapa
             numero_exibicao = numero if numero else str(id_chapa)
@@ -121,7 +119,8 @@ class Tela:
                 text=f"Chapa {numero_exibicao}", 
                 font=("Arial", 15, "bold"), 
                 fg="black", 
-                bg="white").pack(anchor="n")
+                bg="white",
+                wraplength=350).pack(anchor="nw", pady=(5,0))
 
             # Frame para a imagem
             frame_imagem = tk.Frame(container, bg="white", height=100)
@@ -132,55 +131,54 @@ class Tela:
             imagem_tk = self.carregar_imagem(logo, (80, 80))
             if imagem_tk:
                 lbl_imagem = tk.Label(frame_imagem, image=imagem_tk, bg="white")
-                lbl_imagem.image = imagem_tk  # Manter referência
+                lbl_imagem.image = imagem_tk
                 lbl_imagem.pack()
             else:
-                # Placeholder se não há imagem
                 tk.Label(frame_imagem, 
                     text="Sem imagem", 
-                    font=("Arial", 10), 
+                    font=("Arial", 11), 
                     fg="gray", 
                     bg="white").pack()
 
-            # Label do nome da chapa
+            # Label do nome e slogan
             tk.Label(container, 
                 text=nome, 
                 font=("Arial", 16, "bold"), 
                 fg="black", 
                 bg="white",
-                wraplength=280).pack(pady=5)
+                wraplength=350).pack(pady=5)
 
-            # Label do slogan (se existir)
             if slogan:
                 tk.Label(container, 
                     text=slogan, 
                     font=("Arial", 11), 
                     fg="gray", 
                     bg="white",
-                    wraplength=280).pack(pady=2)
+                    wraplength=350,
+                    justify="left").pack(pady=2)
 
             # Frame para os botões
-            frame_botoes = tk.Frame(container, bg="white")
-            frame_botoes.pack(side="bottom", fill="x", pady=5)
+            frm_botoes = tk.Frame(container, bg="white")
+            frm_botoes.pack(side="bottom", fill="x", pady=5)
 
             # Botões de ação
-            tk.Button(frame_botoes, 
+            tk.Button(frm_botoes, 
                 text="Editar",
                 font=("Arial", 12, "bold"),
-                height=2, 
+                height=2,
                 bg="white",
                 relief="solid",
                 command=lambda id=id_chapa, n=nome, s=slogan, l=logo, num=numero: self.editarChapa(id, n, s, l, num)
-                ).pack(side="left", fill="x", expand=True, padx=(0, 2))
+                ).pack(side="left", fill="x", expand=True, padx=(0,5))
             
-            tk.Button(frame_botoes, 
+            tk.Button(frm_botoes,
                 text="Excluir", 
                 bg="red", 
                 fg="white", 
                 font=("Arial", 12, "bold"),
                 height=2,
                 command=lambda id=id_chapa: self.excluirChapa(id)
-                ).pack(side="left", fill="x", expand=True, padx=(2, 0))
+                ).pack(side="left", fill="x", expand=True, padx=(5,0))
 
 
 

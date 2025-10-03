@@ -10,13 +10,19 @@ class Tela():
     def criarFramesDashboard(self,frmpai, titulo, valor, coluna):
         frameBoard = ttk.Frame(frmpai, padding=20, relief="ridge", borderwidth=3)
         frameBoard.grid(row=0, column=coluna, padx=40)
-        ttk.Label(frameBoard, text=titulo, font=("Helvetica", 16, "bold")).pack(pady=10)
-        ttk.Label(frameBoard, text=valor, font=("Helvetica", 24)).pack()
+        ttk.Label(frameBoard, text=titulo, font=("Courier", 16, "bold")).pack(pady=10)
+        ttk.Label(frameBoard, text=valor, font=("Courier", 24)).pack()
 
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela do Administrador')
         self.janela.geometry("1920x1080")
+        
+        # Configurar fonte padrão global
+        self.janela.option_add("*Font", "Courier 14")
+        
+        # Configurar estilos do ttkbootstrap para usar Courier
+        self.configurar_fontes()
 
         frmTopo = ttk.Frame(self.janela)
         frmTopo.pack(fill="x")
@@ -28,7 +34,19 @@ class Tela():
         self.btn_logout = ttk.Button(frmTopo, text="Logout", bootstyle="danger", width=15, command=self.logout)
         self.btn_logout.grid(row=0, column=0, sticky="w", padx=20,pady=(0,70))
 
-        ttk.Label(frmTopo, text="Dashboard", font=("Helvetica", 28, "bold")).grid(row=0, column=1, sticky="n", padx=(10,200),pady=(60,40))
+        ttk.Label(frmTopo, text="Dashboard", font=("Courier", 28, "bold")).grid(row=0, column=1, sticky="n", padx=(10,200),pady=(60,40))
+
+    def configurar_fontes(self):
+        """Configura todas as fontes para usar Courier"""
+        style = tb.Style()
+        
+        # Configurar estilos para diferentes widgets
+        style.configure("TLabel", font=("Courier", 14))
+        style.configure("TButton", font=("Courier", 14))
+        style.configure("TFrame", font=("Courier", 14))
+        
+        # Estilo específico para botões grandes
+        style.configure("Fonte.TButton", font=("Courier", 20, "bold"))
 
 
 
@@ -41,9 +59,6 @@ class Tela():
         self.criarFramesDashboard(frmDashboard, "TOTAL DE CHAPAS", "15", 2)
 
 #---------botoes-------------
-        fonteBotoes = tkFont.Font(family="Helvetica", size=20, weight="bold")
-        style = tb.Style()  
-        style.configure("Fonte.TButton", font=fonteBotoes)
         botoes_frame = ttk.Frame(self.janela)
         botoes_frame.pack(expand=True, pady=40)
 

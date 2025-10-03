@@ -2,14 +2,19 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-import telaCriarChapas
+import telaEleicoes,telaCriarChapas
 
 class Tela:
+    def voltar_tela_eleicoes(self):
+        """Volta para a tela do administrador"""
+        self.janela.destroy()
+        telaEleicoes.iniciarTela()
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Criação de Eleições')
         self.janela.geometry("1920x1080")
         self.janela.configure(bg="white")
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_eleicoes())
 
         self.lbl_topo = tk.Label(self.janela, text="Criar Eleição", font=("Arial", 35, "bold"), bg="white")
         self.lbl_topo.pack(pady=15)

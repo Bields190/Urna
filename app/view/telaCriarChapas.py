@@ -4,14 +4,19 @@ from ttkbootstrap.constants import *
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 
-import telaCriarEleicao
+import telaChapas
 
 class Tela:
+    def voltar_tela_chapas(self):
+        """Volta para a tela do administrador"""
+        self.janela.destroy()
+        telaChapas.iniciarTela()
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Criação de Chapas')
         self.janela.geometry("1920x1080")
         self.janela.configure(bg="white")
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_chapas())
 
         self.lbl_titulo=tk.Label(self.janela, text="Adicionar Chapa", font=("Arial", 24, "bold"), bg="white")
         self.lbl_titulo.pack(pady=45)
@@ -119,7 +124,7 @@ class Tela:
         tk.messagebox.showinfo("Criação de chapas", "Os dados foram Salvos!")
         #aq ele salva tudo no bd
         self.janela.destroy()
-        telaCriarEleicao.iniciarTela()
+        telaChapas.iniciarTela()
 
 
 

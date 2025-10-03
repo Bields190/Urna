@@ -2,14 +2,19 @@ import tkinter as tk
 from tkinter import Menu
 from PIL import Image, ImageTk
 
-import telaCriarEleicao
+import telaADM,telaCriarChapas
 
 class Tela:
+    def voltar_tela_adm(self):
+        """Volta para a tela do administrador"""
+        self.janela.destroy()
+        telaADM.iniciarTela()
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Controle de Chapas')
         self.janela.geometry("1920x1080")
-        self.janela.configure(bg="white")      
+        self.janela.configure(bg="white")  
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())    
     
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
@@ -18,7 +23,7 @@ class Tela:
         self.lbl_ola = tk.Label(text="Controle de Chapas",font=("Arial",20,"bold"), bg="white")
         self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
         
-        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Chapa", font=("Arial",16,"bold"), command= lambda:(self.janela.destroy(), telaCriarEleicao.iniciarTela()))
+        self.btn_criar_eleicao = tk.Button(text="+ Criar Nova Chapa", font=("Arial",16,"bold"), command= lambda:(self.janela.destroy(), telaCriarChapas.iniciarTela()))
         self.btn_criar_eleicao.grid(row=2,column=0,pady=(30,60))
    
         self.frmChapas = tk.Frame(self.janela, bd=2, padx=5, pady=5,bg="white")

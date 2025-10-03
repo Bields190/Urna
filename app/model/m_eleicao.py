@@ -54,4 +54,12 @@ class Eleicao(Model):
         else:
             print("Eleição não encontrada.")
             return None
+    
+    @classmethod
+    def listar(cls):
+        sql = "SELECT * FROM eleicao ORDER BY data_inicio DESC"
+        result = Model().get(sql)
+        if result:
+            return result
+        return []
 

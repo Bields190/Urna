@@ -25,6 +25,7 @@ CREATE TABLE Chapa (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     slogan TEXT,
+    numero  TEXT,
     logo TEXT -- endereço da imagem
 );
 

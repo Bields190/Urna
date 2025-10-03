@@ -43,11 +43,16 @@ class Tela:
         self.lbl_adcFoto.place(relx=0.5, rely=0.5, anchor="center")
         self.lbl_adcFoto.bind('<Button-1>', lambda event: self.adcFoto())
 
-        # Entrys e Labels de nome e slogan da chapa
+        # Entrys e Labels de nome, número e slogan da chapa
         self.lbl_nome = tk.Label(self.frm_entradas, text="Nome da Chapa:", font=("Arial", 16), bg="white")
         self.lbl_nome.pack(anchor="w")
         self.entry_nome = tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
         self.entry_nome.pack(pady=(0, 10), ipady=3)
+
+        self.lbl_numero = tk.Label(self.frm_entradas, text="Número da Chapa:", font=("Arial", 16), bg="white")
+        self.lbl_numero.pack(anchor="w")
+        self.entry_numero = tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
+        self.entry_numero.pack(pady=(0, 10), ipady=3)
 
         self.lbl_slogan = tk.Label(self.frm_entradas, text="Slogan:", font=("Arial", 16), bg="white")
         self.lbl_slogan.pack(anchor="w")
@@ -74,6 +79,7 @@ class Tela:
     def preencher_campos(self):
         """Preenche os campos com os dados da chapa em edição"""
         self.entry_nome.insert(0, self.dados_chapa.get('nome', ''))
+        self.entry_numero.insert(0, self.dados_chapa.get('numero', ''))
         self.entry_slogan.insert(0, self.dados_chapa.get('slogan', ''))
         
         # Carregar imagem se existir
@@ -116,6 +122,7 @@ class Tela:
     def salvar_chapa(self):
         """Salva ou atualiza a chapa no banco de dados"""
         nome = self.entry_nome.get().strip()
+        numero = self.entry_numero.get().strip()
         slogan = self.entry_slogan.get().strip()
         logo = self.caminho_imagem if hasattr(self, 'caminho_imagem') else ""
 
@@ -131,7 +138,7 @@ class Tela:
             if self.modo_edicao:
                 # Atualizar chapa existente
                 id_chapa = self.dados_chapa['id']
-                chapa = m_chapa.Chapa(nome, slogan, logo, id=id_chapa)
+                chapa = m_chapa.Chapa(nome, slogan, logo, numero, id=id_chapa)
                 resultado = chapa.atualizar()
                 if resultado:
                     messagebox.showinfo("Sucesso", "Chapa atualizada com sucesso!")
@@ -140,7 +147,7 @@ class Tela:
                     messagebox.showerror("Erro", "Erro ao atualizar chapa.")
             else:
                 # Criar nova chapa
-                chapa = m_chapa.Chapa(nome, slogan, logo)
+                chapa = m_chapa.Chapa(nome, slogan, logo, numero)
                 resultado = chapa.salvar()
                 if resultado:
                     messagebox.showinfo("Sucesso", "Chapa criada com sucesso!")

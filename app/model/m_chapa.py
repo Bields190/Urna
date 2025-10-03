@@ -1,18 +1,19 @@
 from model import Model
 
 class Chapa(Model):
-    def __init__(self, nome, slogan, logo, id=None):
+    def __init__(self, nome, slogan, logo, numero=None, id=None):
         super().__init__()  # CONSTRUTOR
         self.id = id
         self.nome = nome
         self.slogan = slogan
         self.logo = logo
+        self.numero = numero
 
     def salvar(self):
         sql_ver = f"SELECT * FROM chapa WHERE nome = '{self.nome}' AND slogan = '{self.slogan}' AND logo = '{self.logo}'"
         ver = self.get(sql_ver)
         if not ver:
-            sql = f"INSERT INTO chapa (nome, slogan, logo) VALUES ('{self.nome}', '{self.slogan}', '{self.logo}')"
+            sql = f"INSERT INTO chapa (nome, slogan, logo, numero) VALUES ('{self.nome}', '{self.slogan}', '{self.logo}', '{self.numero}')"
             result = self.insert(sql)
             if result:
                 aux = self.get(f"SELECT id FROM chapa WHERE nome = '{self.nome}' and slogan = '{self.slogan}'")
@@ -27,7 +28,7 @@ class Chapa(Model):
             return False
     
     def atualizar(self):
-        sql = f"UPDATE chapa SET nome = '{self.nome}', slogan = '{self.slogan}', logo = '{self.logo}' WHERE id = {self.id}"
+        sql = f"UPDATE chapa SET nome = '{self.nome}', slogan = '{self.slogan}', logo = '{self.logo}', numero = '{self.numero}' WHERE id = {self.id}"
         result = self.update(sql)
         if result:
             print("Chapa atualizada com sucesso!")

@@ -18,11 +18,6 @@ class Tela():
         self.janela.title('Tela do Administrador')
         self.janela.geometry("1920x1080")
         
-        # Configurar fonte padrão global
-        self.janela.option_add("*Font", "Courier 14")
-        
-        # Configurar estilos do ttkbootstrap para usar Courier
-        self.configurar_fontes()
 
         frmTopo = ttk.Frame(self.janela)
         frmTopo.pack(fill="x")
@@ -36,6 +31,12 @@ class Tela():
 
         ttk.Label(frmTopo, text="Dashboard", font=("Courier", 28, "bold")).grid(row=0, column=1, sticky="n", padx=(10,200),pady=(60,40))
 
+        # Configurar fonte padrão global
+        self.janela.option_add("*Font", "Courier 14")
+        
+        # Configurar estilos do ttkbootstrap para usar Courier
+        self.configurar_fontes()
+        
     def configurar_fontes(self):
         """Configura todas as fontes para usar Courier"""
         style = tb.Style()

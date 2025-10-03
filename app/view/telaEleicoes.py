@@ -2,14 +2,19 @@ import tkinter as tk
 from tkinter import Menu
 from PIL import Image, ImageTk
 
-import telaCriarEleicao
+import telaADM, telaCriarEleicao
 
 class Tela:
+    def voltar_tela_adm(self):
+        """Volta para a tela do administrador"""
+        self.janela.destroy()
+        telaADM.iniciarTela()
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Eleicoes')
         self.janela.geometry("1920x1080")
         self.janela.configure(bg="white")
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
 
 #-----sessão das eleições----------
         self.janela.columnconfigure(2, weight=3)

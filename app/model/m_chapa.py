@@ -15,7 +15,7 @@ class Chapa(Model):
             sql = f"INSERT INTO chapa (nome, slogan, logo) VALUES ('{self.nome}', '{self.slogan}', '{self.logo}')"
             result = self.insert(sql)
             if result:
-                aux = self.get(f"SELECT id FROM CHAPA WHERE nome = '{self.nome}' and slogan = '{self.slogan}'")
+                aux = self.get(f"SELECT id FROM chapa WHERE nome = '{self.nome}' and slogan = '{self.slogan}'")
                 self.id = aux[0][0]
                 print("Chapa salva com sucesso!")
                 return True
@@ -54,3 +54,11 @@ class Chapa(Model):
         else:
             print("Chapa não encontrada.")
             return None
+    
+    @classmethod
+    def listar(cls):
+        sql = "SELECT * FROM chapa"
+        result = Model().get(sql)
+        if result:
+            return result
+        return []

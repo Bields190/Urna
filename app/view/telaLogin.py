@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import ttkbootstrap as tb
+from ttkbootstrap import ttk
 
 import sys
 import os
@@ -13,50 +14,56 @@ import c_administrador # type: ignore
 
 class Tela:
 
-    def __init__(self, master):
-        self.janela = master
-        self.janela.title('Tela de Login')
-        self.janela.geometry("1920x1080")
-        self.janela.option_add("*Font", "Courier 14")
+        def __init__(self, master):
+                self.janela = master
+                self.janela.title('Tela de Login')
+                self.janela.geometry("1920x1080")
+                self.janela.option_add("*Font", "Courier 14")
 
-        self.frm_principal = tk.Frame(self.janela,bg='white')
-        self.frm_principal.pack(fill='both',expand=True)
-        self.frm = tk.Frame(self.frm_principal,bg='white')
-        self.frm.pack(expand=True)
-        
-        self.imagem = tk.PhotoImage(file="app/src/Logo.png")
-        self.imagem = self.imagem.subsample(3,3)
-        self.lbl = tk.Label(self.frm, image=self.imagem, bg='white')
-        self.lbl.image = self.imagem
-        self.lbl.pack()
-        
-#------entry e label de user---------
-        self.lbl1 = tk.Label(self.frm, text='Usuário:', bg='white',font=("Arial",18))
-        self.lbl1.pack(pady=(40, 0))
-        self.entry1 = tk.Entry(self.frm, width=40)
-        self.entry1.pack()
-        self.entry1.bind('<Return>', lambda event: event.widget.event_generate("<Tab>"))
-        
-#------entry e label de senha---------
-        self.lbl2 = tk.Label(self.frm, text='Senha:',bg='white',font=("Arial",18))
-        self.lbl2.pack()
-        self.entry2 = tk.Entry(self.frm, show='*', width=40)    
-        self.entry2.pack(pady=5)
-        self.entry2.bind('<Return>', self.login)
+                # Frame principal
+                self.frm_principal = ttk.Frame(self.janela)
+                self.frm_principal.pack(fill='both', expand=True)
 
-        self.btn_entrar = tk.Button(self.frm, text='Entrar',bg='black',fg='white', width=10,font=("Arial",14), command=self.login)
-        self.btn_entrar.pack(pady=10)
+                self.frm = ttk.Frame(self.frm_principal)
+                self.frm.pack(expand=True)
+
+                # Logo
+                self.imagem = tk.PhotoImage(file="app/src/Logo.png")
+                self.imagem = self.imagem.subsample(3, 3)
+                self.lbl = ttk.Label(self.frm, image=self.imagem)
+                self.lbl.image = self.imagem
+                self.lbl.pack()
+
+                # Usuário
+                self.lbl1 = ttk.Label(self.frm, text='Usuário:', font=("Arial", 18),)
+                self.lbl1.pack(pady=(40, 0))
+
+                self.entry1 = ttk.Entry(self.frm, width=40, bootstyle="info")
+                self.entry1.pack()
+                self.entry1.bind('<Return>', lambda event: event.widget.event_generate("<Tab>"))
+
+                # Senha
+                self.lbl2 = ttk.Label(self.frm, text='Senha:', font=("Arial", 18))
+                self.lbl2.pack()
+
+                self.entry2 = ttk.Entry(self.frm, show='*', width=40, bootstyle="info")
+                self.entry2.pack(pady=5)
+                self.entry2.bind('<Return>', self.login)
+
+                # Botão Entrar
+                self.btn_entrar = ttk.Button(self.frm,text='Entrar',width=10,bootstyle="dark",command=self.login)
+                self.btn_entrar.pack(pady=10)
+
+        def login(self, event=None):
+                if c_administrador.Control(self).login():
+                        tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
+                        for widget in self.janela.winfo_children():
+                                widget.destroy()
+                                telaADM.TelaADM(self.janela)
+                else:
+                        tk.messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 
 
-    def login(self, event):
-        if c_administrador.Control(self).login():
-                tk.messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
-                self.janela.destroy()
-                telaADM.iniciarTela()
-        else:
-                tk.messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
-
-def iniciarTela():
-        app = tb.Window(themename="litera")
-        Tela(app)
-        app.mainloop()
+app = tb.Window(themename="litera")
+Tela(app)
+app.mainloop()

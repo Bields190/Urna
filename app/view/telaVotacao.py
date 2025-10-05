@@ -1,61 +1,79 @@
-import tkinter as tk
+import ttkbootstrap as tb
+from ttkbootstrap import ttk
 
-class Tela:
-    def __init__(self, master):
+class TelaVotacao:
+    def __init__(self, master, eleicao_id=None, titulo="Eleição"):
         self.janela = master
+        self.janela.title("Tela de Votação")
         self.janela.geometry("1920x1080")
-        self.janela.configure(bg="white")
 
-        frmPrincipal = tk.Frame(self.janela, bg="white")
+        # Frame principal
+        frmPrincipal = ttk.Frame(self.janela, padding=20)
         frmPrincipal.pack(fill="both", expand=True)
 
-        frmTopo = tk.Frame(frmPrincipal, bg="white")
+        # Topo
+        frmTopo = ttk.Frame(frmPrincipal)
         frmTopo.pack(fill="both", pady=20)
 
-        self.labelEleicao = tk.Label(frmTopo, text="Eleição 15", font=("Arial", 26, "bold"), bg="white")
+        self.labelEleicao = ttk.Label(
+            frmTopo, text=f"{titulo} (ID: {eleicao_id})",
+            font=("Courier", 26, "bold")
+        )
         self.labelEleicao.pack(side="left", padx=45)
 
-        frmNumero = tk.Frame(frmPrincipal, bg="white")
-        frmNumero.pack(pady=(30,20))
+        # Número da chapa
+        frmNumero = ttk.Frame(frmPrincipal)
+        frmNumero.pack(pady=(30, 20))
 
-        self.lblInserirNumero = tk.Label(frmNumero, text="Escreva o número da chapa:", font=("Arial", 18), bg="white")
+        self.lblInserirNumero = ttk.Label(
+            frmNumero, text="Escreva o número da chapa:",
+            font=("Courier", 18)
+        )
         self.lblInserirNumero.pack()
 
-        self.entInserirNumero = tk.Entry(frmNumero, font=("Arial", 14), width=10)
+        self.entInserirNumero = ttk.Entry(frmNumero, font=("Courier", 14), width=10)
         self.entInserirNumero.pack(pady=10, ipady=3)
 
-# -----------informações do voto (chaopa)--------------
-        frmChapa = tk.Frame(frmPrincipal, bg="white")
+        # Informações do voto
+        frmChapa = ttk.Frame(frmPrincipal)
         frmChapa.pack(pady=5, expand=True)
 
-#--------foto da chapa selecionada---------------
-        self.frmFoto = tk.Frame(frmChapa, width=400, height=400, relief="solid", bd=1, bg="#f5f5f5")
+        # Foto chapa
+        self.frmFoto = ttk.Frame(frmChapa, width=400, height=400)
         self.frmFoto.pack(side="left", padx=50)
         self.frmFoto.pack_propagate(False)
 
-# ------------slogan e informações----------------
-        frmInformacoes = tk.Frame(frmChapa, bg="white")
+        # Info + slogan
+        frmInformacoes = ttk.Frame(frmChapa)
         frmInformacoes.pack(side="left", padx=20)
 
-        self.frmSlogan = tk.Frame(frmInformacoes, width=600, height=80, relief="solid", bd=1, bg="white")
+        self.frmSlogan = ttk.Frame(frmInformacoes, width=600, height=80, relief="ridge")
         self.frmSlogan.pack(pady=10)
         self.frmSlogan.pack_propagate(False)
 
-        self.frmInfoChapa = tk.Frame(frmInformacoes, width=600, height=200, relief="solid", bd=1, bg="white")
+        self.frmInfoChapa = ttk.Frame(frmInformacoes, width=600, height=200, relief="ridge")
         self.frmInfoChapa.pack(pady=10)
         self.frmInfoChapa.pack_propagate(False)
 
-# ---------------- Botões de confirmar ou cancelar voto----------------
-        frmConfirmacao = tk.Frame(frmPrincipal, bg="white")
-        frmConfirmacao.pack(pady=(30,150))
+        # Botões de confirmação
+        frmConfirmacao = ttk.Frame(frmPrincipal)
+        frmConfirmacao.pack(pady=(30, 150))
 
-        self.btnConfirmar = tk.Button(frmConfirmacao, text="Confirmar", font=("Arial", 18), bg="green", fg="white", width=12, height=2)
+        self.btnConfirmar = ttk.Button(
+            frmConfirmacao, text="Confirmar",
+            bootstyle="success", width=20
+        )
         self.btnConfirmar.pack(side="left", padx=40)
 
-        self.btnCancelar = tk.Button(frmConfirmacao, text="Cancelar", font=("Arial", 18), bg="red", fg="white", width=12, height=2)
+        self.btnCancelar = ttk.Button(
+            frmConfirmacao, text="Cancelar",
+            bootstyle="danger", width=20,
+            command=self.janela.destroy
+        )
         self.btnCancelar.pack(side="left", padx=40)
 
 
-gui = tk.Tk()
-Tela(gui)
-gui.mainloop()
+def iniciarTela(eleicao_id=None, titulo="Eleição"):
+    app = tb.Window(themename="litera")
+    TelaVotacao(app, eleicao_id, titulo)
+    app.mainloop()

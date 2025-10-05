@@ -76,8 +76,13 @@ class Tela:
             messagebox.showerror("Erro", "O email deve ser institucional (@ufac.br)!")
             return
 
-        messagebox.showinfo("Sucesso", "Administrador adicionado com sucesso!")
-        self.adcAdm.destroy()
+        # Tenta salvar no banco de dados
+        if c_administrador.Control(self).adicionar_administrador(nome, matricula, email, senha):
+            messagebox.showinfo("Sucesso", "Administrador adicionado com sucesso!")
+            self.adcAdm.destroy()
+            self.renderizar_adms()  # Atualiza a lista
+        else:
+            messagebox.showerror("Erro", "Matrícula ou email já cadastrados!")
 
     def janelaCentro(self, window, largura, altura):
         x = (window.winfo_screenwidth()-largura)//2
@@ -88,12 +93,22 @@ class Tela:
         for widget in self.frmAdms.winfo_children():
             widget.destroy()
 
-        self.frmAdms.grid_columnconfigure(0, weight=1)
-        self.frmAdms.grid_columnconfigure(1, weight=1)
-        self.frmAdms.grid_columnconfigure(2, weight=1)
+        # Remove os pesos das colunas para evitar expansão
+        self.frmAdms.grid_columnconfigure(0, weight=0)
+        self.frmAdms.grid_columnconfigure(1, weight=0)
+        self.frmAdms.grid_columnconfigure(2, weight=0)
 
-        # Banco de dados necessário
-        
+        # Busca administradores do banco
+        adms = c_administrador.Control(self).listar_administradores()
+
+        if not adms:
+            tk.Label(self.frmAdms, 
+                    text="Nenhum administrador cadastrado", 
+                    font=("Arial", 16), 
+                    fg="gray", 
+                    bg="white").grid(row=0, column=0, columnspan=3, pady=50)
+            return
+
         for i, adm in enumerate(adms):
             id_adm, nome, matricula, email = adm
 
@@ -152,10 +167,37 @@ class Tela:
 
         tk.Button(self.editAdm, text='Salvar Alterações', bg='black', fg='white', width=18, font=("Arial",14), command=lambda: self.salvarEdicao(id)).pack(pady=20)
 
+    def salvarEdicao(self, id):
+        nome = self.ent_nome_edit.get()
+        matricula = self.ent_matricula_edit.get()
+        email = self.ent_email_edit.get()
+        senha = self.ent_senha_edit.get()
+
+        if not all([nome, matricula, email]):
+            messagebox.showerror("Erro", "Nome, matrícula e email são obrigatórios!")
+            return
+
+        if "@sou.ufac.br" not in email:
+            messagebox.showerror("Erro", "O email deve ser institucional (@sou.ufac.br)!")
+            return
+
+        #Tenta atualizar no banco de dados
+        if c_administrador.Control(self).atualizar_administrador(id, nome, matricula, email, senha if senha else None):
+            messagebox.showinfo("Sucesso", "Administrador atualizado com sucesso!")
+            self.editAdm.destroy()
+            self.renderizar_adms()  #Atualiza a lista
+        else:
+            messagebox.showerror("Erro", "Matrícula ou email já cadastrados!")
+
     def excluirAdm(self, id):
-        confirm = messagebox.askyesno("Confirmação", "Tem certeza que deseja excluir este administrador?")
+        confirm = messagebox.askyesno("Confirmação", 
+            "Tem certeza que deseja excluir este administrador?")
         if confirm:
-            self.renderizar_adms()
+            if c_administrador.Control(self).deletar_administrador(id):
+                messagebox.showinfo("Sucesso", "Administrador excluído com sucesso!")
+                self.renderizar_adms()  # Atualiza a lista
+            else:
+                messagebox.showerror("Erro", "Erro ao excluir administrador!")
 
 
 gui = tk.Tk()

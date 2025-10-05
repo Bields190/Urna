@@ -58,7 +58,9 @@ class Tela:
         self.entry_nome.pack(pady=(4, 10), anchor="w")
 
         ttk.Label(entradas, text="Número da Chapa:", font=("Courier", 14)).pack(anchor="w")
-        self.entry_numero = ttk.Entry(entradas, width=60)
+        # validação para aceitar apenas números no "Número da Chapa"
+        vcmd = self.janela.register(self.validar_inteiro)
+        self.entry_numero = ttk.Entry(entradas, width=60, validate="key", validatecommand=(vcmd, "%P"))
         self.entry_numero.pack(pady=(4, 10), anchor="w")
 
         ttk.Label(entradas, text="Slogan:", font=("Courier", 14)).pack(anchor="w")
@@ -103,6 +105,11 @@ class Tela:
         self.entry_slogan.insert(0, self.dados_chapa.get('slogan', ''))
         if self.caminho_imagem:
             self.carregar_imagem_preview()
+
+    def validar_inteiro(self, valor):
+        if valor == "":
+            return True
+        return valor.isdigit()
 
     def adcFoto(self):
         tipos = (('Imagens', '*.jpeg *.jpg *.png *.gif *.bmp'), ('Todos', '*.*'))

@@ -1,13 +1,5 @@
 import ttkbootstrap as tb
-import ttkbootstrap as tb
 from ttkbootstrap.constants import *
-from tkinter import messagebox
-import telaEleicoes, telaChapas
-import sys, os
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
-import c_eleicao  # type: ignore
-
 from tkinter import messagebox
 import telaEleicoes, telaChapas
 import sys, os
@@ -33,23 +25,7 @@ class Tela:
         tb.Label(self.janela, text="Criar Eleição", font=("Arial", 35, "bold")).pack(
             pady=15
         )
-        self.janela.title("Criar Eleição")
 
-        # limpar tela
-        for widget in self.janela.winfo_children():
-            widget.destroy()
-
-        self.control = c_eleicao.Control(self)
-
-        # bind ESC para voltar
-        self.janela.bind("<Escape>", lambda e: self.voltarEleicoes())
-
-        tb.Label(self.janela, text="Criar Eleição", font=("Arial", 35, "bold")).pack(
-            pady=15
-        )
-
-        frm = tb.Frame(self.janela, padding=20)
-        frm.pack(pady=10)
         frm = tb.Frame(self.janela, padding=20)
         frm.pack(pady=10)
 
@@ -57,16 +33,7 @@ class Tela:
         tb.Label(frm, text="Título:", font=("Arial", 20)).pack(pady=(20, 5))
         self.entry_titulo = tb.Entry(frm, width=40)
         self.entry_titulo.pack(pady=10)
-        # ---- Campos da Eleição ----
-        tb.Label(frm, text="Título:", font=("Arial", 20)).pack(pady=(20, 5))
-        self.entry_titulo = tb.Entry(frm, width=40)
-        self.entry_titulo.pack(pady=10)
 
-        tb.Label(frm, text="Data de Início:", font=("Arial", 20)).pack()
-        self.entry_inicio = tb.DateEntry(
-            frm, dateformat="%d-%m-%Y", bootstyle=INFO, width=36
-        )
-        self.entry_inicio.pack(pady=10)
         tb.Label(frm, text="Data de Início:", font=("Arial", 20)).pack()
         self.entry_inicio = tb.DateEntry(
             frm, dateformat="%d-%m-%Y", bootstyle=INFO, width=36

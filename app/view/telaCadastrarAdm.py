@@ -43,7 +43,7 @@ class Tela:
         self.adcAdm = tb.Toplevel(self.janela)
         self.adcAdm.grab_set()
         self.adcAdm.title('Adicionar Administrador')
-        self.janelaCentro(self.adcAdm, 450, 400)
+        self.janelaCentro(self.adcAdm, 600, 520)
 
         ttk.Label(self.adcAdm, text="Adicionar Administrador", font=("Courier", 16, "bold")).pack(pady=15)
 
@@ -111,7 +111,7 @@ class Tela:
         for i, adm in enumerate(adms):
             id_adm, nome, matricula, email = adm
 
-            frame_adm = ttk.Frame(self.frmAdms, padding=10, bootstyle="info")
+            frame_adm = ttk.Frame(self.frmAdms, padding=10, relief="ridge")
             frame_adm.grid(row=i//3, column=i%3, padx=20, pady=20, sticky="nsew")
 
             ttk.Label(frame_adm, text=f"#{id_adm} - {nome}", font=("Courier", 15, "bold"), wraplength=350).pack(anchor="n", pady=(5,0))
@@ -130,7 +130,7 @@ class Tela:
         self.editAdm = tb.Toplevel(self.janela)
         self.editAdm.grab_set()
         self.editAdm.title('Editar Administrador')
-        self.janelaCentro(self.editAdm, 450, 400)
+        self.janelaCentro(self.editAdm, 600, 520)
 
         ttk.Label(self.editAdm, text="Editar Administrador", font=("Courier", 16, "bold")).pack(pady=15)
 

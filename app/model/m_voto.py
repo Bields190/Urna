@@ -18,5 +18,17 @@ class Voto(Model):
         else:
             print("Erro ao salvar voto.")
             return False
+        
+    @classmethod
+    def contar_por_chapa(cls, chapa_id):
+        sql = f"SELECT COUNT(*) FROM voto WHERE chapa_id = {chapa_id}"
+        result = Model().get(sql)
+        return result[0][0] if result else 0
+
+    @classmethod
+    def contar_total_eleicao(cls, eleicao_id):
+        sql = f"SELECT COUNT(*) FROM voto WHERE eleicao_id = {eleicao_id}"
+        result = Model().get(sql)
+        return result[0][0] if result else 0
 
 # sem necessidade de criar o resto do crud, uma vez que votos não são alterados ou deletados

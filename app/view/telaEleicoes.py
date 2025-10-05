@@ -6,7 +6,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 import c_eleicao  # type: ignore
 
-import telaADM, telaCriarEleicao
+import telaADM, telaCriarEleicao, telaResultados
 
 
 class Tela:
@@ -28,6 +28,11 @@ class Tela:
         # layout
         self.setup_interface()
         self.renderizar_eleicoes()
+
+    def abrirResultados(self, id_eleicao):
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaResultados.iniciarTela(self.janela, id_eleicao)
 
     def voltar_tela_adm(self):
         for widget in self.janela.winfo_children():
@@ -129,13 +134,20 @@ class Tela:
             frm_btn = ttk.Frame(frame_eleicao)
             frm_btn.pack(fill="x", pady=10)
 
+            if status.lower() == "encerrada":
+                ttk.Button(
+                    frm_btn,
+                    text="Resultados",
+                    bootstyle="success",
+                    command=lambda id=id_eleicao: self.abrirResultados(id),
+                ).pack(side="left", expand=True, fill="x", padx=2)
+
             ttk.Button(
                 frm_btn,
                 text="Excluir",
                 bootstyle="danger",
                 command=lambda id=id_eleicao: self.excluirEleicao(id),
             ).pack(side="left", expand=True, fill="x", padx=2)
-
 
 def iniciarTela(master=None):
     if master is None:

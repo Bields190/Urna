@@ -55,7 +55,7 @@ class Tela:
         self.adcCargo = tb.Toplevel(self.janela)
         self.adcCargo.grab_set()
         self.adcCargo.title('Adicionar Cargo')
-        self.janelaCentro(self.adcCargo, 450, 250)
+        self.janelaCentro(self.adcCargo, 450, 320)
 
         ttk.Label(self.adcCargo, text="Adicionar Cargo",font=("Courier", 16, "bold")).pack(pady=15)
 
@@ -84,7 +84,7 @@ class Tela:
         self.editCargo = tb.Toplevel(self.janela)
         self.editCargo.grab_set()
         self.editCargo.title('Editar Cargo')
-        self.janelaCentro(self.editCargo, 450, 250)
+        self.janelaCentro(self.editCargo, 450, 320)
 
         ttk.Label(self.editCargo, text="Editar Cargo", font=("Courier", 16, "bold")).pack(pady=15)
 

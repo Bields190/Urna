@@ -8,16 +8,23 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 import c_administrador  # type: ignore
 
 class Tela:
+    def voltar_tela_adm(self, event=None):
+        """Volta para a tela do administrador"""
+        telaADM.TelaADM(self.janela)
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Administradores')
         self.janela.geometry("1920x1080")
-        self.janela.configure(bg="white")     
+        self.janela.configure(bg="white")  
+
+        for widget in self.janela.winfo_children():
+            widget.destroy()   
     
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
-        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
+        
+        self.janela.bind('<Escape>', self.voltar_tela_adm)
 
         self.lbl_nomeTela = tk.Label(text="Controle de Administradores", font=("Arial", 20, "bold"), bg="white")
         self.lbl_nomeTela.grid(row=1, column=0, pady=(40, 10), padx=(20,0))

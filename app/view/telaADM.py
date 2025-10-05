@@ -2,7 +2,7 @@ from ttkbootstrap import ttk
 import ttkbootstrap as tb
 from tkinter import messagebox
 
-import telaEleicoes, telaChapas, telaCargos, telaLogin # e a de cadastrar adm
+import telaEleicoes, telaChapas, telaCargos, telaLogin, telaCadastrarAdm
 
 class TelaADM:
     def criarFramesDashboard(self, frmpai, titulo, valor, coluna):
@@ -59,7 +59,7 @@ class TelaADM:
         self.btnCargos = ttk.Button(botoes_frame,text="Gerenciar Cargos",width=40,bootstyle="primary",style="Fonte.TButton",command=lambda: self.trocarTela(telaCargos))
         self.btnCargos.grid(row=2, column=0, pady=10)
 
-        self.btnCadastrarADM = ttk.Button(botoes_frame,text="Cadastrar Administradores",width=40,bootstyle="primary",style="Fonte.TButton",command=None )# depois chama telaCadastrarADM
+        self.btnCadastrarADM = ttk.Button(botoes_frame,text="Cadastrar Administradores",width=40,bootstyle="primary",style="Fonte.TButton", command=lambda: self.trocarTela(telaCadastrarAdm))
         self.btnCadastrarADM.grid(row=3, column=0, pady=10)
 
     def configurar_fontes(self):

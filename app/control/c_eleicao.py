@@ -3,6 +3,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'model'))
 
 import m_eleicao #type:ignore
+import m_chapa #type: ignore
+import m_voto #type: ignore
 from datetime import datetime
 
 
@@ -175,3 +177,34 @@ class Control:
                 stats['encerradas'] += 1
                 
         return stats
+
+    def resultado_eleicao(self, eleicao_id):
+        """
+        Retorna um dicionário com:
+        - total de votos
+        - lista de chapas com votos e percentual
+        """
+        chapas = m_chapa.Chapa.listar_por_eleicao(eleicao_id)
+        total_votos = m_voto.Voto.contar_total_eleicao(eleicao_id)
+        resultado = []
+
+        for chapa in chapas:
+            chapa_id, nome, slogan, logo = chapa
+            votos = m_voto.Voto.contar_por_chapa(chapa_id)
+            percentual = (votos / total_votos * 100) if total_votos > 0 else 0
+            resultado.append({
+                "chapa_id": chapa_id,
+                "nome": nome,
+                "slogan": slogan,
+                "logo": logo,
+                "votos": votos,
+                "percentual": percentual
+            })
+
+        # Ordenar do maior para menor
+        resultado.sort(key=lambda x: x['votos'], reverse=True)
+
+        return {
+            "total_votos": total_votos,
+            "chapas": resultado
+        }

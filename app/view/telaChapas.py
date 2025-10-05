@@ -51,16 +51,13 @@ class Tela:
     def criarChapa(self):
         for widget in self.janela.winfo_children():
             widget.destroy()
-        telaCriarChapas.iniciarTela()
+        telaCriarChapas.iniciarTela(self.janela)
 
     # Navegar para tela de edição
     def editarChapa(self, id, nome, slogan, logo, numero):
         for widget in self.janela.winfo_children():
             widget.destroy()
-        telaCriarChapas.iniciarTela(
-            modo_edicao=True,
-            dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo, 'numero': numero}
-        )
+        telaCriarChapas.iniciarTela(self.janela, modo_edicao=True, dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo, 'numero': numero})
 
     def carregar_imagem(self, caminho_imagem, tamanho=(80, 80)):
         """Carrega e redimensiona uma imagem"""

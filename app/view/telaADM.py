@@ -84,6 +84,6 @@ class TelaADM:
 
 
 def iniciarTela():
-    app = tb.Window()
+    app = tb.Window(themename="litera")
     TelaADM(app)
     app.mainloop()

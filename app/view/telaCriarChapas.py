@@ -1,7 +1,6 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog as fd
-from tkinter import messagebox
+from ttkbootstrap import ttk
+import ttkbootstrap as tb
+from tkinter import messagebox, filedialog as fd, StringVar
 from PIL import Image, ImageTk
 import sys
 import os
@@ -9,8 +8,8 @@ import os
 import telaChapas
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
-
 import c_chapas  # type: ignore
+
 
 class Tela:
     def __init__(self, master, modo_edicao=False, dados_chapa=None):
@@ -18,238 +17,227 @@ class Tela:
         self.modo_edicao = modo_edicao
         self.dados_chapa = dados_chapa or {}
         self.caminho_imagem = self.dados_chapa.get('logo', '') or ''
-        
-        titulo = "Editar Chapa" if modo_edicao else "Adicionar Chapa"
-        self.janela.title(f'Tela de {titulo}')
+
+       
+        for w in self.janela.winfo_children():
+            w.destroy()
+
+        self.janela.title("Editar Chapa" if modo_edicao else "Adicionar Chapa")
         self.janela.geometry("1920x1080")
-        self.janela.configure(bg="white")
-        self.janela.bind('<Escape>', lambda event: self.voltar_tela_chapas())
 
-        self.lbl_titulo = tk.Label(self.janela, text=titulo, font=("Arial", 24, "bold"), bg="white")
-        self.lbl_titulo.pack(pady=45)
+        # bind ESC para voltar 
+        self.janela.bind('<Escape>', lambda e: self.voltar_tela_chapas())
 
-        self.frm_geral = tk.Frame(self.janela, bg="white")
-        self.frm_geral.pack(pady=(10, 30))
+        # container principal
+        container = ttk.Frame(self.janela, padding=18)
+        container.pack(fill="both", expand=True)
 
-        self.frm_entradas = tk.Frame(self.frm_geral, bg="white")
-        self.frm_entradas.grid(row=0, column=1, padx=20)
 
-        # Frame para a foto da chapa
-        self.frm_foto = tk.Frame(self.frm_geral, bg="white", width=225, height=225, highlightthickness=1, highlightbackground="black")
-        self.frm_foto.grid(row=0, column=0, padx=20)
+        titulo_text = "Editar Chapa" if modo_edicao else "Adicionar Chapa"
+        ttk.Label(container, text=titulo_text, font=("Courier", 24, "bold"), bootstyle="primary").pack(pady=(6, 18))
+
+        # corpo: foto | campos
+        corpo = ttk.Frame(container)
+        corpo.pack(fill="x", pady=(0, 8))
+
+        # ---- foto (lado esquerdo) ----
+        self.frm_foto = ttk.Frame(corpo, width=240, height=240, bootstyle="light")
         self.frm_foto.grid_propagate(False)
+        self.frm_foto.grid(row=0, column=0, padx=20, sticky="n")
 
-        self.lbl_adcFoto = tk.Label(self.frm_foto, text="Adicionar Foto", font=("Arial", 16), bg="white")
+        self.lbl_adcFoto = ttk.Label(self.frm_foto, text="Adicionar Foto", font=("Courier", 12))
         self.lbl_adcFoto.place(relx=0.5, rely=0.5, anchor="center")
-        self.lbl_adcFoto.bind('<Button-1>', lambda event: self.adcFoto())
+        self.lbl_adcFoto.bind("<Button-1>", lambda e: self.adcFoto())
 
-        # Entrys e Labels de nome, número e slogan da chapa
-        self.lbl_nome = tk.Label(self.frm_entradas, text="Nome da Chapa:", font=("Arial", 16), bg="white")
-        self.lbl_nome.pack(anchor="w")
-        self.entry_nome = tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
-        self.entry_nome.pack(pady=(0, 10), ipady=3)
 
-        self.lbl_numero = tk.Label(self.frm_entradas, text="Número da Chapa:", font=("Arial", 16), bg="white")
-        self.lbl_numero.pack(anchor="w")
-        self.entry_numero = tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
-        self.entry_numero.pack(pady=(0, 10), ipady=3)
+        entradas = ttk.Frame(corpo)
+        entradas.grid(row=0, column=1, sticky="nw")
 
-        self.lbl_slogan = tk.Label(self.frm_entradas, text="Slogan:", font=("Arial", 16), bg="white")
-        self.lbl_slogan.pack(anchor="w")
-        self.entry_slogan = tk.Entry(self.frm_entradas, width=50, highlightthickness=1, highlightbackground="black")
-        self.entry_slogan.pack(pady=(0, 20), ipady=20)
+        ttk.Label(entradas, text="Nome da Chapa:", font=("Courier", 14)).pack(anchor="w")
+        self.entry_nome = ttk.Entry(entradas, width=60)
+        self.entry_nome.pack(pady=(4, 10), anchor="w")
 
-        # Frame para cargos (mantido para funcionalidade futura)
-        self.frm_cargos = tk.Frame(self.janela, bg="white", width=1500, height=350, highlightthickness=1, highlightbackground="black")
-        self.frm_cargos.pack(pady=(25, 20))
-        self.frm_cargos.pack_propagate(False)
+        ttk.Label(entradas, text="Número da Chapa:", font=("Courier", 14)).pack(anchor="w")
+        self.entry_numero = ttk.Entry(entradas, width=60)
+        self.entry_numero.pack(pady=(4, 10), anchor="w")
 
-        self.btn_designar_cargo = tk.Button(self.frm_cargos, text='Designar Cargo', bg='black', fg='white', width=15, font=("Arial", 14), command=self.abrir)
-        self.btn_designar_cargo.pack(pady=10, anchor="w", padx=10)
+        ttk.Label(entradas, text="Slogan:", font=("Courier", 14)).pack(anchor="w")
+        self.entry_slogan = ttk.Entry(entradas, width=60)
+        self.entry_slogan.pack(pady=(4, 10), anchor="w")
 
-        # Botão de salvar bem embaixo
+        self.frm_cargos = ttk.Labelframe(container, text="Designações", padding=10)
+        self.frm_cargos.pack(fill="both", padx=8, pady=(16, 6), expand=False)
+
+        self.btn_designar_cargo = ttk.Button(self.frm_cargos, text="Designar Cargo", bootstyle="primary-outline",
+                                             command=self.abrir_designar_cargo)
+        self.btn_designar_cargo.pack(anchor="w", pady=(0, 8))
+
+        # Treeview para mostrar as designações já adicionadas
+        self.designados = []  
+        self.tree_designados = ttk.Treeview(self.frm_cargos, columns=("cargo", "nome"), show="headings", height=6)
+        self.tree_designados.heading("cargo", text="Cargo")
+        self.tree_designados.heading("nome", text="Candidato")
+        self.tree_designados.column("cargo", width=220)
+        self.tree_designados.column("nome", width=420)
+        self.tree_designados.pack(fill="both", expand=True, padx=4, pady=6)
+
+        # ---- botões Salvar / Voltar ----
+        botoes = ttk.Frame(container)
+        botoes.pack(fill="x", pady=(12, 4))
+
         texto_botao = "Atualizar Chapa" if modo_edicao else "Salvar Chapa"
-        self.btn_salvar = tk.Button(self.janela, text=texto_botao, bg='black', fg='white', width=20, font=("Arial", 16), command=self.salvar_chapa)
-        self.btn_salvar.pack(pady=30)
+        self.btn_salvar = ttk.Button(botoes, text=texto_botao, bootstyle="success", width=18,
+                                     command=self.salvar_chapa)
+        self.btn_salvar.pack(side="left", padx=(6, 8))
 
-        # Se estiver em modo de edição, preencher os campos
+        self.btn_voltar = ttk.Button(botoes, text="Voltar", bootstyle="secondary", command=self.voltar_tela_chapas)
+        self.btn_voltar.pack(side="left")
+
+    
         if self.modo_edicao:
             self.preencher_campos()
 
     def preencher_campos(self):
-        """Preenche os campos com os dados da chapa em edição"""
         self.entry_nome.insert(0, self.dados_chapa.get('nome', ''))
         self.entry_numero.insert(0, self.dados_chapa.get('numero', ''))
         self.entry_slogan.insert(0, self.dados_chapa.get('slogan', ''))
-        
-        # Carregar imagem se existir
         if self.caminho_imagem:
             self.carregar_imagem_preview()
 
-    def carregar_imagem_preview(self):
-        """Carrega e exibe a imagem atual no preview"""
-        try:
-            if self.caminho_imagem and os.path.exists(self.caminho_imagem):
-                imagem = Image.open(self.caminho_imagem)
-                imagem = imagem.resize((225, 225))
-                imagem_tk = ImageTk.PhotoImage(imagem)
-
-                self.lbl_imagem = tk.Label(self.frm_foto, bg="white")
-                self.lbl_imagem.place(relx=0.5, rely=0.5, anchor="center")
-                self.lbl_imagem.config(image=imagem_tk)
-                self.lbl_imagem.image = imagem_tk
-                self.lbl_adcFoto.place_forget()
-        except Exception as e:
-            print(f"Erro ao carregar imagem: {e}")
-
-    def voltar_tela_chapas(self):
-        """Volta para a tela de chapas"""
-        self.janela.destroy()
-        telaChapas.iniciarTela()
-
-    def somente_numeros(self, texto):
-        return texto.isdigit() or texto == ""
-
-    # Comando para adicionar foto da chapa
     def adcFoto(self):
         tipos = (('Imagens', '*.jpeg *.jpg *.png *.gif *.bmp'), ('Todos', '*.*'))
-        caminho_imagem = fd.askopenfilename(filetypes=tipos, title="Selecionar imagem da chapa")
-        if caminho_imagem:
-            self.caminho_imagem = caminho_imagem
-            print(f"Imagem selecionada: {caminho_imagem}")  # Debug
+        caminho = fd.askopenfilename(filetypes=tipos, title="Selecionar imagem da chapa")
+        if caminho:
+            self.caminho_imagem = caminho
             self.carregar_imagem_preview()
 
+    def carregar_imagem_preview(self):
+        try:
+            if self.caminho_imagem and os.path.exists(self.caminho_imagem):
+                imagem = Image.open(self.caminho_imagem).resize((225, 225), Image.Resampling.LANCZOS)
+                imagem_tk = ImageTk.PhotoImage(imagem)
+                # limpar conteúdo do frame foto
+                for ch in self.frm_foto.winfo_children():
+                    ch.destroy()
+                lbl_img = ttk.Label(self.frm_foto, image=imagem_tk)
+                lbl_img.image = imagem_tk
+                lbl_img.place(relx=0.5, rely=0.5, anchor="center")
+        except Exception as e:
+            print(f"[telaCriarChapas] Erro ao carregar imagem: {e}")
+
+    def voltar_tela_chapas(self, event=None):
+        for w in self.janela.winfo_children():
+            w.destroy()
+        telaChapas.Tela(self.janela)
+
     def salvar_chapa(self):
-        """Salva ou atualiza a chapa no banco de dados"""
         nome = self.entry_nome.get().strip()
         numero = self.entry_numero.get().strip()
         slogan = self.entry_slogan.get().strip()
-        logo = self.caminho_imagem if hasattr(self, 'caminho_imagem') else ""
+        logo = getattr(self, 'caminho_imagem', '')
 
         if not nome:
             messagebox.showerror("Erro", "Nome da chapa é obrigatório!")
             return
 
         try:
-            # Importar o modelo diretamente
             sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'model'))
             import m_chapa  # type: ignore
-            
+
             if self.modo_edicao:
-                # Atualizar chapa existente
-                id_chapa = self.dados_chapa['id']
+                id_chapa = self.dados_chapa.get('id')
                 chapa = m_chapa.Chapa(nome, slogan, logo, numero, id=id_chapa)
                 resultado = chapa.atualizar()
-                if resultado:
-                    messagebox.showinfo("Sucesso", "Chapa atualizada com sucesso!")
-                    self.voltar_tela_chapas()
-                else:
-                    messagebox.showerror("Erro", "Erro ao atualizar chapa.")
             else:
-                # Criar nova chapa
                 chapa = m_chapa.Chapa(nome, slogan, logo, numero)
                 resultado = chapa.salvar()
-                if resultado:
-                    messagebox.showinfo("Sucesso", "Chapa criada com sucesso!")
-                    self.voltar_tela_chapas()
-                else:
-                    messagebox.showerror("Erro", "Erro ao criar chapa. Pode ser que uma chapa com esses dados já exista.")
+
+            if resultado:
+                messagebox.showinfo("Sucesso", "Chapa salva com sucesso!")
+                self.voltar_tela_chapas()
+            else:
+                messagebox.showerror("Erro", "Não foi possível salvar a chapa (possível duplicidade).")
         except Exception as e:
-            print(f"Erro detalhado: {e}")
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro inesperado: {str(e)}")
+            messagebox.showerror("Erro inesperado", str(e))
 
-    # PopUp de adicionar cargo com integração ao BD
-    def abrir(self):
-        self.adcCargo = tk.Toplevel(self.janela)
-        self.adcCargo.grab_set()
-        self.adcCargo.title('Designar Cargo')
-        self.adcCargo.configure(bg="white")
-        self.janelaCentro(self.adcCargo, 450, 300)
+    # ---------------- popup designar cargo ----------------
+    def abrir_designar_cargo(self):
+        popup = tb.Toplevel(self.janela)
+        popup.transient(self.janela)
+        popup.grab_set()
+        popup.title("Designar Cargo")
+        popup.geometry("520x420")
+        popup.resizable(False, False)
 
-        self.lbl_tituloCargo = tk.Label(self.adcCargo, text="Designar Cargo", font=("Arial", 16, "bold"), bg="white")
-        self.lbl_tituloCargo.pack(pady=15)
+        frame = ttk.Frame(popup, padding=12)
+        frame.pack(fill="both", expand=True)
 
-        self.frm_campos = tk.Frame(self.adcCargo, bg="white")
-        self.frm_campos.pack(padx=20)
+        ttk.Label(frame, text="Designar Cargo", font=("Courier", 16, "bold")).pack(pady=(2, 12))
 
-        # Carregar cargos do banco de dados
-        self.lbl_cargo = tk.Label(self.frm_campos, text="Cargo:", font=("Arial", 10), bg="white")
-        self.lbl_cargo.pack(anchor="w")
-        
+        # carregar cargos do BD
         try:
-            # Importar c_cargos para buscar os cargos do BD
             sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
             import c_cargos  # type: ignore
             cargos_bd = c_cargos.Control().listar_cargos()
-            cargos_lista = [f"{cargo[0]} - {cargo[1]}" for cargo in cargos_bd]  # id - nome
-            
-            if not cargos_lista:
-                cargos_lista = ['Nenhum cargo cadastrado']
+            lista = [f"{c[0]} - {c[1]}" for c in cargos_bd] if cargos_bd else ["Nenhum cargo cadastrado"]
         except Exception as e:
-            print(f"Erro ao carregar cargos: {e}")
-            cargos_lista = ['Erro ao carregar cargos']
-        
-        self.cargos = tk.StringVar()
-        self.cbx_cargos = ttk.Combobox(self.frm_campos, values=cargos_lista, textvariable=self.cargos, state='readonly', width=47)
-        if cargos_lista and cargos_lista[0] != 'Nenhum cargo cadastrado':
-            self.cbx_cargos.current(0)
-        self.cbx_cargos.pack(pady=(0, 10))
+            print(f"[telaCriarChapas] Erro ao carregar cargos: {e}")
+            lista = ["Erro ao carregar cargos"]
 
-        self.lbl_candidato = tk.Label(self.frm_campos, text="Nome do Candidato:", font=("Arial", 10), bg="white")
-        self.lbl_candidato.pack(anchor="w")
-        self.entry_candidato = tk.Entry(self.frm_campos, width=50, highlightthickness=1, highlightbackground="black")
-        self.entry_candidato.pack(pady=(0, 10), ipady=3)
+        sel_var = StringVar()
+        cbx = ttk.Combobox(frame, values=lista, textvariable=sel_var, state="readonly", width=56)
+        if lista and lista[0] not in ["Nenhum cargo cadastrado", "Erro ao carregar cargos"]:
+            cbx.current(0)
+        cbx.pack(pady=(4, 8), anchor="w")
 
-        self.btn_adicionar_cargo = tk.Button(self.adcCargo, text='Adicionar Candidato', bg='green', fg='white', width=18, font=("Arial", 12), command=self.adicionar_candidato)
-        self.btn_adicionar_cargo.pack(pady=10)
-        
-        # Lista de candidatos adicionados
-        self.lbl_lista = tk.Label(self.adcCargo, text="Candidatos Designados:", font=("Arial", 12, "bold"), bg="white")
-        self.lbl_lista.pack(pady=(20, 5))
-        
-        self.frame_lista = tk.Frame(self.adcCargo, bg="white", height=100)
-        self.frame_lista.pack(fill="x", padx=20, pady=5)
-        
-        # Scrollbar para a lista
-        self.lista_candidatos = tk.Listbox(self.frame_lista, height=4)
-        scrollbar = tk.Scrollbar(self.frame_lista, orient="vertical")
-        self.lista_candidatos.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=self.lista_candidatos.yview)
-        
-        self.lista_candidatos.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        ttk.Label(frame, text="Nome do Candidato:", font=("Courier", 12)).pack(anchor="w")
+        entry_candidato = ttk.Entry(frame, width=56)
+        entry_candidato.pack(pady=(4, 10), anchor="w")
 
-    def adicionar_candidato(self):
-        """Adiciona um candidato à lista"""
-        cargo_selecionado = self.cargos.get()
-        nome_candidato = self.entry_candidato.get().strip()
-        
-        if not cargo_selecionado or cargo_selecionado in ['Nenhum cargo cadastrado', 'Erro ao carregar cargos']:
-            messagebox.showerror("Erro", "Selecione um cargo válido!")
-            return
-            
-        if not nome_candidato:
-            messagebox.showerror("Erro", "Digite o nome do candidato!")
-            return
-        
-        # Adicionar à lista
-        item = f"{cargo_selecionado} -> {nome_candidato}"
-        self.lista_candidatos.insert(tk.END, item)
-        
-        # Limpar campo do candidato
-        self.entry_candidato.delete(0, tk.END)
-        
-        messagebox.showinfo("Sucesso", "Candidato adicionado à lista!")
+        btn_add = ttk.Button(frame, text="Adicionar Candidato", bootstyle="success")
+        btn_add.pack(pady=(4, 8))
 
-    def janelaCentro(self, window, largura, altura):
-        x = (window.winfo_screenwidth()-largura)//2
-        y = (window.winfo_screenheight()-altura)//2
-        window.geometry(f"{largura}x{altura}+{x}+{y}")
+        ttk.Label(frame, text="Candidatos Designados:", font=("Courier", 12, "bold")).pack(pady=(8, 4))
+
+        # tree local do popup para feedback imediato
+        tree_popup = ttk.Treeview(frame, columns=("cargo", "nome"), show="headings", height=6)
+        tree_popup.heading("cargo", text="Cargo")
+        tree_popup.heading("nome", text="Candidato")
+        tree_popup.column("cargo", width=200)
+        tree_popup.column("nome", width=300)
+        tree_popup.pack(fill="both", pady=6, padx=4)
+
+        def adicionar_local():
+            cargo_sel = sel_var.get()
+            nome_cand = entry_candidato.get().strip()
+            if not cargo_sel or cargo_sel in ["Nenhum cargo cadastrado", "Erro ao carregar cargos"]:
+                messagebox.showerror("Erro", "Selecione um cargo válido!")
+                return
+            if not nome_cand:
+                messagebox.showerror("Erro", "Digite o nome do candidato!")
+                return
+            # adiciona no tree do popup e na lista da tela principal
+            tree_popup.insert("", "end", values=(cargo_sel, nome_cand))
+            self._add_designacao(cargo_sel, nome_cand)
+            entry_candidato.delete(0, "end")
+            # mensagem de confirmação sem fechar popup
+            messagebox.showinfo("Sucesso", "Candidato adicionado à lista!")
+
+        btn_add.configure(command=adicionar_local)
+
+        ttk.Button(frame, text="Fechar", bootstyle="secondary", command=popup.destroy).pack(pady=(6, 6))
+
+    def _add_designacao(self, cargo_str, candidato_str):
+        self.designados.append((cargo_str, candidato_str))
+        self.tree_designados.insert("", "end", values=(cargo_str, candidato_str))
 
 
-def iniciarTela(modo_edicao=False, dados_chapa=None):
-    app = tk.Tk()
-    Tela(app, modo_edicao, dados_chapa)
-    app.mainloop()
+def iniciarTela(master=None, modo_edicao=False, dados_chapa=None):
+    if master is None:
+        app = tb.Window(themename="litera")
+        Tela(app, modo_edicao=modo_edicao, dados_chapa=dados_chapa)
+        app.mainloop()
+    else:
+        Tela(master, modo_edicao=modo_edicao, dados_chapa=dados_chapa)

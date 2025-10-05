@@ -2,7 +2,7 @@ import ttkbootstrap as tb
 from ttkbootstrap.constants import *
 from tkinter import messagebox
 
-import telaEleicoes, telaCriarChapas
+import telaEleicoes
 
 
 class Tela:
@@ -42,13 +42,7 @@ class Tela:
         self.entry_fim.pack(pady=10)
 
         # -------- botão salvar --------
-        self.btn_salvar = tb.Button(
-            self.janela,
-            text="Salvar",
-            bootstyle="success-outline",
-            width=20,
-            command=self.salvarEleicao
-        )
+        self.btn_salvar = tb.Button(self.janela,text="Salvar",bootstyle="success-outline",width=20,command=self.salvarEleicao)
         self.btn_salvar.pack(pady=20)
 
         # -------- seção chapas --------
@@ -84,7 +78,7 @@ class Tela:
         lbl = tb.Label(frm_card, text="Adicionar Chapa", font=("Arial", 18, "bold"))
         lbl.pack(pady=(50, 20))
 
-        btn = tb.Button(frm_card,text="+",bootstyle="dark",width=10,command=self.abrirCriarChapas)
+        btn = tb.Button(frm_card,text="+",bootstyle="dark",width=10)
         btn.pack()
 
         return frm_card
@@ -98,9 +92,6 @@ class Tela:
 
         return frm_card
 
-    def abrirCriarChapas(self):
-        self.janela.destroy()
-        telaCriarChapas.iniciarTela()
 
     def salvar_chapa(self, nome):
         

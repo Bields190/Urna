@@ -14,16 +14,8 @@ class Tela:
     def voltar_tela_adm(self, event=None):
         """Volta para a tela do administrador"""
         telaADM.TelaADM(self.janela)
-    def voltar_tela_adm(self, event=None):
-        """Volta para a tela do administrador"""
-        telaADM.TelaADM(self.janela)
     def __init__(self, master):
         self.janela = master
-
-        # Limpa widgets anteriores para carregar essa tela
-        for widget in self.janela.winfo_children():
-            widget.destroy()
-
 
         # Limpa widgets anteriores para carregar essa tela
         for widget in self.janela.winfo_children():
@@ -36,19 +28,13 @@ class Tela:
         self.janela.bind('<Escape>', self.voltar_tela_adm)
 
    
-
-        self.janela.bind('<Escape>', self.voltar_tela_adm)
-
-   
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
 
         self.lbl_nomeTela = tk.Label(self.janela, text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
-        self.lbl_nomeTela = tk.Label(self.janela, text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
         self.lbl_nomeTela.grid(row=1, column=0, pady=(40, 10), padx=(20,0))
 
-        self.btn_criar_cargo = tk.Button(self.janela, text="+ Criar Novo Cargo", font=("Arial",16,"bold"), command=self.criarCargo)
         self.btn_criar_cargo = tk.Button(self.janela, text="+ Criar Novo Cargo", font=("Arial",16,"bold"), command=self.criarCargo)
         self.btn_criar_cargo.grid(row=2, column=0, pady=(30,60))
    
@@ -84,13 +70,11 @@ class Tela:
                   command=self.salvarCargo)
         self.btn_adc.pack(pady=10)
         
-        
     def salvarCargo(self):
         c_cargos.Control(self).adicionar_cargo()
         messagebox.showinfo("Sucesso", "Cargo adicionado com sucesso!")
         self.adcCargo.destroy()
         self.renderizar_cargos()
-
 
 
     def editarCargo(self, id, nome, descricao):
@@ -128,7 +112,6 @@ class Tela:
         self.renderizar_cargos()
 
 
-
     def excluirCargo(self, id):
         confirm = messagebox.askyesno("Confirmação", "Tem certeza que deseja excluir este cargo?")
         if confirm:
@@ -158,7 +141,6 @@ class Tela:
             container = tk.Frame(frame_cargo, bg="white")
             container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.9)
 
-            tk.Label(container, text=f"{id_cargo} - {nome}", font=("Arial", 15, "bold"), fg="black", bg="white",wraplength=350).pack(anchor="nw", pady=(5,0))
             tk.Label(container, text=f"{id_cargo} - {nome}", font=("Arial", 15, "bold"), fg="black", bg="white",wraplength=350).pack(anchor="nw", pady=(5,0))
             
             tk.Label(container, 

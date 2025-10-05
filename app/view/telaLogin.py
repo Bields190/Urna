@@ -1,10 +1,7 @@
-# telaLogin.py
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import ttkbootstrap as tb
-from ttkbootstrap import ttk
 from ttkbootstrap import ttk
 import sys
 import os
@@ -25,19 +22,10 @@ class Tela:
         self.frm_principal.pack(fill='both', expand=True)
 
         self.frm = ttk.Frame(self.frm_principal)
-        # Frame principal
-        self.frm_principal = ttk.Frame(self.janela)
-        self.frm_principal.pack(fill='both', expand=True)
-
-        self.frm = ttk.Frame(self.frm_principal)
         self.frm.pack(expand=True)
 
         # Logo
-
-        # Logo
         self.imagem = tk.PhotoImage(file="app/src/Logo.png")
-        self.imagem = self.imagem.subsample(3, 3)
-        self.lbl = ttk.Label(self.frm, image=self.imagem)
         self.imagem = self.imagem.subsample(3, 3)
         self.lbl = ttk.Label(self.frm, image=self.imagem)
         self.lbl.image = self.imagem
@@ -45,12 +33,7 @@ class Tela:
 
         # Usuário
         self.lbl1 = ttk.Label(self.frm, text='Usuário:', font=("Arial", 18))
-
-        # Usuário
-        self.lbl1 = ttk.Label(self.frm, text='Usuário:', font=("Arial", 18))
         self.lbl1.pack(pady=(40, 0))
-
-        self.entry1 = ttk.Entry(self.frm, width=40, bootstyle="info")
 
         self.entry1 = ttk.Entry(self.frm, width=40, bootstyle="info")
         self.entry1.pack()
@@ -58,22 +41,12 @@ class Tela:
 
         # Senha
         self.lbl2 = ttk.Label(self.frm, text='Senha:', font=("Arial", 18))
-
-        # Senha
-        self.lbl2 = ttk.Label(self.frm, text='Senha:', font=("Arial", 18))
         self.lbl2.pack()
-
-        self.entry2 = ttk.Entry(self.frm, show='*', width=40, bootstyle="info")
 
         self.entry2 = ttk.Entry(self.frm, show='*', width=40, bootstyle="info")
         self.entry2.pack(pady=5)
         self.entry2.bind('<Return>', self.login)
 
-        # Botão Entrar
-        self.btn_entrar = ttk.Button(
-            self.frm, text='Entrar', width=10,
-            bootstyle="dark", command=self.login
-        )
         # Botão Entrar
         self.btn_entrar = ttk.Button(
             self.frm, text='Entrar', width=10,
@@ -87,17 +60,10 @@ class Tela:
             for widget in self.janela.winfo_children():
                 widget.destroy()
             telaADM.TelaADM(self.janela)
-            messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
-            for widget in self.janela.winfo_children():
-                widget.destroy()
-            telaADM.TelaADM(self.janela)
         else:
             messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 
-            messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 
-
-# 🔹 Função que o view.py vai chamar
 def iniciarTela():
     app = tb.Window(themename="litera")
     Tela(app)

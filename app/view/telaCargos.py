@@ -11,33 +11,52 @@ import c_cargos  # type: ignore
 
 
 class Tela:
+    def voltar_tela_adm(self, event=None):
+        """Volta para a tela do administrador"""
+        telaADM.TelaADM(self.janela)
+    def voltar_tela_adm(self, event=None):
+        """Volta para a tela do administrador"""
+        telaADM.TelaADM(self.janela)
     def __init__(self, master):
         self.janela = master
+
+        # Limpa widgets anteriores para carregar essa tela
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+
+
+        # Limpa widgets anteriores para carregar essa tela
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+
         self.janela.title('Tela de Controle de Cargos')
         self.janela.geometry("1920x1080")
         self.janela.configure(bg="white")     
-    
+
+        self.janela.bind('<Escape>', self.voltar_tela_adm)
+
+   
+
+        self.janela.bind('<Escape>', self.voltar_tela_adm)
+
+   
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
-        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
 
-        self.lbl_nomeTela = tk.Label(text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
+        self.lbl_nomeTela = tk.Label(self.janela, text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
+        self.lbl_nomeTela = tk.Label(self.janela, text="Controle de Cargos", font=("Arial", 20, "bold"), bg="white")
         self.lbl_nomeTela.grid(row=1, column=0, pady=(40, 10), padx=(20,0))
 
-        self.btn_criar_cargo = tk.Button(text="+ Criar Novo Cargo", font=("Arial",16,"bold"), command=self.criarCargo)
+        self.btn_criar_cargo = tk.Button(self.janela, text="+ Criar Novo Cargo", font=("Arial",16,"bold"), command=self.criarCargo)
+        self.btn_criar_cargo = tk.Button(self.janela, text="+ Criar Novo Cargo", font=("Arial",16,"bold"), command=self.criarCargo)
         self.btn_criar_cargo.grid(row=2, column=0, pady=(30,60))
    
         self.frmChapas = tk.Frame(self.janela, bd=2, padx=5, pady=5, bg="white")
         self.frmChapas.grid(row=3, column=0, columnspan=3, padx=10, pady=(20,20), sticky="nsew")
 
-        # Renderiza os cargos na tela
         self.renderizar_cargos()
 
-    def voltar_tela_adm(self):
-        """Volta para a tela do administrador"""
-        self.janela.destroy()
-        telaADM.iniciarTela()
 
     # Criar novo cargo
     def criarCargo(self):
@@ -65,14 +84,15 @@ class Tela:
                   command=self.salvarCargo)
         self.btn_adc.pack(pady=10)
         
-
+        
     def salvarCargo(self):
         c_cargos.Control(self).adicionar_cargo()
         messagebox.showinfo("Sucesso", "Cargo adicionado com sucesso!")
         self.adcCargo.destroy()
         self.renderizar_cargos()
 
-    # Editar cargo
+
+
     def editarCargo(self, id, nome, descricao):
         self.editCargo = tk.Toplevel(self.janela)
         self.editCargo.grab_set()
@@ -107,7 +127,8 @@ class Tela:
         self.editCargo.destroy()
         self.renderizar_cargos()
 
-    # Excluir cargo
+
+
     def excluirCargo(self, id):
         confirm = messagebox.askyesno("Confirmação", "Tem certeza que deseja excluir este cargo?")
         if confirm:
@@ -116,7 +137,6 @@ class Tela:
 
     # Renderizar os cargos do banco
     def renderizar_cargos(self):
-        # Limpa frames existentes
         for widget in self.frmChapas.winfo_children():
             widget.destroy()
 
@@ -135,17 +155,11 @@ class Tela:
             frame_cargo.grid(row=i//3, column=i%3, padx=20, pady=20, sticky="nsew")
             frame_cargo.grid_propagate(False)
 
-            # Container para o conteúdo
             container = tk.Frame(frame_cargo, bg="white")
             container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.9)
 
-            # Labels com wraplength para controlar quebra de texto
-            tk.Label(container, 
-                text=f"{id_cargo} - {nome}", 
-                font=("Arial", 15, "bold"), 
-                fg="black", 
-                bg="white",
-                wraplength=350).pack(anchor="nw", pady=(5,0))
+            tk.Label(container, text=f"{id_cargo} - {nome}", font=("Arial", 15, "bold"), fg="black", bg="white",wraplength=350).pack(anchor="nw", pady=(5,0))
+            tk.Label(container, text=f"{id_cargo} - {nome}", font=("Arial", 15, "bold"), fg="black", bg="white",wraplength=350).pack(anchor="nw", pady=(5,0))
             
             tk.Label(container, 
                 text=descricao, 
@@ -182,9 +196,3 @@ class Tela:
         x = (window.winfo_screenwidth()-largura)//2
         y = (window.winfo_screenheight()-altura)//2
         window.geometry(f"{largura}x{altura}+{x}+{y}")
-#gente tenq arrumar o lugar onde as telas vao ficar
-
-def iniciarTela():
-    gui = tk.Tk()
-    Tela(gui)
-    gui.mainloop()

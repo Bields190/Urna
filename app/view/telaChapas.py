@@ -1,4 +1,7 @@
-import tkinter as tk
+from ttkbootstrap import ttk
+import ttkbootstrap as tb
+from ttkbootstrap import ttk
+import ttkbootstrap as tb
 from tkinter import messagebox
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
@@ -8,53 +11,87 @@ import os
 import telaADM, telaCriarChapas
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
-
 import c_chapas  # type: ignore
+
+
 
 class Tela:
     def __init__(self, master):
         self.janela = master
         self.janela.title('Tela de Controle de Chapas')
         self.janela.geometry("1920x1080")
-        self.janela.configure(bg="white")  
-        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())    
-    
+
+        # Bind para voltar à tela ADM com ESC
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
+
+        # Configurar grid
+
+        # Bind para voltar à tela ADM com ESC
+        self.janela.bind('<Escape>', lambda event: self.voltar_tela_adm())
+
+        # Configurar grid
         self.janela.columnconfigure(2, weight=3)
         self.janela.rowconfigure(3, weight=3)
         self.janela.rowconfigure(3, weight=1)
 
-        self.lbl_ola = tk.Label(text="Controle de Chapas",font=("Arial",20,"bold"), bg="white")
-        self.lbl_ola.grid(row=1,column=0, pady=(40, 10), padx=(20,0))
-        
-        self.btn_criar_chapa = tk.Button(text="+ Criar Nova Chapa", font=("Arial",16,"bold"), command=self.criarChapa)
-        self.btn_criar_chapa.grid(row=2,column=0,pady=(30,60))
-   
-        self.frmChapas = tk.Frame(self.janela, bd=2, padx=5, pady=5,bg="white")
-        self.frmChapas.grid(row=3, column=0, columnspan=3, padx=10, pady=(20,20), sticky="nsew")
+        # Label título
+        self.lbl_ola = ttk.Label(self.janela,text="Controle de Chapas",font=("Courier", 20, "bold"))
+        self.lbl_ola.grid(row=1, column=0, pady=(40, 10), padx=(20, 0))
 
-        # Renderiza as chapas na tela
+        # Botão criar chapa
+        self.btn_criar_chapa = ttk.Button(self.janela,text="+ Criar Nova Chapa",bootstyle="primary",width=20,command=self.criarChapa)
+        self.btn_criar_chapa.grid(row=2, column=0, pady=(30, 60))
+
+        # Frame container das chapas
+        self.frmChapas = ttk.Frame(self.janela, padding=10)
+        self.frmChapas.grid(row=3, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+        # Label título
+        self.lbl_ola = ttk.Label(self.janela,text="Controle de Chapas",font=("Courier", 20, "bold"))
+        self.lbl_ola.grid(row=1, column=0, pady=(40, 10), padx=(20, 0))
+
+        # Botão criar chapa
+        self.btn_criar_chapa = ttk.Button(self.janela,text="+ Criar Nova Chapa",bootstyle="primary",width=20,command=self.criarChapa)
+        self.btn_criar_chapa.grid(row=2, column=0, pady=(30, 60))
+
+        # Frame container das chapas
+        self.frmChapas = ttk.Frame(self.janela, padding=10)
+        self.frmChapas.grid(row=3, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+
+        # Renderiza as chapas
+        # Renderiza as chapas
         self.renderizar_chapas()
 
     def voltar_tela_adm(self):
         """Volta para a tela do administrador"""
-        self.janela.destroy()
-        telaADM.iniciarTela()
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaADM.TelaADM(self.janela)
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaADM.TelaADM(self.janela)
 
     # Navegar para tela de criação
     def criarChapa(self):
-        self.janela.destroy()
-        telaCriarChapas.iniciarTela()
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaCriarChapas.iniciarTela(self.janela)
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaCriarChapas.iniciarTela(self.janela)
 
     # Navegar para tela de edição
     def editarChapa(self, id, nome, slogan, logo, numero):
-        self.janela.destroy()
-        telaCriarChapas.iniciarTela(modo_edicao=True, dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo, 'numero': numero})
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaCriarChapas.iniciarTela(self.janela, modo_edicao=True, dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo, 'numero': numero})
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaCriarChapas.iniciarTela(self.janela, modo_edicao=True, dados_chapa={'id': id, 'nome': nome, 'slogan': slogan, 'logo': logo, 'numero': numero})
 
     def carregar_imagem(self, caminho_imagem, tamanho=(80, 80)):
         """Carrega e redimensiona uma imagem"""
         try:
             if caminho_imagem and caminho_imagem.strip():
-                import os
                 if os.path.exists(caminho_imagem):
                     imagem = Image.open(caminho_imagem)
                     imagem = imagem.resize(tamanho, Image.Resampling.LANCZOS)
@@ -74,115 +111,88 @@ class Tela:
             else:
                 messagebox.showerror("Erro", "Erro ao excluir chapa.")
 
-    # Renderizar as chapas do banco
+    # Renderizar chapas
+    # Renderizar chapas
     def renderizar_chapas(self):
         # Limpa frames existentes
         for widget in self.frmChapas.winfo_children():
             widget.destroy()
 
-        # Configura o grid para distribuir igualmente as 3 colunas
-        self.frmChapas.grid_columnconfigure(0, weight=1)
-        self.frmChapas.grid_columnconfigure(1, weight=1)
-        self.frmChapas.grid_columnconfigure(2, weight=1)
+        # Configura o grid para distribuir igualmente as 4 colunas
+        for col in range(4):
+            self.frmChapas.grid_columnconfigure(col, weight=1)
+        for col in range(4):
+            self.frmChapas.grid_columnconfigure(col, weight=1)
 
         chapas = c_chapas.Control(self).listar_chapas()
 
         if not chapas:
-            # Se não há chapas, mostra uma mensagem
-            tk.Label(self.frmChapas, 
-                text="Nenhuma chapa cadastrada", 
-                font=("Arial", 16), 
-                fg="gray", 
-                bg="white").grid(row=0, column=0, columnspan=3, pady=50)
+            ttk.Label(self.frmChapas,text="Nenhuma chapa cadastrada",font=("Courier", 16),bootstyle="secondary").grid(row=0, column=0, columnspan=4, pady=50)
+            ttk.Label(self.frmChapas,text="Nenhuma chapa cadastrada",font=("Courier", 16),bootstyle="secondary").grid(row=0, column=0, columnspan=4, pady=50)
             return
 
         for i, chapa in enumerate(chapas):
-            if len(chapa) == 4:  # formato antigo sem número
+            # Mudança para suportar número
+            if len(chapa) == 4:
                 id_chapa, nome, slogan, logo = chapa
                 numero = ""
-            else:  # formato novo com número
+            else:
                 id_chapa, nome, slogan, numero, logo = chapa
 
-            # Frame com tamanho fixo para cada chapa
-            frame_chapa = tk.Frame(self.frmChapas, bd=2, relief="solid", width=400, height=300, bg="white")
-            frame_chapa.grid(row=i//3, column=i%3, padx=20, pady=20, sticky="nsew")
-            frame_chapa.grid_propagate(False)
-            frame_chapa.pack_propagate(False)
+            # Card de cada chapa
+            frame_chapa = ttk.Frame(self.frmChapas, padding=10, relief="ridge", borderwidth=2)
+            frame_chapa.grid(row=i // 4, column=i % 4, padx=10, pady=10, sticky="nsew")
 
-            # Container principal
-            container = tk.Frame(frame_chapa, bg="white")
-            container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.9, relheight=0.9)
+            # Card de cada chapa
+            frame_chapa = ttk.Frame(self.frmChapas, padding=10, relief="ridge", borderwidth=2)
+            frame_chapa.grid(row=i // 4, column=i % 4, padx=10, pady=10, sticky="nsew")
 
-            # Label do número da chapa
             numero_exibicao = numero if numero else str(id_chapa)
-            tk.Label(container, 
-                text=f"Chapa {numero_exibicao}", 
-                font=("Arial", 15, "bold"), 
-                fg="black", 
-                bg="white",
-                wraplength=350).pack(anchor="nw", pady=(5,0))
 
-            # Frame para a imagem
-            frame_imagem = tk.Frame(container, bg="white", height=100)
-            frame_imagem.pack(pady=5, fill="x")
-            frame_imagem.pack_propagate(False)
+            ttk.Label(frame_chapa,text=f"Chapa {numero_exibicao}",font=("Courier", 15, "bold")).pack(anchor="n", pady=5)
+            ttk.Label(frame_chapa,text=f"Chapa {numero_exibicao}",font=("Courier", 15, "bold")).pack(anchor="n", pady=5)
 
-            # Tentar carregar e exibir a imagem
+            # Imagem/logo
+            # Imagem/logo
             imagem_tk = self.carregar_imagem(logo, (80, 80))
             if imagem_tk:
-                lbl_imagem = tk.Label(frame_imagem, image=imagem_tk, bg="white")
+                lbl_imagem = ttk.Label(frame_chapa, image=imagem_tk)
                 lbl_imagem.image = imagem_tk
-                lbl_imagem.pack()
+                lbl_imagem.pack(pady=5)
+                lbl_imagem = ttk.Label(frame_chapa, image=imagem_tk)
+                lbl_imagem.image = imagem_tk
+                lbl_imagem.pack(pady=5)
             else:
-                tk.Label(frame_imagem, 
-                    text="Sem imagem", 
-                    font=("Arial", 11), 
-                    fg="gray", 
-                    bg="white").pack()
+                ttk.Label(frame_chapa,text="Sem imagem",font=("Courier", 10),bootstyle="secondary").pack(pady=5)
+                ttk.Label(frame_chapa,text="Sem imagem",font=("Courier", 10),bootstyle="secondary").pack(pady=5)
 
-            # Label do nome e slogan
-            tk.Label(container, 
-                text=nome, 
-                font=("Arial", 16, "bold"), 
-                fg="black", 
-                bg="white",
-                wraplength=350).pack(pady=5)
+            # Nome da chapa
+            ttk.Label(frame_chapa,text=nome,font=("Courier", 14, "bold"),wraplength=250).pack(pady=5)
+            # Nome da chapa
+            ttk.Label(frame_chapa,text=nome,font=("Courier", 14, "bold"),wraplength=250).pack(pady=5)
 
+            # Slogan
+            # Slogan
             if slogan:
-                tk.Label(container, 
-                    text=slogan, 
-                    font=("Arial", 11), 
-                    fg="gray", 
-                    bg="white",
-                    wraplength=350,
-                    justify="left").pack(pady=2)
+                ttk.Label(frame_chapa,text=slogan,font=("Courier", 11),bootstyle="secondary",wraplength=250).pack(pady=2)
+                ttk.Label(frame_chapa,text=slogan,font=("Courier", 11),bootstyle="secondary",wraplength=250).pack(pady=2)
 
-            # Frame para os botões
-            frm_botoes = tk.Frame(container, bg="white")
-            frm_botoes.pack(side="bottom", fill="x", pady=5)
+            # Botões ação
+            frm_botoes = ttk.Frame(frame_chapa)
+            frm_botoes.pack(fill="x", pady=10)
+            # Botões ação
+            frm_botoes = ttk.Frame(frame_chapa)
+            frm_botoes.pack(fill="x", pady=10)
 
-            # Botões de ação
-            tk.Button(frm_botoes, 
-                text="Editar",
-                font=("Arial", 12, "bold"),
-                height=2,
-                bg="white",
-                relief="solid",
-                command=lambda id=id_chapa, n=nome, s=slogan, l=logo, num=numero: self.editarChapa(id, n, s, l, num)
-                ).pack(side="left", fill="x", expand=True, padx=(0,5))
-            
-            tk.Button(frm_botoes,
-                text="Excluir", 
-                bg="red", 
-                fg="white", 
-                font=("Arial", 12, "bold"),
-                height=2,
-                command=lambda id=id_chapa: self.excluirChapa(id)
-                ).pack(side="left", fill="x", expand=True, padx=(5,0))
+            ttk.Button(frm_botoes,text="Editar",bootstyle="info-outline",command=lambda id=id_chapa, n=nome, s=slogan, l=logo, num=numero: self.editarChapa(id, n, s, l, num)).pack(side="left", expand=True, fill="x", padx=2)
 
+            ttk.Button(frm_botoes,text="Excluir",bootstyle="danger",command=lambda id=id_chapa: self.excluirChapa(id)).pack(side="left", expand=True, fill="x", padx=2)
+            ttk.Button(frm_botoes,text="Editar",bootstyle="info-outline",command=lambda id=id_chapa, n=nome, s=slogan, l=logo, num=numero: self.editarChapa(id, n, s, l, num)).pack(side="left", expand=True, fill="x", padx=2)
+
+            ttk.Button(frm_botoes,text="Excluir",bootstyle="danger",command=lambda id=id_chapa: self.excluirChapa(id)).pack(side="left", expand=True, fill="x", padx=2)
 
 
 def iniciarTela():
-        gui = tk.Tk()
-        Tela(gui)
-        gui.mainloop()
+    app = tb.Window(themename="superhero")
+    Tela(app)
+    app.mainloop()

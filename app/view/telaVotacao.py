@@ -3,8 +3,7 @@ from ttkbootstrap import ttk
 import ttkbootstrap as tb
 from ttkbootstrap import ttk
 
-class TelaVotacao:
-    def __init__(self, master, eleicao_id=None, titulo="Eleição"):
+
 class TelaVotacao:
     def __init__(self, master, eleicao_id=None, titulo="Eleição"):
         self.janela = master

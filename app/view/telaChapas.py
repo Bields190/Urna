@@ -134,11 +134,8 @@ class Tela:
         for i, chapa in enumerate(chapas):
             # Mudança para suportar número
             if len(chapa) == 4:
-            # Mudança para suportar número
-            if len(chapa) == 4:
                 id_chapa, nome, slogan, logo = chapa
                 numero = ""
-            else:
             else:
                 id_chapa, nome, slogan, numero, logo = chapa
 

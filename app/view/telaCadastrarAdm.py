@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 import sys
 import os
-
 import telaADM
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))

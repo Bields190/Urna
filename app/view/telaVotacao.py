@@ -300,8 +300,6 @@ class TelaVotacao:
                     )
                     
                     if voto.salvar():
-                        print(f"✅ Voto confirmado para a chapa {nome} (número {numero})")
-                        
                         # Limpar a tela e ir para a cédula virtual
                         for widget in self.janela.winfo_children():
                             widget.destroy()

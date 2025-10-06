@@ -30,8 +30,9 @@ class TelaVotacao:
             font=("Courier", 18)
         )
         self.lblInserirNumero.pack()
-
-        self.entInserirNumero = ttk.Entry(frmNumero, font=("Courier", 14), width=10)
+        # Função para aceitar somente número
+        vcmd = self.janela.register(self.validar_inteiro)
+        self.entInserirNumero = ttk.Entry(frmNumero, font=("Courier", 14), width=10, validate="key", validatecommand=(vcmd, "%P"))
         self.entInserirNumero.pack(pady=10, ipady=3)
 
         # Informações do voto
@@ -39,8 +40,8 @@ class TelaVotacao:
         frmChapa.pack(pady=5, expand=True)
 
         # Foto chapa
-        self.frmFoto = ttk.Frame(frmChapa, width=400, height=400)
-        self.frmFoto.pack(side="left", padx=50)
+        self.frmFoto = ttk.Labelframe(frmChapa, text="", bootstyle="secondary", width=400, height=400)
+        self.frmFoto.pack(side="left", padx=50, pady=10)
         self.frmFoto.pack_propagate(False)
 
         # Info + slogan
@@ -72,8 +73,15 @@ class TelaVotacao:
         )
         self.btnCancelar.pack(side="left", padx=40)
 
+    def validar_inteiro(self, valor):
+        if valor == "":
+            return True
+        return valor.isdigit()
 
-def iniciarTela(eleicao_id=None, titulo="Eleição"):
-    app = tb.Window(themename="litera")
-    TelaVotacao(app, eleicao_id, titulo)
-    app.mainloop()
+def iniciarTela(master=None, eleicao_id=None):
+    if master is None:
+        app = tb.Window(themename="superhero")
+        TelaVotacao(app, eleicao_id)
+        app.mainloop()
+    else:
+        TelaVotacao(master, eleicao_id)

@@ -47,6 +47,9 @@ eleições, possibilitar o cadastro de *Chapas* e *Candidatos*, garantir que o *
 
 **RNF03** – O sistema deve persistir as Chapas utilizadas em uma base de dados relacional para possibilitar sua recuperação e reutilização em operações futuras.
 
+### Executável Pronto (Recomendado)
+Baixe o executável mais recente na seção [Releases](https://github.com/Bields190/Urna/releases):
+
 ## UML:
 ### Diagrama de Caso de Uso:
 

@@ -15,8 +15,12 @@ def resource_path(relative_path):
     try:
         # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
         base_path = sys._MEIPASS
+        # No PyInstaller, os arquivos estão em src/ não app/src/
+        if relative_path.startswith("app/src/"):
+            relative_path = relative_path[4:]  # Remove "app/"
     except Exception:
-        base_path = os.path.abspath(".")
+        # Em desenvolvimento, busca a partir da raiz do projeto
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     
     return os.path.join(base_path, relative_path)
 
@@ -38,7 +42,7 @@ class Tela:
         self.frm.pack(expand=True)
 
         # Logo
-        logo_path = resource_path("src/Logo.png")
+        logo_path = resource_path("app/src/Logo.png")
         self.imagem = tk.PhotoImage(file=logo_path)
         self.imagem = self.imagem.subsample(3, 3)
         self.lbl = ttk.Label(self.frm, image=self.imagem)

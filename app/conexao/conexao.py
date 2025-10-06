@@ -8,6 +8,18 @@ def resource_path(relative_path):
     try:
         # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
         base_path = sys._MEIPASS
+        # No PyInstaller, o banco está na raiz não em app/
+        if relative_path.startswith("app/"):
+            relative_path = relative_path[4:]  # Remove "app/"
+    except Exception:
+        # Em desenvolvimento, busca a partir da raiz do projeto
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
+    return os.path.join(base_path, relative_path)
+    """Obtém o caminho absoluto para recursos, funciona tanto em desenvolvimento quanto em executável"""
+    try:
+        # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
+        base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     

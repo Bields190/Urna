@@ -1,3 +1,5 @@
 flake8
 ttkbootstrap
 ttkthemes
+pillow
+pyinstaller

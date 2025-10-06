@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 -- ===============================
 -- BANCO DE DADOS: URNA ELETRÔNICA
 -- ===============================
@@ -5,13 +7,16 @@
 CREATE TABLE Administrador (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario TEXT UNIQUE NOT NULL,
-    senha HASH NOT NULL
+    senha TEXT NOT NULL,
+    matricula TEXT UNIQUE NOT NULL,
+    email_institucional TEXT NOT NULL,
+    master INTEGER DEFAULT 0
 );
 
 CREATE TABLE Eleicao (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
-    data_inicio DATE NOT NULL,  -- formato: YYYY-MM-DD
+    data_inicio DATE NOT NULL,
     data_fim DATE NOT NULL
 );
 
@@ -25,8 +30,8 @@ CREATE TABLE Chapa (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     slogan TEXT,
-    numero  TEXT,
-    logo TEXT -- endereço da imagem
+    numero TEXT,
+    logo TEXT
 );
 
 CREATE TABLE Candidato (
@@ -37,7 +42,6 @@ CREATE TABLE Candidato (
     FOREIGN KEY (cargo_id) REFERENCES Cargo(id),
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
 );
-
 
 CREATE TABLE Voto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,11 +54,10 @@ CREATE TABLE Voto (
 CREATE TABLE Cedula (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
-    data_emissao DATE NOT NULL, -- formato: YYYY-MM-DD HH:MM:SS
+    data_emissao DATETIME NOT NULL,
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
 );
 
--- Tabela opcional para guardar resultados consolidados
 CREATE TABLE Resultado (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
@@ -64,34 +67,50 @@ CREATE TABLE Resultado (
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
 );
 
--- INSERÇÕES:
+-- INTERMEDIO ENTRE ELEICAO E CHAPA:
+
+CREATE TABLE EleicaoChapa (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    eleicao_id INTEGER NOT NULL,
+    chapa_id INTEGER NOT NULL,
+    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
+    FOREIGN KEY (chapa_id) REFERENCES Chapa(id),
+    UNIQUE (eleicao_id, chapa_id)
+);
 
 -- ===============================
--- DADOS FICTÍCIOS PARA TESTE:::
+-- DADOS FICTÍCIOS PARA TESTE
 -- ===============================
 
-INSERT INTO Administrador (id, usuario, senha) VALUES
-(1, 'limeira', 'tesi25');
+-- Administrador
+INSERT INTO Administrador (usuario, senha, matricula, email_institucional, master)
+VALUES ('limeira', 'tesi25', '2025001', 'limeira@ufac.br', 1),
+        ('root', 'root', 'root', 'root', '1');
 
 -- Eleição
-INSERT INTO Eleicao (id, titulo, data_inicio, data_fim) VALUES
-(1, 'Eleição CASI 2025', '2025-10-01', '2025-10-05');
+INSERT INTO Eleicao (titulo, data_inicio, data_fim)
+VALUES ('Eleição CASI 2025', '2025-10-01', '2025-10-05');
 
 -- Cargos
-INSERT INTO Cargo (id, nome, descricao) VALUES
-(1, 'Presidente', 'Responsável geral pelo Centro Acadêmico'),
-(2, 'Vice-Presidente', 'Substitui o presidente quando necessário'),
-(3, 'Diretor de Cultura', 'Coordena atividades culturais e eventos');
+INSERT INTO Cargo (nome, descricao) VALUES
+('Presidente', 'Responsável geral pelo Centro Acadêmico'),
+('Vice-Presidente', 'Substitui o presidente quando necessário'),
+('Diretor de Cultura', 'Coordena atividades culturais e eventos');
 
 -- Chapas
-INSERT INTO Chapa (id, nome, slogan, logo) VALUES
-(1, 'Core 2 Quad', 'Renovar com atitude', '/images/core2quad.png'),
-(2, 'Nova Ordem', 'Juntos pelo futuro', '/images/nova_ordem.png');
+INSERT INTO Chapa (nome, slogan, logo) VALUES
+('Core 2 Quad', 'Renovar com atitude', '/images/core2quad.png'),
+('Nova Ordem', 'Juntos pelo futuro', '/images/nova_ordem.png');
 
 -- Candidatos
-INSERT INTO Candidato (id, nome, cargo_id, chapa_id) VALUES
-(1, 'Ana Souza', 1, 1),
-(2, 'Bruno Silva', 1, 2),
-(3, 'Carla Mendes', 2, 1),
-(4, 'Diego Ramos', 2, 2),
-(5, 'Eduardo Lima', 3, 1);
+INSERT INTO Candidato (nome, cargo_id, chapa_id) VALUES
+('Ana Souza', 1, 1),
+('Bruno Silva', 1, 2),
+('Carla Mendes', 2, 1),
+('Diego Ramos', 2, 2),
+('Eduardo Lima', 3, 1);
+
+-- Associação entre eleição e chapas
+INSERT INTO EleicaoChapa (eleicao_id, chapa_id) VALUES
+(1, 1),
+(1, 2);

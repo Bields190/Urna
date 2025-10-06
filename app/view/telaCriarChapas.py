@@ -70,9 +70,17 @@ class Tela:
         self.frm_cargos = ttk.Labelframe(container, text="Designações", padding=10)
         self.frm_cargos.pack(fill="both", padx=8, pady=(16, 6), expand=False)
 
-        self.btn_designar_cargo = ttk.Button(self.frm_cargos, text="Designar Cargo", bootstyle="primary-outline",
+        # Frame para os botões de designação
+        btn_frame = ttk.Frame(self.frm_cargos)
+        btn_frame.pack(anchor="w", pady=(0, 8))
+        
+        self.btn_designar_cargo = ttk.Button(btn_frame, text="Designar Cargo", bootstyle="primary-outline",
                                              command=self.abrir_designar_cargo)
-        self.btn_designar_cargo.pack(anchor="w", pady=(0, 8))
+        self.btn_designar_cargo.pack(side="left", padx=(0, 8))
+        
+        self.btn_excluir_candidato = ttk.Button(btn_frame, text="Excluir Candidato", bootstyle="danger-outline",
+                                               command=self.excluir_candidato_selecionado)
+        self.btn_excluir_candidato.pack(side="left")
 
         # Treeview para mostrar as designações já adicionadas
         self.designados = []  
@@ -98,6 +106,8 @@ class Tela:
     
         if self.modo_edicao:
             self.preencher_campos()
+            # Carregar candidatos após a interface estar completa
+            self.carregar_candidatos_existentes()
 
     def preencher_campos(self):
         self.entry_nome.insert(0, self.dados_chapa.get('nome', ''))
@@ -105,6 +115,68 @@ class Tela:
         self.entry_slogan.insert(0, self.dados_chapa.get('slogan', ''))
         if self.caminho_imagem:
             self.carregar_imagem_preview()
+
+    def carregar_candidatos_existentes(self):
+        """Carrega candidatos existentes da chapa no modo edição"""
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+            from conexao import Conexao
+            conn = Conexao().get_conexao()
+            cursor = conn.cursor()
+            
+            # Buscar candidatos da chapa com informações do cargo
+            cursor.execute("""
+                SELECT c.nome, ca.id, ca.nome as cargo_nome
+                FROM Candidato c
+                JOIN Cargo ca ON c.cargo_id = ca.id
+                WHERE c.chapa_id = ?
+            """, (self.dados_chapa.get('id'),))
+            
+            candidatos = cursor.fetchall()
+            conn.close()
+            
+            # Adicionar à lista e ao tree
+            for nome_candidato, cargo_id, cargo_nome in candidatos:
+                cargo_str = f"{cargo_id} - {cargo_nome}"
+                self.designados.append((cargo_str, nome_candidato))
+                self.tree_designados.insert("", "end", values=(cargo_str, nome_candidato))
+                
+        except Exception as e:
+            print(f"Erro ao carregar candidatos existentes: {e}")
+
+    def excluir_candidato_selecionado(self):
+        """Exclui o candidato selecionado no treeview"""
+        selecao = self.tree_designados.selection()
+        
+        if not selecao:
+            messagebox.showwarning("Aviso", "Selecione um candidato para excluir!")
+            return
+        
+        # Confirmar exclusão
+        resposta = messagebox.askyesno("Confirmar Exclusão", 
+                                     "Tem certeza que deseja excluir o candidato selecionado?")
+        if not resposta:
+            return
+        
+        try:
+            # Pegar os dados do item selecionado
+            item = selecao[0]
+            valores = self.tree_designados.item(item, 'values')
+            cargo_str = valores[0]
+            nome_candidato = valores[1]
+            
+            # Remover da lista de designados
+            self.designados = [(c, n) for c, n in self.designados 
+                             if not (c == cargo_str and n == nome_candidato)]
+            
+            # Remover do treeview
+            self.tree_designados.delete(item)
+            
+            messagebox.showinfo("Sucesso", "Candidato excluído com sucesso!")
+            
+        except Exception as e:
+            print(f"Erro ao excluir candidato: {e}")
+            messagebox.showerror("Erro", "Erro ao excluir candidato!")
 
     def validar_inteiro(self, valor):
         if valor == "":
@@ -150,17 +222,50 @@ class Tela:
         try:
             sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'model'))
             import m_chapa  # type: ignore
+            import m_candidato  # type: ignore
 
             if self.modo_edicao:
                 id_chapa = self.dados_chapa.get('id')
                 chapa = m_chapa.Chapa(nome, slogan, logo, numero, id=id_chapa)
                 resultado = chapa.atualizar()
+                
+                # Em modo edição, primeiro remove todos os candidatos da chapa
+                if resultado:
+                    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+                    from conexao import Conexao
+                    conn = Conexao().get_conexao()
+                    cursor = conn.cursor()
+                    cursor.execute("DELETE FROM Candidato WHERE chapa_id = ?", (id_chapa,))
+                    conn.commit()
+                    conn.close()
             else:
                 chapa = m_chapa.Chapa(nome, slogan, logo, numero)
                 resultado = chapa.salvar()
 
             if resultado:
-                messagebox.showinfo("Sucesso", "Chapa salva com sucesso!")
+                # Salvar os candidatos designados
+                chapa_id = chapa.id
+                candidatos_salvos = 0
+                
+                for cargo_str, nome_candidato in self.designados:
+                    try:
+                        # Extrair o ID do cargo da string "ID - Nome"
+                        cargo_id = int(cargo_str.split(' - ')[0])
+                        
+                        candidato = m_candidato.Candidato(nome_candidato, chapa_id, cargo_id)
+                        if candidato.salvar():
+                            candidatos_salvos += 1
+                        else:
+                            print(f"Aviso: Candidato {nome_candidato} para {cargo_str} já existe ou houve erro")
+                    except (ValueError, IndexError) as e:
+                        print(f"Erro ao processar cargo {cargo_str}: {e}")
+                        continue
+                
+                if self.designados and candidatos_salvos == 0:
+                    messagebox.showwarning("Aviso", "Chapa salva, mas nenhum candidato pôde ser adicionado (possível duplicidade).")
+                else:
+                    messagebox.showinfo("Sucesso", f"Chapa salva com sucesso! {candidatos_salvos} candidatos adicionados.")
+                
                 self.voltar_tela_chapas()
             else:
                 messagebox.showerror("Erro", "Não foi possível salvar a chapa (possível duplicidade).")
@@ -183,19 +288,31 @@ class Tela:
 
         ttk.Label(frame, text="Designar Cargo", font=("Courier", 16, "bold")).pack(pady=(2, 12))
 
-        # carregar cargos do BD
+        # carregar cargos do BD, excluindo os já ocupados
         try:
             sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
             import c_cargos  # type: ignore
             cargos_bd = c_cargos.Control().listar_cargos()
-            lista = [f"{c[0]} - {c[1]}" for c in cargos_bd] if cargos_bd else ["Nenhum cargo cadastrado"]
+            
+            # Filtrar cargos já ocupados
+            cargos_ocupados = set()
+            for cargo_str, _ in self.designados:
+                try:
+                    cargo_id = int(cargo_str.split(' - ')[0])
+                    cargos_ocupados.add(cargo_id)
+                except (ValueError, IndexError):
+                    continue
+            
+            # Criar lista apenas com cargos disponíveis
+            cargos_disponiveis = [c for c in cargos_bd if c[0] not in cargos_ocupados] if cargos_bd else []
+            lista = [f"{c[0]} - {c[1]}" for c in cargos_disponiveis] if cargos_disponiveis else ["Todos os cargos já estão ocupados"]
         except Exception as e:
             print(f"[telaCriarChapas] Erro ao carregar cargos: {e}")
             lista = ["Erro ao carregar cargos"]
 
         sel_var = StringVar()
         cbx = ttk.Combobox(frame, values=lista, textvariable=sel_var, state="readonly", width=56)
-        if lista and lista[0] not in ["Nenhum cargo cadastrado", "Erro ao carregar cargos"]:
+        if lista and lista[0] not in ["Todos os cargos já estão ocupados", "Nenhum cargo cadastrado", "Erro ao carregar cargos"]:
             cbx.current(0)
         cbx.pack(pady=(4, 8), anchor="w")
 
@@ -219,16 +336,38 @@ class Tela:
         def adicionar_local():
             cargo_sel = sel_var.get()
             nome_cand = entry_candidato.get().strip()
-            if not cargo_sel or cargo_sel in ["Nenhum cargo cadastrado", "Erro ao carregar cargos"]:
+            if not cargo_sel or cargo_sel in ["Todos os cargos já estão ocupados", "Nenhum cargo cadastrado", "Erro ao carregar cargos"]:
                 messagebox.showerror("Erro", "Selecione um cargo válido!")
                 return
             if not nome_cand:
                 messagebox.showerror("Erro", "Digite o nome do candidato!")
                 return
+                
+            # Verificar se o cargo já está ocupado (dupla verificação)
+            for cargo_existente, _ in self.designados:
+                if cargo_existente == cargo_sel:
+                    messagebox.showerror("Erro", "Este cargo já está ocupado na chapa!")
+                    return
+            
             # adiciona no tree do popup e na lista da tela principal
             tree_popup.insert("", "end", values=(cargo_sel, nome_cand))
             self._add_designacao(cargo_sel, nome_cand)
             entry_candidato.delete(0, "end")
+            
+            # Atualizar combobox removendo o cargo selecionado
+            try:
+                cargo_id = int(cargo_sel.split(' - ')[0])
+                lista_atualizada = [item for item in lista if not item.startswith(f"{cargo_id} - ")]
+                if not lista_atualizada:
+                    lista_atualizada = ["Todos os cargos já estão ocupados"]
+                cbx.configure(values=lista_atualizada)
+                if lista_atualizada[0] != "Todos os cargos já estão ocupados":
+                    cbx.current(0)
+                else:
+                    cbx.set("")
+            except (ValueError, IndexError):
+                pass
+            
             # mensagem de confirmação sem fechar popup
             messagebox.showinfo("Sucesso", "Candidato adicionado à lista!")
 

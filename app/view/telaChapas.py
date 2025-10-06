@@ -47,6 +47,45 @@ class Tela:
             widget.destroy()
         telaADM.TelaADM(self.janela)
 
+    def mostrar_candidatos_chapa(self, frame_pai, chapa_id):
+        """Mostra os candidatos de uma chapa"""
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+            from conexao import Conexao
+            
+            conn = Conexao().get_conexao()
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                SELECT c.nome, ca.nome as cargo_nome
+                FROM Candidato c
+                JOIN Cargo ca ON c.cargo_id = ca.id
+                WHERE c.chapa_id = ?
+                ORDER BY ca.id
+            """, (chapa_id,))
+            
+            candidatos = cursor.fetchall()
+            conn.close()
+            
+            if candidatos:
+                # Frame para candidatos
+                frame_candidatos = ttk.Frame(frame_pai)
+                frame_candidatos.pack(fill="x", pady=5)
+                
+                ttk.Label(frame_candidatos, text="Candidatos:", font=("Courier", 10, "bold"), bootstyle="info").pack(anchor="w")
+                
+                for nome_candidato, cargo_nome in candidatos:
+                    ttk.Label(frame_candidatos, text=f"• {nome_candidato} ({cargo_nome})", 
+                             font=("Courier", 9), wraplength=230).pack(anchor="w", padx=5)
+            else:
+                ttk.Label(frame_pai, text="Sem candidatos", font=("Courier", 9), 
+                         bootstyle="warning").pack(pady=2)
+                
+        except Exception as e:
+            print(f"Erro ao carregar candidatos da chapa {chapa_id}: {e}")
+            ttk.Label(frame_pai, text="Erro ao carregar candidatos", font=("Courier", 9), 
+                     bootstyle="danger").pack(pady=2)
+
     # Navegar para tela de criação
     def criarChapa(self):
         for widget in self.janela.winfo_children():
@@ -129,6 +168,9 @@ class Tela:
             # Slogan
             if slogan:
                 ttk.Label(frame_chapa,text=slogan,font=("Courier", 11),bootstyle="secondary",wraplength=250).pack(pady=2)
+
+            # Candidatos da chapa
+            self.mostrar_candidatos_chapa(frame_chapa, id_chapa)
 
             # Botões ação
             frm_botoes = ttk.Frame(frame_chapa)

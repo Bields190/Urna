@@ -19,6 +19,10 @@ python -m PyInstaller --onefile --windowed \
   --hidden-import=model.model \
   --hidden-import=conexao.conexao \
   app/view/view.py
+
+  ou
+
+  python -m PyInstaller --onefile --windowed --name UrnaEletronica_Linux --add-data "app/src/*:src" --add-data "db:." --paths="app" --paths="app/view" --paths="app/control" --paths="app/model" --paths="app/conexao" --hidden-import=PIL._tkinter_finder --hidden-import=model.model --hidden-import=conexao.conexao app/view/view.py
 ```
 
 ## Comando para Gerar Windows:
@@ -37,10 +41,11 @@ python -m PyInstaller --onefile --windowed ^
   --hidden-import=model.model ^
   --hidden-import=conexao.conexao ^
   app/view/view.py
-```
 
-## GitHub Actions (Automático)
-O projeto inclui workflow que gera automaticamente executáveis para Linux e Windows quando você criar uma tag/release.
+  ou
+
+  python -m PyInstaller --onefile --windowed --name UrnaEletronica_Windows.exe --add-data "app/src/*;src" --add-data "db;."  --paths="app" --paths="app/view" --paths="app/control" --paths="app/model" --paths="app/conexao" --hidden-import=PIL._tkinter_finder --hidden-import=model.model --hidden-import=conexao.conexao app/view/view.py
+```
 
 ## Resultado
 O executável estará em `dist/UrnaEletronica_Linux` ou `dist/UrnaEletronica_Windows.exe`

@@ -5,6 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'model'))
 import m_eleicao #type:ignore
 import m_chapa #type: ignore
 import m_voto #type: ignore
+from model import Model
 from datetime import datetime
 
 
@@ -44,7 +45,14 @@ class Control:
             return False
             
         eleicao = m_eleicao.Eleicao(titulo, data_inicio_bd, data_fim_bd)
-        return eleicao.salvar()
+        resultado = eleicao.salvar()
+        
+        # Se a eleição foi salva com sucesso e há chapas selecionadas
+        if resultado and hasattr(self.tela, 'chapas') and self.tela.chapas:
+            eleicao_id = eleicao.id
+            self.associar_chapas_eleicao(eleicao_id, self.tela.chapas)
+            
+        return resultado
 
     def listar_eleicoes(self):
         """Lista todas as eleições"""
@@ -78,7 +86,16 @@ class Control:
             return False
             
         eleicao = m_eleicao.Eleicao(titulo, data_inicio, data_fim, id=id)
-        return eleicao.atualizar()
+        resultado = eleicao.atualizar()
+        
+        # Se a eleição foi atualizada com sucesso e há chapas selecionadas
+        if resultado and hasattr(self.tela, 'chapas') and self.tela.chapas:
+            # Primeiro remove todas as associações existentes
+            self.remover_chapas_eleicao(id)
+            # Depois adiciona as novas associações
+            self.associar_chapas_eleicao(id, self.tela.chapas)
+            
+        return resultado
 
     def deletar_eleicao(self, id):
         """Deleta uma eleição"""
@@ -208,3 +225,58 @@ class Control:
             "total_votos": total_votos,
             "chapas": resultado
         }
+
+    def associar_chapas_eleicao(self, eleicao_id, chapas_nomes):
+        """Associa chapas a uma eleição na tabela EleicaoChapa"""
+        try:
+            for chapa_nome in chapas_nomes:
+                # Buscar o ID da chapa pelo nome
+                chapa_data = self.buscar_chapa_por_nome(chapa_nome)
+                if chapa_data:
+                    chapa_id = chapa_data[0][0]  # Primeiro campo é o ID
+                    
+                    # Inserir na tabela EleicaoChapa se não existir
+                    sql = f"""
+                    INSERT OR IGNORE INTO EleicaoChapa (eleicao_id, chapa_id) 
+                    VALUES ({eleicao_id}, {chapa_id})
+                    """
+                    Model().insert(sql)
+            print("Chapas associadas à eleição com sucesso!")
+            return True
+        except Exception as e:
+            print(f"Erro ao associar chapas à eleição: {e}")
+            return False
+
+    def remover_chapas_eleicao(self, eleicao_id):
+        """Remove todas as associações de chapas de uma eleição"""
+        try:
+            sql = f"DELETE FROM EleicaoChapa WHERE eleicao_id = {eleicao_id}"
+            Model().delete(sql)
+            print("Associações de chapas removidas com sucesso!")
+            return True
+        except Exception as e:
+            print(f"Erro ao remover associações de chapas: {e}")
+            return False
+
+    def buscar_chapa_por_nome(self, nome):
+        """Busca uma chapa pelo nome"""
+        try:
+            sql = f"SELECT * FROM Chapa WHERE nome = '{nome}'"
+            return Model().get(sql)
+        except Exception as e:
+            print(f"Erro ao buscar chapa: {e}")
+            return None
+
+    def listar_chapas_por_eleicao(self, eleicao_id):
+        """Lista as chapas associadas a uma eleição específica"""
+        try:
+            sql = f"""
+            SELECT c.id, c.nome, c.slogan, c.logo, c.numero
+            FROM Chapa c
+            JOIN EleicaoChapa ec ON c.id = ec.chapa_id
+            WHERE ec.eleicao_id = {eleicao_id}
+            """
+            return Model().get(sql)
+        except Exception as e:
+            print(f"Erro ao listar chapas da eleição: {e}")
+            return []

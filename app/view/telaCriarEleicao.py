@@ -9,9 +9,11 @@ import c_eleicao  # type: ignore
 
 
 class Tela:
-    def __init__(self, master):
+    def __init__(self, master, modo_edicao=False, dados_eleicao=None):
         self.janela = master
-        self.janela.title("Criar Eleição")
+        self.modo_edicao = modo_edicao
+        self.dados_eleicao = dados_eleicao or {}
+        self.janela.title("Editar Eleição" if modo_edicao else "Criar Eleição")
 
         # limpar tela
         for widget in self.janela.winfo_children():
@@ -23,7 +25,8 @@ class Tela:
         # bind ESC para voltar
         self.janela.bind("<Escape>", lambda e: self.voltarEleicoes())
 
-        tb.Label(self.janela, text="Criar Eleição", font=("Arial", 35, "bold")).pack(
+        titulo_tela = "Editar Eleição" if modo_edicao else "Criar Eleição"
+        tb.Label(self.janela, text=titulo_tela, font=("Arial", 35, "bold")).pack(
             pady=15
         )
 
@@ -52,9 +55,10 @@ class Tela:
         frm_botoes.pack(pady=20)
 
         # Botão Salvar
+        texto_botao = "Atualizar Eleição" if self.modo_edicao else "Salvar Eleição"
         tb.Button(
             frm_botoes,
-            text="Salvar Eleição",
+            text=texto_botao,
             bootstyle="success-outline",
             width=20,
             command=self.salvarEleicao,
@@ -76,8 +80,47 @@ class Tela:
         self.tree_chapas.column("chapa", width=500)
         self.tree_chapas.pack(fill="both", padx=20, pady=10)
 
+        # Preencher campos se estiver em modo de edição
+        if self.modo_edicao and self.dados_eleicao:
+            self.carregar_dados_eleicao()
+
     def voltarEleicoes(self):
         telaEleicoes.iniciarTela(self.janela)
+
+    def carregar_dados_eleicao(self):
+        """Carrega os dados da eleição nos campos para edição"""
+        from datetime import datetime
+        
+        # Preencher título
+        self.entry_titulo.insert(0, self.dados_eleicao.get('titulo', ''))
+        
+        # Converter e preencher datas (de YYYY-MM-DD para DD-MM-YYYY)
+        data_inicio = self.dados_eleicao.get('data_inicio', '')
+        data_fim = self.dados_eleicao.get('data_fim', '')
+        
+        if data_inicio:
+            try:
+                data_obj = datetime.strptime(data_inicio, '%Y-%m-%d')
+                self.entry_inicio.entry.delete(0, 'end')
+                self.entry_inicio.entry.insert(0, data_obj.strftime('%d-%m-%Y'))
+            except ValueError:
+                pass
+                
+        if data_fim:
+            try:
+                data_obj = datetime.strptime(data_fim, '%Y-%m-%d')
+                self.entry_fim.entry.delete(0, 'end')
+                self.entry_fim.entry.insert(0, data_obj.strftime('%d-%m-%Y'))
+            except ValueError:
+                pass
+
+        # Carregar chapas associadas à eleição
+        if self.dados_eleicao.get('id'):
+            chapas_eleicao = self.control.listar_chapas_por_eleicao(self.dados_eleicao['id'])
+            for chapa in chapas_eleicao:
+                chapa_id, nome, slogan, logo, numero = chapa
+                self.chapas_selecionadas.append(nome)
+                self.tree_chapas.insert("", "end", values=(nome,))
 
     def salvarEleicao(self):
         titulo = self.entry_titulo.get().strip()
@@ -97,13 +140,21 @@ class Tela:
         self.control.tela.chapas = self.chapas_selecionadas  # passar chapas selecionadas
 
         try:
-            sucesso = self.control.adicionar_eleicao()
+            if self.modo_edicao:
+                # Atualizar eleição existente
+                id_eleicao = self.dados_eleicao.get('id')
+                sucesso = self.control.atualizar_eleicao(id_eleicao, titulo, data_inicio, data_fim)
+                mensagem_sucesso = "Eleição atualizada com sucesso!"
+            else:
+                # Criar nova eleição
+                sucesso = self.control.adicionar_eleicao()
+                mensagem_sucesso = "Eleição criada com sucesso!"
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao salvar eleição: {e}")
             return
 
         if sucesso:
-            messagebox.showinfo("Sucesso", "Eleição criada com sucesso!")
+            messagebox.showinfo("Sucesso", mensagem_sucesso)
             self.voltarEleicoes()
         else:
             messagebox.showerror("Erro", "Erro ao salvar eleição!")
@@ -146,26 +197,26 @@ class Tela:
         def adicionar_local():
             chapa = sel_var.get()
             if chapa in ["Nenhuma chapa cadastrada", "Erro ao carregar chapas"]:
-                tb.messagebox.showerror("Erro", "Selecione uma chapa válida!")
+                messagebox.showerror("Erro", "Selecione uma chapa válida!")
                 return
             if chapa in self.chapas_selecionadas:
-                tb.messagebox.showwarning("Aviso", "Chapa já adicionada!")
+                messagebox.showwarning("Aviso", "Chapa já adicionada!")
                 return
             # adicionar à lista principal e aos Treeviews
             self.chapas_selecionadas.append(chapa)
             tree_popup.insert("", "end", values=(chapa,))
             self.tree_chapas.insert("", "end", values=(chapa,))
-            tb.messagebox.showinfo("Sucesso", "Chapa adicionada!")
+            messagebox.showinfo("Sucesso", "Chapa adicionada!")
 
         # botão dentro do popup para adicionar chapa
         tb.Button(frame, text="Adicionar Chapa", bootstyle="success", command=adicionar_local).pack(pady=5)
         tb.Button(frame, text="Fechar", bootstyle="secondary", command=popup.destroy).pack(pady=6)
 
 
-def iniciarTela(master=None):
+def iniciarTela(master=None, modo_edicao=False, dados_eleicao=None):
     if master is None:
         app = tb.Window(themename="superhero")
-        Tela(app)
+        Tela(app, modo_edicao=modo_edicao, dados_eleicao=dados_eleicao)
         app.mainloop()
     else:
-        Tela(master)
+        Tela(master, modo_edicao=modo_edicao, dados_eleicao=dados_eleicao)

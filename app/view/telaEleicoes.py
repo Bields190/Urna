@@ -6,7 +6,7 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 import c_eleicao  # type: ignore
 
-import telaADM, telaCriarEleicao, telaResultados
+import telaADM, telaCriarEleicao, telaResultados, telaVotacao
 
 
 class Tela:
@@ -28,6 +28,11 @@ class Tela:
         # layout
         self.setup_interface()
         self.renderizar_eleicoes()
+
+    def abrirVotacao(self, id_eleicao):
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        telaVotacao.iniciarTela(self.janela, id_eleicao)
 
     def abrirResultados(self, id_eleicao):
         for widget in self.janela.winfo_children():
@@ -140,6 +145,14 @@ class Tela:
                     text="Resultados",
                     bootstyle="success",
                     command=lambda id=id_eleicao: self.abrirResultados(id),
+                ).pack(side="left", expand=True, fill="x", padx=2)
+
+            if status.lower() == "ativa":
+                ttk.Button(
+                    frm_btn,
+                    text="Abrir Urna",
+                    bootstyle="sucess",
+                    command=lambda id=id_eleicao: self.abrirVotacao(id),
                 ).pack(side="left", expand=True, fill="x", padx=2)
 
             ttk.Button(

@@ -1,4 +1,4 @@
-name: Build Executables
+name: Criação de Executaveis
 
 on:
   push:

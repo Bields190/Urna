@@ -10,12 +10,25 @@ import telaADM
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 import c_administrador # type: ignore
 
+def resource_path(relative_path):
+    """Obtém o caminho absoluto para recursos, funciona tanto em desenvolvimento quanto em executável"""
+    try:
+        # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
+
 class Tela:
     def __init__(self, master):
         self.janela = master
-        self.janela.title('Tela de Login')
-        self.janela.geometry("1920x1080")
+        self.janela.title('Urna Eletrônica')
+        # Configura para tela cheia
+        self.janela.attributes('-fullscreen', True)
         self.janela.option_add("*Font", "Courier 14")
+        
+        self.janela.bind('<F11>', self.toggle_fullscreen)
 
         # Frame principal
         self.frm_principal = ttk.Frame(self.janela)
@@ -25,7 +38,8 @@ class Tela:
         self.frm.pack(expand=True)
 
         # Logo
-        self.imagem = tk.PhotoImage(file="app/src/Logo.png")
+        logo_path = resource_path("src/Logo.png")
+        self.imagem = tk.PhotoImage(file=logo_path)
         self.imagem = self.imagem.subsample(3, 3)
         self.lbl = ttk.Label(self.frm, image=self.imagem)
         self.lbl.image = self.imagem
@@ -63,6 +77,11 @@ class Tela:
             telaADM.TelaADM(self.janela, admin_data=login_result)
         else:
             messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
+    
+    def toggle_fullscreen(self, event=None):
+        """Alterna entre tela cheia e janela normal"""
+        current_state = self.janela.attributes('-fullscreen')
+        self.janela.attributes('-fullscreen', not current_state)
 
 
 def iniciarTela():

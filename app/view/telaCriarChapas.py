@@ -122,7 +122,8 @@ class Tela:
 
     def preencher_campos(self):
         self.entry_nome.insert(0, self.dados_chapa.get('nome', ''))
-        self.entry_numero.insert(0, self.dados_chapa.get('numero', ''))
+        numero_valor = self.dados_chapa.get('numero', '') or ''
+        self.entry_numero.insert(0, str(numero_valor) if numero_valor is not None else '')
         self.entry_slogan.insert(0, self.dados_chapa.get('slogan', ''))
         if self.caminho_imagem:
             self.carregar_imagem_preview()

@@ -5,6 +5,8 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
 import c_eleicao #type: ignore
 
+import telaEleicoes
+
 class Tela:
     def __init__(self, master, eleicao_id):
         self.janela = master
@@ -87,7 +89,6 @@ class Tela:
         self.lbl_total_votos_nmr.pack(pady=50)
 
     def voltarEleicoes(self):
-        from view import telaEleicoes  # import dinâmico para evitar loop
         for widget in self.janela.winfo_children():
             widget.destroy()
         telaEleicoes.iniciarTela(self.janela)

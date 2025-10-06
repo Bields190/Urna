@@ -24,6 +24,9 @@ class Tela:
 
         # controlador
         self.control = c_eleicao.Control(self)
+        
+        # Obter dados do administrador logado
+        self.admin_data = telaADM.TelaADM.get_admin_logado()
 
         # layout
         self.setup_interface()
@@ -72,6 +75,17 @@ class Tela:
         for widget in self.janela.winfo_children():
             widget.destroy()
         telaCriarEleicao.iniciarTela(self.janela)
+
+    def editarEleicao(self, id_eleicao, titulo, data_inicio, data_fim):
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+        dados_eleicao = {
+            'id': id_eleicao, 
+            'titulo': titulo, 
+            'data_inicio': data_inicio, 
+            'data_fim': data_fim
+        }
+        telaCriarEleicao.iniciarTela(self.janela, modo_edicao=True, dados_eleicao=dados_eleicao)
 
     def excluirEleicao(self, id):
         if messagebox.askyesno("Confirmação", "Deseja excluir esta eleição?"):
@@ -153,6 +167,17 @@ class Tela:
                     text="Abrir Urna",
                     bootstyle="sucess",
                     command=lambda id=id_eleicao: self.abrirVotacao(id),
+                ).pack(side="left", expand=True, fill="x", padx=2)
+
+            # Botão de editar (apenas para master e eleições agendadas)
+            if (self.admin_data and self.admin_data.get('master') == 1 and 
+                status.lower() == "agendada"):
+                ttk.Button(
+                    frm_btn,
+                    text="Editar",
+                    bootstyle="info",
+                    command=lambda id=id_eleicao, t=titulo, di=data_inicio, df=data_fim: 
+                        self.editarEleicao(id, t, di, df),
                 ).pack(side="left", expand=True, fill="x", padx=2)
 
             ttk.Button(

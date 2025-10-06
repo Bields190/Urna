@@ -48,13 +48,16 @@ CREATE TABLE Voto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapa_id INTEGER NOT NULL,
     eleicao_id INTEGER NOT NULL,
+    cedula_id INTEGER NOT NULL,
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id),
-    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
+    FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
+    FOREIGN KEY (cedula_id) REFERENCES Cedula(id)
 );
 
 CREATE TABLE Cedula (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
+    email_votante TEXT NOT NULL,
     data_emissao DATETIME NOT NULL,
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
 );

@@ -36,7 +36,7 @@ class Tela:
 
     # Voltar à tela ADM
     def voltar_tela_adm(self, event=None):
-        telaADM.TelaADM(self.janela)
+        telaADM.TelaADM(self.janela, admin_data={'master': 1})  # Assume master para acesso a esta tela
 
     # Criar administrador
     def criarAdm(self):

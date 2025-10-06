@@ -11,14 +11,23 @@ class Admin(Model):
         self.master = master
 
     def verificar(self):
-        sql = f"SELECT * FROM Administrador WHERE usuario = '{self.usuario}' AND senha = '{self.senha}'"
+        sql = f"SELECT * FROM Administrador WHERE matricula = '{self.matricula}' AND senha = '{self.senha}'"
         result = self.get(sql)
         if result:
             print("Usuário Encontrado e Logado com sucesso!")
-            return True
+            # Retorna os dados do administrador: (id, usuario, senha, matricula, email_institucional, master)
+            admin_data = result[0]
+            return {
+                'success': True,
+                'id': admin_data[0],
+                'usuario': admin_data[1],
+                'matricula': admin_data[3],
+                'email_institucional': admin_data[4],
+                'master': admin_data[5]
+            }
         else:
-            print("Usuário ou Senha incorretos!")
-            return False
+            print("Matrícula ou Senha incorretos!")
+            return {'success': False}
 
     def salvar(self):
         # Verificar se já existe administrador com a mesma matrícula ou email

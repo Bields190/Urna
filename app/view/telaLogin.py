@@ -32,7 +32,7 @@ class Tela:
         self.lbl.pack()
 
         # Usuário
-        self.lbl1 = ttk.Label(self.frm, text='Usuário:', font=("Arial", 18))
+        self.lbl1 = ttk.Label(self.frm, text='Usuário(Matrícula):', font=("Arial", 18))
         self.lbl1.pack(pady=(40, 0))
 
         self.entry1 = ttk.Entry(self.frm, width=40, bootstyle="info")
@@ -55,11 +55,12 @@ class Tela:
         self.btn_entrar.pack(pady=10)
 
     def login(self, event=None):
-        if c_administrador.Control(self).login():
+        login_result = c_administrador.Control(self).login()
+        if login_result and login_result != False:
             messagebox.showinfo("Login - ADM", "Login bem-sucedido! Bem vindo, Administrador.")
             for widget in self.janela.winfo_children():
                 widget.destroy()
-            telaADM.TelaADM(self.janela)
+            telaADM.TelaADM(self.janela, admin_data=login_result)
         else:
             messagebox.showerror("Login - ADM", "Usuário ou senha incorretos.")
 

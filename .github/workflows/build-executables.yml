@@ -15,7 +15,17 @@ jobs:
     - name: Configurar Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.10'
+    
+    - name: Verificar versoes do sistema
+      run: |
+        echo "=== Info do Sistema ==="
+        lsb_release -a
+        echo "=== GLIBC Version ==="
+        ldd --version
+        echo "=== Python Version ==="
+        python --version
+        echo "======================="
     
     - name: Instalar dependencias
       run: |
@@ -131,7 +141,7 @@ jobs:
           
           ### compatibilidade Linux:
           - Ubuntu 20.04+ / Debian 11+ / CentOS 8+ / Fedora 32+
-          - compilado no Ubuntu 20.04 pra maxima compatibilidade
+          - compilado no Ubuntu 20.04 pra maxima compatibilidade (GLIBC 2.31)
           
           ### como usar:
           **Linux:**

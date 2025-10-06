@@ -176,7 +176,7 @@ class Tela:
             frm_botoes = ttk.Frame(frame_chapa)
             frm_botoes.pack(fill="x", pady=10)
 
-            ttk.Button(frm_botoes,text="Editar",bootstyle="info-outline",command=lambda id=id_chapa, n=nome, s=slogan, l=logo, num=numero: self.editarChapa(id, n, s, l, num)).pack(side="left", expand=True, fill="x", padx=2)
+            ttk.Button(frm_botoes,text="Editar",bootstyle="info-outline",command=lambda id=id_chapa, n=nome, s=slogan, num=numero, l=logo: self.editarChapa(id, n, s, l, num)).pack(side="left", expand=True, fill="x", padx=2)
 
             ttk.Button(frm_botoes,text="Excluir",bootstyle="danger",command=lambda id=id_chapa: self.excluirChapa(id)).pack(side="left", expand=True, fill="x", padx=2)
 

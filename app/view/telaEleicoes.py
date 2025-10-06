@@ -13,7 +13,8 @@ class Tela:
     def __init__(self, master):
         self.janela = master
         self.janela.title("Controle de Eleições")
-        self.janela.geometry("1920x1080")
+        # Configura para tela cheia
+        self.janela.attributes('-fullscreen', True)
 
         # --- limpar widgets ---
         for widget in self.janela.winfo_children():

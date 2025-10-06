@@ -43,7 +43,8 @@ class TelaADM:
             
         self.admin_data = admin_data  # Dados do administrador logado
         self.janela.title('Tela do Administrador')
-        self.janela.geometry("1920x1080")
+        # Configura para tela cheia
+        self.janela.attributes('-fullscreen', True)
 
         # limpa tudo que já estava na janela (ex: telaLogin)
         for widget in self.janela.winfo_children():
@@ -195,6 +196,11 @@ class TelaADM:
         f4 = self.criarFramesDashboard(self.frmDashboard, "TOTAL DE VOTOS (última)", f"{votos_ultima}", 3)
 
         self._dashboard_frames.extend([f1, f2, f3, f4])
+
+    def toggle_fullscreen(self, event=None):
+        """Alterna entre tela cheia e janela normal"""
+        current_state = self.janela.attributes('-fullscreen')
+        self.janela.attributes('-fullscreen', not current_state)
 
 
 def iniciarTela():

@@ -19,7 +19,9 @@ class TelaVotacao:
         self.chapa_atual = None 
 
         try:
-            self.janela.title(f"Tela de Votação - {titulo}")
+            self.janela.title('Urna Eletrônica - Votação')
+            # Configura para tela cheia
+            self.janela.attributes('-fullscreen', True)
         except Exception:
             pass
 

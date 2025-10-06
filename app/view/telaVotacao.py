@@ -1,5 +1,6 @@
 import ttkbootstrap as tb
 from ttkbootstrap import ttk
+from PIL import Image, ImageTk
 import sys, os
 
 # importa o controlador
@@ -16,23 +17,23 @@ class TelaVotacao:
         self.janela = master
         self.eleicao_id = eleicao_id
         self.control = c_eleicao.Control(self)
-        self.chapa_atual = None 
+        self.chapa_atual = None
+        self.imagem_exibida = None 
 
+        # título
         try:
-            self.janela.title('Urna Eletrônica - Votação')
-            # Configura para tela cheia
-            self.janela.attributes('-fullscreen', True)
+            self.janela.title(f"Tela de Votação - {titulo}")
         except Exception:
             pass
 
-
+        # bind ESC
         self.janela.bind("<Escape>", self.voltar_para_eleicoes)
 
         # Frame principal
         frmPrincipal = ttk.Frame(self.janela, padding=20)
         frmPrincipal.pack(fill="both", expand=True)
 
-        # Topo
+        #Topo
         frmTopo = ttk.Frame(frmPrincipal)
         frmTopo.pack(fill="both", pady=20)
 
@@ -42,7 +43,7 @@ class TelaVotacao:
         )
         self.labelEleicao.pack(side="left", padx=45)
 
-        # Número da chapa
+        #Entrada do número
         frmNumero = ttk.Frame(frmPrincipal)
         frmNumero.pack(pady=(30, 20))
 
@@ -61,14 +62,19 @@ class TelaVotacao:
         self.entInserirNumero.bind("<Return>", self.buscar_chapa)
         self.entInserirNumero.bind("<Escape>", self.voltar_para_eleicoes)
 
-        # Informações do voto
+        #Frame de informações da chapa
         frmChapa = ttk.Frame(frmPrincipal)
         frmChapa.pack(pady=5, expand=True)
 
-        self.frmFoto = ttk.Labelframe(frmChapa, text="", bootstyle="secondary", width=400, height=400)
+        #Frame da foto
+        self.frmFoto = ttk.Labelframe(frmChapa, text="Foto da Chapa", bootstyle="secondary", width=400, height=400)
         self.frmFoto.pack(side="left", padx=50, pady=10)
         self.frmFoto.pack_propagate(False)
 
+        self.lblFoto = ttk.Label(self.frmFoto)
+        self.lblFoto.pack(expand=True)
+
+        #Frame com informações
         frmInformacoes = ttk.Frame(frmChapa)
         frmInformacoes.pack(side="left", padx=20)
 
@@ -80,28 +86,20 @@ class TelaVotacao:
         self.frmInfoChapa.pack(pady=10)
         self.frmInfoChapa.pack_propagate(False)
 
-        self.lblSlogan = ttk.Label(self.frmSlogan, text="", font=("Courier", 14, "italic"))
+        self.lblSlogan = ttk.Label(self.frmSlogan, text="", font=("Courier", 18, "bold"))
         self.lblSlogan.pack(expand=True)
 
-        self.lblInfo = ttk.Label(self.frmInfoChapa, text="", font=("Courier", 14), wraplength=580, justify="left")
+        self.lblInfo = ttk.Label(self.frmInfoChapa, text="", font=("Courier", 18,"bold"), wraplength=580, justify="left")
         self.lblInfo.pack(expand=True)
 
-        # Botões
+        #Botões
         frmConfirmacao = ttk.Frame(frmPrincipal)
         frmConfirmacao.pack(pady=(30, 150))
 
-        self.btnConfirmar = ttk.Button(
-            frmConfirmacao, text="Confirmar",
-            bootstyle="success", width=20,
-            command=self.confirmar_voto, state="disabled"
-        )
+        self.btnConfirmar = ttk.Button(frmConfirmacao, text="Confirmar",bootstyle="success", width=20,command=self.confirmar_voto, state="disabled")
         self.btnConfirmar.pack(side="left", padx=40)
 
-        self.btnCancelar = ttk.Button(
-            frmConfirmacao, text="Cancelar",
-            bootstyle="danger", width=20,
-            command=self.cancelar_voto, state="disabled"
-        )
+        self.btnCancelar = ttk.Button(frmConfirmacao, text="Cancelar",bootstyle="danger", width=20,command=self.cancelar_voto, state="disabled")
         self.btnCancelar.pack(side="left", padx=40)
 
     def validar_inteiro(self, valor):
@@ -125,40 +123,55 @@ class TelaVotacao:
         if self.chapa_atual:
             _, nome, slogan, logo, numero = self.chapa_atual
             self.lblSlogan.config(text=slogan or "Sem slogan")
-            self.lblInfo.config(text=f"Nome: {nome}\nNúmero: {numero}\nLogo: {logo or 'Sem logo'}")
+            self.lblInfo.config(text=f"Nome: {nome}\nNúmero: {numero}")
 
-            
+
+            if logo and os.path.exists(logo):
+                try:
+                    img = Image.open(logo)
+                    img = img.resize((300, 300))
+                    self.imagem_exibida = ImageTk.PhotoImage(img)
+                    self.lblFoto.config(image=self.imagem_exibida, text="")
+                except Exception as e:
+                    self.lblFoto.config(text="Erro ao carregar imagem", image="")
+            else:
+                self.lblFoto.config(text="Sem imagem", image="")
+
+    
             self.btnConfirmar.config(state="normal")
             self.btnCancelar.config(state="normal")
         else:
             self.lblSlogan.config(text="Chapa não encontrada")
             self.lblInfo.config(text="")
+            self.lblFoto.config(text="", image="")
             self.btnConfirmar.config(state="disabled")
             self.btnCancelar.config(state="disabled")
 
     def confirmar_voto(self):
         if self.chapa_atual:
             _, nome, slogan, logo, numero = self.chapa_atual
-            print(f"✅ Voto confirmado para a chapa {nome} (número {numero})")
-            
-            self.btnConfirmar.config(state="disabled")
-            self.btnCancelar.config(state="disabled")
+
             self.lblSlogan.config(text="Voto registrado com sucesso!")
             self.lblInfo.config(text="")
+            self.lblFoto.config(text="", image="")
+            self.btnConfirmar.config(state="disabled")
+            self.btnCancelar.config(state="disabled")
+            self.entInserirNumero.delete(0, "end")
+            self.chapa_atual = None
 
     def cancelar_voto(self):
-
         self.chapa_atual = None
         self.entInserirNumero.delete(0, "end")
         self.lblSlogan.config(text="")
         self.lblInfo.config(text="")
+        self.lblFoto.config(text="", image="")
         self.btnConfirmar.config(state="disabled")
         self.btnCancelar.config(state="disabled")
 
     def voltar_para_eleicoes(self, event=None):
+
         for widget in self.janela.winfo_children():
             widget.destroy()
-
         telaEleicoes.iniciarTela(self.janela)
 
 

@@ -161,18 +161,14 @@ class Control:
         return self.pode_editar_eleicao(id)
 
     def encerrar_eleicao(self, id):
-        """Encerra uma eleição ativa alterando sua data de fim para hoje e status para encerrada"""
-        print(f"[DEBUG] encerrar_eleicao chamado com ID: {id}")
-        
+        """Encerra uma eleição ativa alterando sua data de fim para hoje e status para encerrada"""        
         if not self.validar_eleicao_ativa(id):
-            print(f"[DEBUG] Eleição {id} não é válida/ativa")
             print("Apenas eleições ativas podem ser encerradas!")
             return False
             
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
             id_el, titulo, data_inicio, _, _ = eleicao_data[0]  # Incluindo status
-            print(f"[DEBUG] Dados da eleição encontrada: ID={id_el}, Titulo={titulo}")
             hoje = datetime.now().strftime('%Y-%m-%d')
             
             try:
@@ -182,22 +178,18 @@ class Control:
                 SET data_fim = '{hoje}', status = 0 
                 WHERE id = {id_el}
                 """
-                print(f"[DEBUG] Executando SQL: {sql}")
                 result = Model().update(sql)
                 if result:
-                    print(f"[DEBUG] Eleição {id_el} encerrada com sucesso!")
                     print("Eleição encerrada com sucesso!")
                     return True
                 else:
-                    print(f"[DEBUG] Erro no banco ao encerrar eleição {id_el}")
                     print("Erro ao encerrar eleição.")
                     return False
             except Exception as e:
-                print(f"[DEBUG] Exception ao encerrar eleição {id}: {e}")
                 print(f"Erro ao encerrar eleição: {e}")
                 return False
         else:
-            print(f"[DEBUG] Eleição {id} não encontrada")
+            pass
         return False
 
     def obter_estatisticas_eleicoes(self):

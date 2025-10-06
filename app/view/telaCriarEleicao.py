@@ -133,7 +133,6 @@ class Tela:
         if not self.chapas_selecionadas:
             messagebox.showerror("Erro", "Adicione pelo menos uma chapa!")
             return
-
         self.control.tela.entry1 = self.entry_titulo
         self.control.tela.entry2 = self.entry_inicio
         self.control.tela.entry3 = self.entry_fim

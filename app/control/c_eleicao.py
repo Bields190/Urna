@@ -107,8 +107,12 @@ class Control:
         eleicao = m_eleicao.Eleicao("", "", "")
         return eleicao.ver(id)
         
-    def obter_status_eleicao(self, data_inicio, data_fim):
-        """Determina o status da eleição baseado nas datas"""
+    def obter_status_eleicao(self, data_inicio, data_fim, status_bd=None):
+        """Determina o status da eleição baseado nas datas e status do banco"""
+        # Se o status do banco for 0 (encerrada manualmente), sempre retornar "Encerrada"
+        if status_bd is not None and status_bd == 0:
+            return "Encerrada"
+            
         hoje = datetime.now().date()
         
         try:
@@ -138,8 +142,8 @@ class Control:
         """Verifica se uma eleição está ativa (para operações específicas)"""
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
-            _, _, data_inicio, data_fim = eleicao_data[0]
-            status = self.obter_status_eleicao(data_inicio, data_fim)
+            _, _, data_inicio, data_fim, status_bd = eleicao_data[0]  # Incluindo status
+            status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
             return status == "Ativa"
         return False
 
@@ -147,8 +151,8 @@ class Control:
         """Verifica se uma eleição pode ser editada (apenas agendadas)"""
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
-            _, _, data_inicio, data_fim = eleicao_data[0]
-            status = self.obter_status_eleicao(data_inicio, data_fim)
+            _, _, data_inicio, data_fim, status_bd = eleicao_data[0]  # Incluindo status
+            status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
             return status == "Agendada"
         return False
 
@@ -157,18 +161,43 @@ class Control:
         return self.pode_editar_eleicao(id)
 
     def encerrar_eleicao(self, id):
-        """Encerra uma eleição ativa alterando sua data de fim para hoje"""
+        """Encerra uma eleição ativa alterando sua data de fim para hoje e status para encerrada"""
+        print(f"[DEBUG] encerrar_eleicao chamado com ID: {id}")
+        
         if not self.validar_eleicao_ativa(id):
+            print(f"[DEBUG] Eleição {id} não é válida/ativa")
             print("Apenas eleições ativas podem ser encerradas!")
             return False
             
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
-            id_el, titulo, data_inicio, _ = eleicao_data[0]
+            id_el, titulo, data_inicio, _, _ = eleicao_data[0]  # Incluindo status
+            print(f"[DEBUG] Dados da eleição encontrada: ID={id_el}, Titulo={titulo}")
             hoje = datetime.now().strftime('%Y-%m-%d')
             
-            # Atualizar com data de fim sendo hoje
-            return self.atualizar_eleicao(id_el, titulo, data_inicio, hoje)
+            try:
+                # Atualizar eleição com data de fim sendo hoje e status como encerrada
+                sql = f"""
+                UPDATE Eleicao 
+                SET data_fim = '{hoje}', status = 0 
+                WHERE id = {id_el}
+                """
+                print(f"[DEBUG] Executando SQL: {sql}")
+                result = Model().update(sql)
+                if result:
+                    print(f"[DEBUG] Eleição {id_el} encerrada com sucesso!")
+                    print("Eleição encerrada com sucesso!")
+                    return True
+                else:
+                    print(f"[DEBUG] Erro no banco ao encerrar eleição {id_el}")
+                    print("Erro ao encerrar eleição.")
+                    return False
+            except Exception as e:
+                print(f"[DEBUG] Exception ao encerrar eleição {id}: {e}")
+                print(f"Erro ao encerrar eleição: {e}")
+                return False
+        else:
+            print(f"[DEBUG] Eleição {id} não encontrada")
         return False
 
     def obter_estatisticas_eleicoes(self):
@@ -183,8 +212,13 @@ class Control:
         }
         
         for eleicao in eleicoes:
-            _, _, data_inicio, data_fim = eleicao
-            status = self.obter_status_eleicao(data_inicio, data_fim)
+            # Verificar se a eleição tem 4 ou 5 campos (com ou sem status)
+            if len(eleicao) == 5:
+                _, _, data_inicio, data_fim, status_bd = eleicao
+                status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
+            else:
+                _, _, data_inicio, data_fim = eleicao
+                status = self.obter_status_eleicao(data_inicio, data_fim)
             
             if status == "Ativa":
                 stats['ativas'] += 1
@@ -230,8 +264,15 @@ class Control:
         """Associa chapas a uma eleição na tabela EleicaoChapa"""
         try:
             for chapa_nome in chapas_nomes:
+                # Se a chapa vem no formato "ID - Nome", extrair apenas o nome
+                if ' - ' in chapa_nome:
+                    # Formato: "1 - Core 2 Quad" -> "Core 2 Quad"
+                    nome_limpo = chapa_nome.split(' - ', 1)[1]
+                else:
+                    nome_limpo = chapa_nome
+                
                 # Buscar o ID da chapa pelo nome
-                chapa_data = self.buscar_chapa_por_nome(chapa_nome)
+                chapa_data = self.buscar_chapa_por_nome(nome_limpo)
                 if chapa_data:
                     chapa_id = chapa_data[0][0]  # Primeiro campo é o ID
                     
@@ -241,6 +282,7 @@ class Control:
                     VALUES ({eleicao_id}, {chapa_id})
                     """
                     Model().insert(sql)
+                    
             print("Chapas associadas à eleição com sucesso!")
             return True
         except Exception as e:

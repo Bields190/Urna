@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v4
     
@@ -100,7 +100,7 @@ jobs:
 
   create-release:
     needs: [build-linux, build-windows]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/')
     
     steps:
@@ -126,8 +126,12 @@ jobs:
           ## 🗳️ Urna Eletrônica - Release ${{ github.ref_name }}
           
           ### Executáveis Disponíveis:
-          - **Linux**: `UrnaEletronica_Linux` (~22MB)
+          - **Linux**: `UrnaEletronica_Linux` (~22MB) - Compatível com GLIBC 2.31+
           - **Windows**: `UrnaEletronica_Windows.exe` (~25MB)
+          
+          ### Compatibilidade Linux:
+          - Ubuntu 20.04+ / Debian 11+ / CentOS 8+ / Fedora 32+
+          - Compilado em Ubuntu 20.04 para máxima compatibilidade
           
           ### Como Usar:
           **Linux:**

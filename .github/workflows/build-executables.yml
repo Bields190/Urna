@@ -1,0 +1,111 @@
+name: Build Executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build Linux executable
+      run: |
+        python -m PyInstaller --onefile --windowed \
+          --name UrnaEletronica_Linux \
+          --add-data "app/src/*:src" \
+          --add-data "db:." \
+          --paths="app" \
+          --paths="app/view" \
+          --paths="app/control" \
+          --paths="app/model" \
+          --paths="app/conexao" \
+          --hidden-import=PIL._tkinter_finder \
+          --hidden-import=model.model \
+          --hidden-import=conexao.conexao \
+          app/view/view.py
+    
+    - name: Upload Linux artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: UrnaEletronica_Linux
+        path: dist/UrnaEletronica_Linux
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build Windows executable
+      run: |
+        python -m PyInstaller --onefile --windowed `
+          --name UrnaEletronica_Windows.exe `
+          --add-data "app/src/*;src" `
+          --add-data "db;." `
+          --paths="app" `
+          --paths="app/view" `
+          --paths="app/control" `
+          --paths="app/model" `
+          --paths="app/conexao" `
+          --hidden-import=PIL._tkinter_finder `
+          --hidden-import=model.model `
+          --hidden-import=conexao.conexao `
+          app/view/view.py
+    
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: UrnaEletronica_Windows
+        path: dist/UrnaEletronica_Windows.exe
+
+  create-release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Download Linux artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: UrnaEletronica_Linux
+        path: ./linux/
+    
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: UrnaEletronica_Windows
+        path: ./windows/
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./linux/UrnaEletronica_Linux
+          ./windows/UrnaEletronica_Windows.exe
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

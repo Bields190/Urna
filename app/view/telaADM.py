@@ -1,6 +1,13 @@
 from ttkbootstrap import ttk
 import ttkbootstrap as tb
 from tkinter import messagebox
+import sys, os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'control'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'model'))
+
+import c_eleicao  # type: ignore
+import m_chapa    # type: ignore
 
 import telaEleicoes, telaChapas, telaCargos, telaLogin, telaCadastrarAdm
 
@@ -22,6 +29,7 @@ class TelaADM:
         frameBoard.grid(row=0, column=coluna, padx=40)
         ttk.Label(frameBoard, text=titulo, font=("Courier", 16, "bold")).pack(pady=10)
         ttk.Label(frameBoard, text=valor, font=("Courier", 24)).pack()
+        return frameBoard
 
     def __init__(self, master, admin_data=None):
         self.janela = master
@@ -67,14 +75,18 @@ class TelaADM:
 
         # Configurar estilos do ttkbootstrap para usar Courier
         self.configurar_fontes()
+        
+        self.control = c_eleicao.Control()
 
         # ----------- Dashboard -----------
-        frmDashboard = ttk.Frame(self.janela)
-        frmDashboard.pack()
+        self.frmDashboard = ttk.Frame(self.janela)
+        self.frmDashboard.pack()
 
-        self.criarFramesDashboard(frmDashboard, "ELEIÇÕES ATIVAS", "3", 0)
-        self.criarFramesDashboard(frmDashboard, "TOTAL DE VOTOS ÚLTIMA ELEIÇÃO", "1.250", 1)
-        self.criarFramesDashboard(frmDashboard, "TOTAL DE CHAPAS", "15", 2)
+        
+        self._dashboard_frames = []
+        
+        self.atualizar_dashboard()
+
 
         # --------- botões -------------
         botoes_frame = ttk.Frame(self.janela)
@@ -115,6 +127,74 @@ class TelaADM:
             for widget in self.janela.winfo_children():
                 widget.destroy()
             telaLogin.Tela(self.janela)
+    def limpar_dashboard(self):
+        # remove frames antigos do dashboard
+        for f in self._dashboard_frames:
+            try:
+                f.destroy()
+            except Exception:
+                pass
+        self._dashboard_frames = []
+    def atualizar_dashboard(self):
+        
+        self.limpar_dashboard()
+
+        total_eleicoes = 0
+        eleicoes_ativas = 0
+        total_chapas = 0
+        votos_ultima = 0
+
+        #-------dados eleições dahsboard-------
+        try:
+            if self.control:
+                stats = self.control.obter_estatisticas_eleicoes()
+                total_eleicoes = stats.get('total', 0)
+                eleicoes_ativas = stats.get('ativas', 0)
+        except Exception:
+            
+            pass
+
+        #--------total de chapas----------
+        try:
+            chapas = m_chapa.Chapa.listar()  
+            total_chapas = len(chapas)
+        except Exception:
+            try:
+                todas_eleicoes = []
+                if self.control:
+                    todas_eleicoes = self.control.listar_eleicoes()
+                count = 0
+                for el in todas_eleicoes:
+                    el_id = el[0]
+                    try:
+                        chapas_el = m_chapa.Chapa.listar_por_eleicao(el_id)
+                        count += len(chapas_el)
+                    except Exception:
+                        pass
+                if count > 0:
+                    total_chapas = count
+            except Exception:
+                pass
+
+        try:
+            if self.control:
+                eleicoes = self.control.listar_eleicoes()
+                if eleicoes:
+                    # cada eleicao parece ser (id, titulo, data_inicio, data_fim)
+                    ultima = max(eleicoes, key=lambda e: e[3] if len(e) > 3 else "")
+                    ultima_id = ultima[0]
+                    resultado = self.control.resultado_eleicao(ultima_id)
+                    votos_ultima = resultado.get('total_votos', 0)
+        except Exception:
+            pass
+
+        #----------cria os frames---------- 
+        f1 = self.criarFramesDashboard(self.frmDashboard, "ELEIÇÕES TOTAIS", str(total_eleicoes), 0)
+        f2 = self.criarFramesDashboard(self.frmDashboard, "ELEIÇÕES ATIVAS", str(eleicoes_ativas), 1)
+        f3 = self.criarFramesDashboard(self.frmDashboard, "TOTAL DE CHAPAS", str(total_chapas), 2)
+        f4 = self.criarFramesDashboard(self.frmDashboard, "TOTAL DE VOTOS (última)", f"{votos_ultima}", 3)
+
+        self._dashboard_frames.extend([f1, f2, f3, f4])
 
 
 def iniciarTela():

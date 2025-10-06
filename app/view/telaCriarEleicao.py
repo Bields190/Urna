@@ -171,18 +171,36 @@ class Tela:
 
         tb.Label(frame, text="Selecione a Chapa", font=("Arial", 16, "bold")).pack(pady=(10, 12))
 
-        # carregar chapas do BD
+        # carregar chapas do BD - apenas chapas com candidatos
         try:
             import c_chapas  # type: ignore
             chapas_bd = c_chapas.Control().listar_chapas()
-            lista_chapas = [f"{c[0]} - {c[1]}" for c in chapas_bd] if chapas_bd else ["Nenhuma chapa cadastrada"]
+            
+            # Filtrar chapas que têm candidatos
+            chapas_com_candidatos = []
+            if chapas_bd:
+                sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+                from conexao import Conexao
+                conn = Conexao().get_conexao()
+                cursor = conn.cursor()
+                
+                for chapa in chapas_bd:
+                    chapa_id = chapa[0]
+                    cursor.execute("SELECT COUNT(*) FROM Candidato WHERE chapa_id = ?", (chapa_id,))
+                    count = cursor.fetchone()[0]
+                    if count > 0:
+                        chapas_com_candidatos.append(chapa)
+                
+                conn.close()
+            
+            lista_chapas = [f"{c[0]} - {c[1]}" for c in chapas_com_candidatos] if chapas_com_candidatos else ["Nenhuma chapa com candidatos"]
         except Exception as e:
             print(f"[telaCriarEleicao] Erro ao carregar chapas: {e}")
             lista_chapas = ["Erro ao carregar chapas"]
 
         sel_var = tb.StringVar()
         cbx = tb.Combobox(frame, values=lista_chapas, textvariable=sel_var, state="readonly", width=50)
-        if lista_chapas and lista_chapas[0] not in ["Nenhuma chapa cadastrada", "Erro ao carregar chapas"]:
+        if lista_chapas and lista_chapas[0] not in ["Nenhuma chapa com candidatos", "Erro ao carregar chapas"]:
             cbx.current(0)
         cbx.pack(pady=(5, 10))
 
@@ -195,12 +213,52 @@ class Tela:
 
         def adicionar_local():
             chapa = sel_var.get()
-            if chapa in ["Nenhuma chapa cadastrada", "Erro ao carregar chapas"]:
+            if chapa in ["Nenhuma chapa com candidatos", "Erro ao carregar chapas"]:
                 messagebox.showerror("Erro", "Selecione uma chapa válida!")
                 return
             if chapa in self.chapas_selecionadas:
                 messagebox.showwarning("Aviso", "Chapa já adicionada!")
                 return
+                
+            # Verificar compatibilidade de cargos se já há chapas selecionadas
+            if self.chapas_selecionadas:
+                try:
+                    chapa_id = int(chapa.split(' - ')[0])
+                    primeira_chapa_id = int(self.chapas_selecionadas[0].split(' - ')[0])
+                    
+                    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+                    from conexao import Conexao
+                    conn = Conexao().get_conexao()
+                    cursor = conn.cursor()
+                    
+                    # Buscar cargos da primeira chapa
+                    cursor.execute("""
+                        SELECT DISTINCT cargo_id FROM Candidato WHERE chapa_id = ?
+                        ORDER BY cargo_id
+                    """, (primeira_chapa_id,))
+                    cargos_primeira = set(row[0] for row in cursor.fetchall())
+                    
+                    # Buscar cargos da chapa atual
+                    cursor.execute("""
+                        SELECT DISTINCT cargo_id FROM Candidato WHERE chapa_id = ?
+                        ORDER BY cargo_id
+                    """, (chapa_id,))
+                    cargos_atual = set(row[0] for row in cursor.fetchall())
+                    
+                    conn.close()
+                    
+                    # Verificar se têm os mesmos cargos
+                    if cargos_primeira != cargos_atual:
+                        messagebox.showerror("Erro", 
+                                           "Esta chapa não possui candidatos para os mesmos cargos que as outras chapas já selecionadas!\n\n"
+                                           "Para uma eleição válida, todas as chapas devem ter candidatos para os mesmos cargos.")
+                        return
+                        
+                except (ValueError, IndexError, Exception) as e:
+                    print(f"Erro ao verificar compatibilidade: {e}")
+                    messagebox.showerror("Erro", "Erro ao verificar compatibilidade da chapa!")
+                    return
+            
             # adicionar à lista principal e aos Treeviews
             self.chapas_selecionadas.append(chapa)
             tree_popup.insert("", "end", values=(chapa,))

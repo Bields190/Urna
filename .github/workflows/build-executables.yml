@@ -10,7 +10,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -19,8 +19,8 @@ jobs:
     
     - name: Install dependencies
       run: |
+        pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pyinstaller
     
     - name: Build Linux executable
       run: |
@@ -38,8 +38,15 @@ jobs:
           --hidden-import=conexao.conexao \
           app/view/view.py
     
+    - name: Verify Linux executable
+      run: |
+        chmod +x dist/UrnaEletronica_Linux
+        ls -la dist/UrnaEletronica_Linux
+        file dist/UrnaEletronica_Linux
+        echo "✅ Linux executable created successfully"
+    
     - name: Upload Linux artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: UrnaEletronica_Linux
         path: dist/UrnaEletronica_Linux
@@ -47,7 +54,7 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -56,8 +63,8 @@ jobs:
     
     - name: Install dependencies
       run: |
+        pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pyinstaller
     
     - name: Build Windows executable
       run: |
@@ -75,8 +82,18 @@ jobs:
           --hidden-import=conexao.conexao `
           app/view/view.py
     
+    - name: Verify Windows executable
+      run: |
+        if (Test-Path "dist/UrnaEletronica_Windows.exe") {
+          Write-Host "✅ Windows executable created successfully"
+          Get-Item "dist/UrnaEletronica_Windows.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Error "❌ Executable not found!"
+          exit 1
+        }
+    
     - name: Upload Windows artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: UrnaEletronica_Windows
         path: dist/UrnaEletronica_Windows.exe
@@ -88,13 +105,13 @@ jobs:
     
     steps:
     - name: Download Linux artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: UrnaEletronica_Linux
         path: ./linux/
     
     - name: Download Windows artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: UrnaEletronica_Windows
         path: ./windows/
@@ -105,6 +122,33 @@ jobs:
         files: |
           ./linux/UrnaEletronica_Linux
           ./windows/UrnaEletronica_Windows.exe
+        body: |
+          ## 🗳️ Urna Eletrônica - Release ${{ github.ref_name }}
+          
+          ### Executáveis Disponíveis:
+          - **Linux**: `UrnaEletronica_Linux` (~22MB)
+          - **Windows**: `UrnaEletronica_Windows.exe` (~25MB)
+          
+          ### Como Usar:
+          **Linux:**
+          ```bash
+          chmod +x UrnaEletronica_Linux
+          ./UrnaEletronica_Linux
+          ```
+          
+          **Windows:**
+          ```cmd
+          UrnaEletronica_Windows.exe
+          ```
+          
+          ### Funcionalidades:
+          - Interface em tela cheia
+          - Banco de dados SQLite integrado
+          - Sistema completo de votação
+          - Portável (não precisa instalação)
+          
+          ### Controles:
+          - **F11**: Alternar tela cheia
         draft: false
         prerelease: false
       env:

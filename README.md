@@ -47,6 +47,9 @@ eleições, possibilitar o cadastro de *Chapas* e *Candidatos*, garantir que o *
 
 **RNF03** – O sistema deve persistir as Chapas utilizadas em uma base de dados relacional para possibilitar sua recuperação e reutilização em operações futuras.
 
+### Executável Pronto (Recomendado)
+Baixe o executável mais recente na seção [Releases](https://github.com/Bields190/Urna/releases):
+
 ## UML:
 ### Diagrama de Caso de Uso:
 
@@ -78,6 +81,36 @@ Quando o eleitor vota, ele gera uma *Cédula*. Essa classe representa o comprova
 A classe *Administrador* representa quem organiza a eleição: *cria eleições, cadastra chapas e candidatos e fecha o processo quando necessário*. Já o *CalculadorResultados* é a parte que faz a apuração: ele soma os votos, identifica o vencedor e permite exportar os resultados pra dar transparência.
 
 No geral, esse diagrama mostra bem como cada parte do sistema se conecta: da criação da eleição, passando pelo cadastro das chapas, até o momento do eleitor votar e o sistema calcular o resultado. Tudo foi pensado pra ser simples, confiável e adaptado ao contexto das eleições acadêmicas.
+
+## 📸 Screenshots
+
+### Tela de Login
+Interface de autenticação para administradores
+
+### Painel Administrativo  
+Dashboard com estatísticas e controles da eleição
+
+### Interface de Votação
+Tela de votação em modo fullscreen para eleitores
+
+### Resultados
+Visualização dos resultados da eleição
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🎓 Disciplina
+
+Projeto desenvolvido para a disciplina **Tópicos Especiais em Sistemas de Informação (TESI)** da **Universidade Federal do Acre (UFAC)**, sob orientação do professor [@mlimeira](https://github.com/mlimeira).
 
 ## Autores
 

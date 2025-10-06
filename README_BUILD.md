@@ -1,8 +1,6 @@
-# Como Gerar o Executável
-
 ## Pré-requisitos:
 ```bash
-pip install pyinstaller
+pip install pyinstaller pillow ttkbootstrap
 ```
 
 ## Comando para Gerar Linux:
@@ -45,33 +43,45 @@ python -m PyInstaller --onefile --windowed ^
 O projeto inclui workflow que gera automaticamente executáveis para Linux e Windows quando você criar uma tag/release.
 
 ## Resultado
-O executável estará em `dist/UrnaEletronica`
+O executável estará em `dist/UrnaEletronica_Linux` ou `dist/UrnaEletronica_Windows.exe`
+
+## ⚡ Teste Rápido
+
+### Desenvolvimento:
+```bash
+# Deve funcionar sem erros
+python app/view/view.py
+```
+
+### Executável:
+```bash
+# Copiar para qualquer pasta e testar
+cp dist/UrnaEletronica_Linux /tmp/
+cd /tmp
+chmod +x UrnaEletronica_Linux
+./UrnaEletronica_Linux
+```
+
+## 🔧 Resolução de Problemas
+
+### "Permission denied"
+```bash
+chmod +x UrnaEletronica_Linux
+```
 
 ## Como Usar o Executável Baixado:
 
 ### Para Usuários Linux:
 ```bash
 # 1. Dar permissão de execução
-chmod +x UrnaEletronica_v1
+chmod +x UrnaEletronica_Linux
 
 # 2. Executar
-./UrnaEletronica_v1
+./UrnaEletronica_Linux
 ```
-ou clicar nele
 
 ### Para usuários Windows:
 ```cmd
-# executar (duplo-clique ou pelo cmd)
+# executar (duplo-clique ou pelo cmd) ~mto mais facil af~
 UrnaEletronica_Windows.exe
 ```
-
-### Requisitos do Sistema:
-
-**Linux:**
-- Linux 64-bit
-- Interface gráfica (X11/Wayland)
-- Bibliotecas básicas do sistema (geralmente já instaladas)
-
-**Windows:**
-- Windows 7/8/10/11 (64-bit)
-- Interface gráfica

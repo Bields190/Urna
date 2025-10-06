@@ -70,23 +70,38 @@ class Tela:
         ttk.Button(self.adcAdm, text='Adicionar', bootstyle="success", width=15, command=self.salvarAdm).pack(pady=20)
 
     def salvarAdm(self):
-        nome = self.ent_nome.get()
-        matricula = self.ent_matricula.get()
-        email = self.ent_email.get()
+        nome = self.ent_nome.get().strip()
+        matricula = self.ent_matricula.get().strip()
+        email = self.ent_email.get().strip()
         senha = self.ent_senha.get()
 
+        # Validações básicas
         if not all([nome, matricula, email, senha]):
             messagebox.showerror("Erro", "Todos os campos devem ser preenchidos!")
             return
+        
+        # Validação de email institucional
         if "@sou.ufac.br" not in email:
             messagebox.showerror("Erro", "O email deve ser institucional (@sou.ufac.br)!")
             return
+        
+        # Validação de tamanho mínimo da senha
+        if len(senha) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
+            return
+        
+        # Validação de nome (não pode ser muito curto)
+        if len(nome) < 2:
+            messagebox.showerror("Erro", "O nome deve ter pelo menos 2 caracteres!")
+            return
+        
+        # Tentar adicionar o administrador
         if c_administrador.Control(self).adicionar_administrador(nome, matricula, email, senha):
             messagebox.showinfo("Sucesso", "Administrador adicionado com sucesso!")
             self.adcAdm.destroy()
             self.renderizar_adms()
         else:
-            messagebox.showerror("Erro", "Matrícula ou email já cadastrados!")
+            messagebox.showerror("Erro", "Matrícula ou email já cadastrados no sistema!")
 
     # Centralizar janela
     def janelaCentro(self, window, largura, altura):
@@ -159,23 +174,38 @@ class Tela:
         ttk.Button(self.editAdm, text='Salvar Alterações', bootstyle="info", width=18, command=lambda: self.salvarEdicao(id)).pack(pady=20)
 
     def salvarEdicao(self, id):
-        nome = self.ent_nome_edit.get()
-        matricula = self.ent_matricula_edit.get()
-        email = self.ent_email_edit.get()
+        nome = self.ent_nome_edit.get().strip()
+        matricula = self.ent_matricula_edit.get().strip()
+        email = self.ent_email_edit.get().strip()
         senha = self.ent_senha_edit.get()
 
+        # Validações básicas
         if not all([nome, matricula, email]):
             messagebox.showerror("Erro", "Nome, matrícula e email são obrigatórios!")
             return
+        
+        # Validação de email institucional
         if "@sou.ufac.br" not in email:
             messagebox.showerror("Erro", "O email deve ser institucional (@sou.ufac.br)!")
             return
+        
+        # Validação de senha (se fornecida)
+        if senha and len(senha) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
+            return
+        
+        # Validação de nome (não pode ser muito curto)
+        if len(nome) < 2:
+            messagebox.showerror("Erro", "O nome deve ter pelo menos 2 caracteres!")
+            return
+        
+        # Tentar atualizar o administrador
         if c_administrador.Control(self).atualizar_administrador(id, nome, matricula, email, senha if senha else None):
             messagebox.showinfo("Sucesso", "Administrador atualizado com sucesso!")
             self.editAdm.destroy()
             self.renderizar_adms()
         else:
-            messagebox.showerror("Erro", "Matrícula ou email já cadastrados!")
+            messagebox.showerror("Erro", "Matrícula ou email já cadastrados em outro registro!")
 
     def excluirAdm(self, id):
         confirm = messagebox.askyesno("Confirmação", "Tem certeza que deseja excluir este administrador?")

@@ -294,15 +294,6 @@ class Tela:
                     command=lambda id=id_eleicao: self.abrirVotacao(id),
                 ).pack(side="left", expand=True, fill="x", padx=2)
 
-            # Botão de ver dados (para todos os administradores)
-            ttk.Button(
-                frm_btn,
-                text="Ver Dados",
-                bootstyle="secondary",
-                command=lambda id=id_eleicao, t=titulo, di=data_inicio, df=data_fim: 
-                    self.verDadosEleicao(id, t, di, df),
-            ).pack(side="left", expand=True, fill="x", padx=2)
-
             # Botão de editar (apenas para master e eleições agendadas)
             if (self.admin_data and self.admin_data.get('master') == 1 and 
                 status.lower() == "agendada"):
@@ -312,6 +303,16 @@ class Tela:
                     bootstyle="info",
                     command=lambda id=id_eleicao, t=titulo, di=data_inicio, df=data_fim: 
                         self.editarEleicao(id, t, di, df),
+                ).pack(side="left", expand=True, fill="x", padx=2)
+
+            # Botão de ver dados (apenas para admins não-master)
+            if (self.admin_data and self.admin_data.get('master') == 0):
+                ttk.Button(
+                    frm_btn,
+                    text="Ver Dados",
+                    bootstyle="secondary",
+                    command=lambda id=id_eleicao, t=titulo, di=data_inicio, df=data_fim: 
+                        self.verDadosEleicao(id, t, di, df),
                 ).pack(side="left", expand=True, fill="x", padx=2)
 
             ttk.Button(

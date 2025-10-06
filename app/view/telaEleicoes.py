@@ -93,25 +93,20 @@ class Tela:
 
     def fecharEleicao(self, id_eleicao):
         """Fecha uma eleição ativa"""
-        print(f"[DEBUG INTERFACE] fecharEleicao chamado com ID: {id_eleicao}")
         
         if messagebox.askyesno(
             "Confirmação", 
             "Tem certeza que deseja fechar esta eleição?\n\nEsta ação encerrará definitivamente a votação e não poderá ser desfeita."
         ):
             try:
-                print(f"[DEBUG INTERFACE] Usuário confirmou, chamando control.encerrar_eleicao({id_eleicao})")
                 # Encerrar a eleição no controlador
                 if self.control.encerrar_eleicao(id_eleicao):
-                    print(f"[DEBUG INTERFACE] Encerramento bem-sucedido, atualizando interface")
                     messagebox.showinfo("Sucesso", "Eleição encerrada com sucesso!\n\nAgora você pode visualizar os resultados.")
                     # Atualizar a interface para mostrar os novos botões
                     self.renderizar_eleicoes()
                 else:
-                    print(f"[DEBUG INTERFACE] Falha no encerramento")
                     messagebox.showerror("Erro", "Erro ao encerrar a eleição!")
             except Exception as e:
-                print(f"[DEBUG INTERFACE] Exception na interface: {e}")
                 messagebox.showerror("Erro", f"Erro inesperado: {str(e)}")
 
     def mostrarDadosEleicao(self, id_eleicao, titulo, data_inicio, data_fim):
@@ -240,7 +235,6 @@ class Tela:
                 messagebox.showerror("Erro", "Erro ao excluir eleição!")
 
     def renderizar_eleicoes(self):
-        print(f"[DEBUG INTERFACE] renderizar_eleicoes chamado")
         for widget in self.frmEleicoes.winfo_children():
             widget.destroy()
 
@@ -249,7 +243,6 @@ class Tela:
             self.frmEleicoes.grid_columnconfigure(col, weight=1)
 
         eleicoes = self.control.listar_eleicoes()
-        print(f"[DEBUG INTERFACE] Encontradas {len(eleicoes)} eleições para renderizar")
 
         if not eleicoes:
             ttk.Label(
@@ -269,8 +262,7 @@ class Tela:
                 id_eleicao, titulo, data_inicio, data_fim = eleicao
                 status = self.control.obter_status_eleicao(data_inicio, data_fim)
             
-            print(f"[DEBUG INTERFACE] Eleição ID {id_eleicao}: {titulo} - Status: {status}")
-
+            
             # card
             frame_eleicao = ttk.Frame(
                 self.frmEleicoes, padding=10, relief="ridge", borderwidth=2

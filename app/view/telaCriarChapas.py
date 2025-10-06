@@ -49,6 +49,17 @@ class Tela:
         self.lbl_adcFoto.place(relx=0.5, rely=0.5, anchor="center")
         self.lbl_adcFoto.bind("<Button-1>", lambda e: self.adcFoto())
 
+        # Adicionar botões de edição de imagem no modo edição
+        if self.modo_edicao:
+            frame_botoes_imagem = ttk.Frame(self.frm_foto)
+            frame_botoes_imagem.place(relx=0.5, rely=0.9, anchor="center")
+            
+            ttk.Button(frame_botoes_imagem, text="Alterar", bootstyle="warning-outline", 
+                      command=self.alterar_imagem, width=7).pack(side="left", padx=2)
+            
+            ttk.Button(frame_botoes_imagem, text="Remover", bootstyle="danger-outline", 
+                      command=self.remover_imagem, width=7).pack(side="left", padx=2)
+
 
         entradas = ttk.Frame(corpo)
         entradas.grid(row=0, column=1, sticky="nw")
@@ -115,6 +126,25 @@ class Tela:
         self.entry_slogan.insert(0, self.dados_chapa.get('slogan', ''))
         if self.caminho_imagem:
             self.carregar_imagem_preview()
+        else:
+            # Se não há imagem no modo edição, ainda mostrar os botões
+            if self.modo_edicao:
+                # Limpar o label padrão
+                self.lbl_adcFoto.destroy()
+                
+                # Criar label indicando ausência de imagem
+                lbl_sem_imagem = ttk.Label(self.frm_foto, text="Nenhuma imagem", font=("Courier", 12), bootstyle="secondary")
+                lbl_sem_imagem.place(relx=0.5, rely=0.4, anchor="center")
+                
+                # Criar botões
+                frame_botoes_imagem = ttk.Frame(self.frm_foto)
+                frame_botoes_imagem.place(relx=0.5, rely=0.9, anchor="center")
+                
+                ttk.Button(frame_botoes_imagem, text="Alterar", bootstyle="warning-outline", 
+                          command=self.alterar_imagem, width=7).pack(side="left", padx=2)
+                
+                ttk.Button(frame_botoes_imagem, text="Remover", bootstyle="danger-outline", 
+                          command=self.remover_imagem, width=7).pack(side="left", padx=2)
 
     def carregar_candidatos_existentes(self):
         """Carrega candidatos existentes da chapa no modo edição"""
@@ -184,25 +214,73 @@ class Tela:
         return valor.isdigit()
 
     def adcFoto(self):
-        tipos = (('Imagens', '*.jpeg *.jpg *.png *.gif *.bmp'), ('Todos', '*.*'))
+        tipos = [
+            ("Imagens", "*.png *.jpg *.jpeg *.gif *.bmp"),
+            ("PNG", "*.png"),
+            ("JPEG", "*.jpg *.jpeg"),
+            ("Todos os arquivos", "*.*")
+        ]
         caminho = fd.askopenfilename(filetypes=tipos, title="Selecionar imagem da chapa")
         if caminho:
             self.caminho_imagem = caminho
             self.carregar_imagem_preview()
+
+    def alterar_imagem(self):
+        """Método específico para alterar imagem no modo edição"""
+        self.adcFoto()
+
+    def remover_imagem(self):
+        """Remove a imagem da chapa"""
+        if messagebox.askyesno("Confirmação", "Tem certeza que deseja remover a imagem desta chapa?"):
+            self.caminho_imagem = ""
+            
+            # Limpar apenas labels de imagem
+            for child in self.frm_foto.winfo_children():
+                if isinstance(child, ttk.Label):
+                    child.destroy()
+            
+            # Criar label indicando ausência de imagem
+            lbl_sem_imagem = ttk.Label(self.frm_foto, text="Nenhuma imagem", font=("Courier", 12), bootstyle="secondary")
+            lbl_sem_imagem.place(relx=0.5, rely=0.4, anchor="center")
+            
+            # Recriar botões se estiver no modo edição
+            if self.modo_edicao:
+                frame_botoes_imagem = ttk.Frame(self.frm_foto)
+                frame_botoes_imagem.place(relx=0.5, rely=0.9, anchor="center")
+                
+                ttk.Button(frame_botoes_imagem, text="Alterar", bootstyle="warning-outline", 
+                          command=self.alterar_imagem, width=7).pack(side="left", padx=2)
+                
+                ttk.Button(frame_botoes_imagem, text="Remover", bootstyle="danger-outline", 
+                          command=self.remover_imagem, width=7).pack(side="left", padx=2)
 
     def carregar_imagem_preview(self):
         try:
             if self.caminho_imagem and os.path.exists(self.caminho_imagem):
                 imagem = Image.open(self.caminho_imagem).resize((225, 225), Image.Resampling.LANCZOS)
                 imagem_tk = ImageTk.PhotoImage(imagem)
-                # limpar conteúdo do frame foto
+                
+                # Limpar apenas labels de imagem, mantendo botões no modo edição
                 for ch in self.frm_foto.winfo_children():
-                    ch.destroy()
+                    if isinstance(ch, ttk.Label):
+                        ch.destroy()
+                
                 lbl_img = ttk.Label(self.frm_foto, image=imagem_tk)
                 lbl_img.image = imagem_tk
-                lbl_img.place(relx=0.5, rely=0.5, anchor="center")
+                lbl_img.place(relx=0.5, rely=0.4, anchor="center")
+                
+                # Recriar botões se estiver no modo edição
+                if self.modo_edicao:
+                    frame_botoes_imagem = ttk.Frame(self.frm_foto)
+                    frame_botoes_imagem.place(relx=0.5, rely=0.9, anchor="center")
+                    
+                    ttk.Button(frame_botoes_imagem, text="Alterar", bootstyle="warning-outline", 
+                              command=self.alterar_imagem, width=7).pack(side="left", padx=2)
+                    
+                    ttk.Button(frame_botoes_imagem, text="Remover", bootstyle="danger-outline", 
+                              command=self.remover_imagem, width=7).pack(side="left", padx=2)
         except Exception as e:
-            print(f"[telaCriarChapas] Erro ao carregar imagem: {e}")
+            pass
 
     def voltar_tela_chapas(self, event=None):
         for w in self.janela.winfo_children():
@@ -307,7 +385,6 @@ class Tela:
             cargos_disponiveis = [c for c in cargos_bd if c[0] not in cargos_ocupados] if cargos_bd else []
             lista = [f"{c[0]} - {c[1]}" for c in cargos_disponiveis] if cargos_disponiveis else ["Todos os cargos já estão ocupados"]
         except Exception as e:
-            print(f"[telaCriarChapas] Erro ao carregar cargos: {e}")
             lista = ["Erro ao carregar cargos"]
 
         sel_var = StringVar()

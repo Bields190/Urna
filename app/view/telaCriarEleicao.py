@@ -73,6 +73,15 @@ class Tela:
             command=self.adicionarChapa,
         ).pack(side="left", padx=10)
 
+        # Botão Excluir Chapa
+        tb.Button(
+            frm_botoes,
+            text="Excluir Chapa",
+            bootstyle="danger-outline",
+            width=20,
+            command=self.excluirChapa,
+        ).pack(side="left", padx=10)
+
         # ---- Treeview para mostrar chapas selecionadas ----
         tb.Label(self.janela, text="Chapas Selecionadas:", font=("Arial", 16, "bold")).pack(pady=(10, 5))
         self.tree_chapas = tb.Treeview(self.janela, columns=("chapa",), show="headings", height=8)
@@ -119,8 +128,42 @@ class Tela:
             chapas_eleicao = self.control.listar_chapas_por_eleicao(self.dados_eleicao['id'])
             for chapa in chapas_eleicao:
                 chapa_id, nome, slogan, logo, numero = chapa
-                self.chapas_selecionadas.append(nome)
-                self.tree_chapas.insert("", "end", values=(nome,))
+                chapa_formatada = f"{chapa_id} - {nome}"
+                self.chapas_selecionadas.append(chapa_formatada)
+                self.tree_chapas.insert("", "end", values=(chapa_formatada,))
+
+    def excluirChapa(self):
+        """Exclui a chapa selecionada no treeview"""
+        selecao = self.tree_chapas.selection()
+        
+        if not selecao:
+            messagebox.showwarning("Aviso", "Selecione uma chapa para excluir!")
+            return
+        
+        # Confirmar exclusão
+        resposta = messagebox.askyesno("Confirmar Exclusão", 
+                                     "Tem certeza que deseja excluir a chapa selecionada da eleição?")
+        if not resposta:
+            return
+        
+        try:
+            # Pegar os dados do item selecionado
+            item = selecao[0]
+            valores = self.tree_chapas.item(item, 'values')
+            chapa_str = valores[0]
+            
+            # Remover da lista de chapas selecionadas
+            if chapa_str in self.chapas_selecionadas:
+                self.chapas_selecionadas.remove(chapa_str)
+            
+            # Remover do treeview
+            self.tree_chapas.delete(item)
+            
+            messagebox.showinfo("Sucesso", "Chapa removida da eleição com sucesso!")
+            
+        except Exception as e:
+            print(f"Erro ao excluir chapa: {e}")
+            messagebox.showerror("Erro", "Erro ao excluir chapa da eleição!")
 
     def salvarEleicao(self):
         titulo = self.entry_titulo.get().strip()
@@ -195,7 +238,6 @@ class Tela:
             
             lista_chapas = [f"{c[0]} - {c[1]}" for c in chapas_com_candidatos] if chapas_com_candidatos else ["Nenhuma chapa com candidatos"]
         except Exception as e:
-            print(f"[telaCriarEleicao] Erro ao carregar chapas: {e}")
             lista_chapas = ["Erro ao carregar chapas"]
 
         sel_var = tb.StringVar()
@@ -222,42 +264,77 @@ class Tela:
                 
             # Verificar compatibilidade de cargos se já há chapas selecionadas
             if self.chapas_selecionadas:
-                try:
-                    chapa_id = int(chapa.split(' - ')[0])
-                    primeira_chapa_id = int(self.chapas_selecionadas[0].split(' - ')[0])
-                    
-                    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
-                    from conexao import Conexao
-                    conn = Conexao().get_conexao()
-                    cursor = conn.cursor()
-                    
-                    # Buscar cargos da primeira chapa
-                    cursor.execute("""
-                        SELECT DISTINCT cargo_id FROM Candidato WHERE chapa_id = ?
-                        ORDER BY cargo_id
-                    """, (primeira_chapa_id,))
-                    cargos_primeira = set(row[0] for row in cursor.fetchall())
-                    
-                    # Buscar cargos da chapa atual
-                    cursor.execute("""
-                        SELECT DISTINCT cargo_id FROM Candidato WHERE chapa_id = ?
-                        ORDER BY cargo_id
-                    """, (chapa_id,))
-                    cargos_atual = set(row[0] for row in cursor.fetchall())
-                    
-                    conn.close()
-                    
-                    # Verificar se têm os mesmos cargos
-                    if cargos_primeira != cargos_atual:
-                        messagebox.showerror("Erro", 
-                                           "Esta chapa não possui candidatos para os mesmos cargos que as outras chapas já selecionadas!\n\n"
-                                           "Para uma eleição válida, todas as chapas devem ter candidatos para os mesmos cargos.")
-                        return
+                # Verificar se há chapas com formato inválido na lista
+                chapas_validas = []
+                for chapa_existente in self.chapas_selecionadas:
+                    if ' - ' in chapa_existente:
+                        chapas_validas.append(chapa_existente)
+                
+                self.chapas_selecionadas = chapas_validas
+                
+                # Se ainda há chapas válidas, fazer a verificação
+                if self.chapas_selecionadas:
+                    try:
+                        if ' - ' not in chapa:
+                            messagebox.showerror("Erro", "Formato de chapa inválido!")
+                            return
                         
-                except (ValueError, IndexError, Exception) as e:
-                    print(f"Erro ao verificar compatibilidade: {e}")
-                    messagebox.showerror("Erro", "Erro ao verificar compatibilidade da chapa!")
-                    return
+                        # Extrair e validar o ID da chapa atual
+                        chapa_parts = chapa.split(' - ')
+                        if len(chapa_parts) < 2:
+                            messagebox.showerror("Erro", "Formato de chapa inválido!")
+                            return
+                        
+                        try:
+                            chapa_id = int(chapa_parts[0])
+                        except ValueError:
+                            messagebox.showerror("Erro", f"ID da chapa inválido: '{chapa_parts[0]}'")
+                            return
+                        
+                        # Extrair e validar o ID da primeira chapa
+                        primeira_chapa_parts = self.chapas_selecionadas[0].split(' - ')
+                        if len(primeira_chapa_parts) < 2:
+                            messagebox.showerror("Erro", "Formato da primeira chapa inválido!")
+                            return
+                        
+                        try:
+                            primeira_chapa_id = int(primeira_chapa_parts[0])
+                        except ValueError:
+                            messagebox.showerror("Erro", f"ID da primeira chapa inválido: '{primeira_chapa_parts[0]}'")
+                            return
+                        
+                        sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'conexao'))
+                        from conexao import Conexao
+                        conn = Conexao().get_conexao()
+                        cursor = conn.cursor()
+                        
+                        # Buscar cargos da primeira chapa
+                        cursor.execute("""
+                            SELECT DISTINCT cargo_id FROM Candidato WHERE chapa_id = ?
+                            ORDER BY cargo_id
+                        """, (primeira_chapa_id,))
+                        cargos_primeira = set(row[0] for row in cursor.fetchall())
+                        
+                        # Buscar cargos da chapa atual
+                        cursor.execute("""
+                            SELECT DISTINCT cargo_id FROM Candidato WHERE chapa_id = ?
+                            ORDER BY cargo_id
+                        """, (chapa_id,))
+                        cargos_atual = set(row[0] for row in cursor.fetchall())
+                        
+                        conn.close()
+                        
+                        # Verificar se têm os mesmos cargos
+                        if cargos_primeira != cargos_atual:
+                            messagebox.showerror("Erro", 
+                                               "Esta chapa não possui candidatos para os mesmos cargos que as outras chapas já selecionadas!\n\n"
+                                               "Para uma eleição válida, todas as chapas devem ter candidatos para os mesmos cargos.")
+                            return
+                            
+                    except (ValueError, IndexError, Exception) as e:
+                        print(f"Erro ao verificar compatibilidade: {e}")
+                        messagebox.showerror("Erro", "Erro ao verificar compatibilidade da chapa!")
+                        return
             
             # adicionar à lista principal e aos Treeviews
             self.chapas_selecionadas.append(chapa)

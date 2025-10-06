@@ -1,4 +1,4 @@
-name: Build Executables
+name: Criar Executaveis
 
 on:
   push:
@@ -12,17 +12,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Configurar Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
+    - name: Instalar dependencias
       run: |
         pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Build Linux executable
+    - name: Criar executavel Linux
       run: |
         python -m PyInstaller --onefile --windowed \
           --name UrnaEletronica_Linux \
@@ -38,14 +38,14 @@ jobs:
           --hidden-import=conexao.conexao \
           app/view/view.py
     
-    - name: Verify Linux executable
+    - name: Verificar executavel Linux
       run: |
         chmod +x dist/UrnaEletronica_Linux
         ls -la dist/UrnaEletronica_Linux
         file dist/UrnaEletronica_Linux
-        echo "✅ Linux executable created successfully"
+        echo "✅ executavel do Linux criado com sucesso"
     
-    - name: Upload Linux artifact
+    - name: Upload executavel Linux
       uses: actions/upload-artifact@v4
       with:
         name: UrnaEletronica_Linux
@@ -56,17 +56,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Configurar Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
+    - name: Instalar dependencias
       run: |
         pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Build Windows executable
+    - name: Criar executavel Windows
       run: |
         python -m PyInstaller --onefile --windowed `
           --name UrnaEletronica_Windows.exe `
@@ -82,41 +82,41 @@ jobs:
           --hidden-import=conexao.conexao `
           app/view/view.py
     
-    - name: Verify Windows executable
+    - name: Verificar executavel Windows
       run: |
         if (Test-Path "dist/UrnaEletronica_Windows.exe") {
-          Write-Host "✅ Windows executable created successfully"
+          Write-Host "✅ executavel do Windows criado com sucesso"
           Get-Item "dist/UrnaEletronica_Windows.exe" | Select-Object Name, Length, LastWriteTime
         } else {
-          Write-Error "❌ Executable not found!"
+          Write-Error "❌ executavel nao encontrado!"
           exit 1
         }
     
-    - name: Upload Windows artifact
+    - name: Upload executavel Windows
       uses: actions/upload-artifact@v4
       with:
         name: UrnaEletronica_Windows
         path: dist/UrnaEletronica_Windows.exe
 
-  create-release:
+  criar-release:
     needs: [build-linux, build-windows]
     runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/')
     
     steps:
-    - name: Download Linux artifact
+    - name: Baixar executavel Linux
       uses: actions/download-artifact@v4
       with:
         name: UrnaEletronica_Linux
         path: ./linux/
     
-    - name: Download Windows artifact
+    - name: Baixar executavel Windows
       uses: actions/download-artifact@v4
       with:
         name: UrnaEletronica_Windows
         path: ./windows/
     
-    - name: Create Release
+    - name: Criar Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
@@ -125,15 +125,15 @@ jobs:
         body: |
           ## 🗳️ Urna Eletrônica - Release ${{ github.ref_name }}
           
-          ### Executáveis Disponíveis:
-          - **Linux**: `UrnaEletronica_Linux` (~22MB) - Compatível com GLIBC 2.31+
+          ### executaveis disponiveis:
+          - **Linux**: `UrnaEletronica_Linux` (~22MB) - compativel com GLIBC 2.31+
           - **Windows**: `UrnaEletronica_Windows.exe` (~25MB)
           
-          ### Compatibilidade Linux:
+          ### compatibilidade Linux:
           - Ubuntu 20.04+ / Debian 11+ / CentOS 8+ / Fedora 32+
-          - Compilado em Ubuntu 20.04 para máxima compatibilidade
+          - compilado no Ubuntu 20.04 pra maxima compatibilidade
           
-          ### Como Usar:
+          ### como usar:
           **Linux:**
           ```bash
           chmod +x UrnaEletronica_Linux
@@ -145,14 +145,8 @@ jobs:
           UrnaEletronica_Windows.exe
           ```
           
-          ### Funcionalidades:
-          - Interface em tela cheia
-          - Banco de dados SQLite integrado
-          - Sistema completo de votação
-          - Portável (não precisa instalação)
-          
-          ### Controles:
-          - **F11**: Alternar tela cheia
+          ### controles:
+          - **F11**: alternar tela cheia
         draft: false
         prerelease: false
       env:

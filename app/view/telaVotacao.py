@@ -36,8 +36,8 @@ class TelaVotacao:
         except Exception:
             pass
 
-        # bind ESC
-        self.janela.bind("<Escape>", self.voltar_para_eleicoes)
+        # Bind especial para sair: Ctrl+Alt+X
+        self.janela.bind("<Control-Alt-x>", lambda e: self.voltar_para_eleicoes())
 
         # Frame principal
         frmPrincipal = ttk.Frame(self.janela, padding=20)
@@ -79,7 +79,7 @@ class TelaVotacao:
         self.entInserirNumero.pack(pady=10, ipady=3)
         self.entInserirNumero.bind("<Return>", self.buscar_chapa)
         self.entInserirNumero.bind("<KeyRelease>", self.buscar_automatico)
-        self.entInserirNumero.bind("<Escape>", self.voltar_para_eleicoes)
+        # ESC removido para manter lock na tela
 
         #Frame de informações da chapa
         frmChapa = ttk.Frame(frmPrincipal)

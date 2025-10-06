@@ -27,7 +27,8 @@ class TelaEntradaVotacao:
         except Exception:
             pass
 
-        self.janela.bind("<Escape>", self.voltar_para_eleicoes)
+        # Bind especial para sair: Ctrl+Alt+X
+        self.janela.bind("<Control-Alt-x>", lambda e: self.voltar_para_eleicoes())
 
         # Frame principal
         frmPrincipal = ttk.Frame(self.janela, padding=20)

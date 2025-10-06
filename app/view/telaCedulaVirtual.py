@@ -24,7 +24,8 @@ class TelaCedulaVirtual:
         except Exception:
             pass
 
-        self.janela.bind("<Escape>", self.voltar_para_entrada)
+        # Bind especial para sair: Ctrl+Alt+X
+        self.janela.bind("<Control-Alt-x>", lambda e: self.voltar_para_entrada())
         self.janela.bind("<KeyPress-space>", self.contar_espaco)
         self.janela.focus_set()  # Permite que a janela receba eventos de teclado
 

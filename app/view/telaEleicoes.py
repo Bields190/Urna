@@ -20,8 +20,8 @@ class Tela:
         for widget in self.janela.winfo_children():
             widget.destroy()
 
-        # bind ESC para voltar
-        self.janela.bind("<Escape>", lambda e: self.voltar_tela_adm())
+        # Bind especial para sair: Ctrl+Alt+X (mais difícil de acertar por acaso)
+        self.janela.bind("<Control-Alt-x>", lambda e: self.voltar_tela_adm())
 
         # controlador
         self.control = c_eleicao.Control(self)

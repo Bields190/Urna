@@ -79,6 +79,7 @@ A classe *Administrador* representa quem organiza a eleição: *cria eleições,
 
 No geral, esse diagrama mostra bem como cada parte do sistema se conecta: da criação da eleição, passando pelo cadastro das chapas, até o momento do eleitor votar e o sistema calcular o resultado. Tudo foi pensado pra ser simples, confiável e adaptado ao contexto das eleições acadêmicas.
 
+# [COMO EXECUTAR?](https://github.com/Bields190/Urna/blob/main/README_BUILD.md)
 ## Autores
 
 - [Andrey Marques](https://www.github.com/Andrey-Marques)

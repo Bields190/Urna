@@ -24,7 +24,12 @@ class Control:
         return admin.deletar()
 
     def login(self):
-        usuario = str(self.tela.entry1.get())
+        matricula = str(self.tela.entry1.get())
         senha = str(self.tela.entry2.get())
-        admin = m_administrador.Admin(usuario, senha)
-        return admin.verificar()
+        admin = m_administrador.Admin("", senha, matricula)
+        result = admin.verificar()
+        
+        if result['success']:
+            return result  # Retorna os dados do administrador
+        else:
+            return False

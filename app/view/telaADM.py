@@ -5,14 +5,35 @@ from tkinter import messagebox
 import telaEleicoes, telaChapas, telaCargos, telaLogin, telaCadastrarAdm
 
 class TelaADM:
+    # Variável de classe para armazenar dados do admin logado
+    _admin_logado = None
+    
+    @classmethod
+    def set_admin_logado(cls, admin_data):
+        """Define os dados do administrador logado"""
+        cls._admin_logado = admin_data
+    
+    @classmethod
+    def get_admin_logado(cls):
+        """Retorna os dados do administrador logado"""
+        return cls._admin_logado
     def criarFramesDashboard(self, frmpai, titulo, valor, coluna):
         frameBoard = ttk.Frame(frmpai, padding=20, relief="ridge", borderwidth=3)
         frameBoard.grid(row=0, column=coluna, padx=40)
         ttk.Label(frameBoard, text=titulo, font=("Courier", 16, "bold")).pack(pady=10)
         ttk.Label(frameBoard, text=valor, font=("Courier", 24)).pack()
 
-    def __init__(self, master):
+    def __init__(self, master, admin_data=None):
         self.janela = master
+        
+        # Se admin_data não foi passado, usa os dados armazenados
+        if admin_data is None:
+            admin_data = TelaADM.get_admin_logado()
+        else:
+            # Se admin_data foi passado, armazena para uso futuro
+            TelaADM.set_admin_logado(admin_data)
+            
+        self.admin_data = admin_data  # Dados do administrador logado
         self.janela.title('Tela do Administrador')
         self.janela.geometry("1920x1080")
 
@@ -31,6 +52,15 @@ class TelaADM:
         self.btn_logout.grid(row=0, column=0, sticky="w", padx=20, pady=(0, 70))
 
         ttk.Label(frmTopo,text="Dashboard",font=("Courier", 28, "bold")).grid(row=0, column=1, sticky="n", padx=(10, 200), pady=(60, 40))
+
+        if self.admin_data and self.admin_data.get('usuario'):
+            nome_usuario = self.admin_data.get('usuario')
+            self.lbl_saudacao = ttk.Label(frmTopo, text=f"Olá, {nome_usuario}", font=("Courier", 16, "bold"), bootstyle="info")
+            self.lbl_saudacao.grid(row=0, column=2, sticky="e", padx=20, pady=(20, 0))
+        else:
+            # Fallback caso não tenha dados do usuário
+            self.lbl_saudacao = ttk.Label(frmTopo, text="Olá, Administrador", font=("Courier", 16, "bold"), bootstyle="info")
+            self.lbl_saudacao.grid(row=0, column=2, sticky="e", padx=20, pady=(20, 0))
 
         # Configurar fonte padrão global
         self.janela.option_add("*Font", "Courier 14")
@@ -59,8 +89,10 @@ class TelaADM:
         self.btnCargos = ttk.Button(botoes_frame,text="Gerenciar Cargos",width=40,bootstyle="primary",style="Fonte.TButton",command=lambda: self.trocarTela(telaCargos))
         self.btnCargos.grid(row=2, column=0, pady=10)
 
-        self.btnCadastrarADM = ttk.Button(botoes_frame,text="Cadastrar Administradores",width=40,bootstyle="primary",style="Fonte.TButton", command=lambda: self.trocarTela(telaCadastrarAdm))
-        self.btnCadastrarADM.grid(row=3, column=0, pady=10)
+        # Só mostra o botão de cadastrar administradores se o usuário for master
+        if self.admin_data and self.admin_data.get('master') == 1:
+            self.btnCadastrarADM = ttk.Button(botoes_frame,text="Cadastrar Administradores",width=40,bootstyle="primary",style="Fonte.TButton", command=lambda: self.trocarTela(telaCadastrarAdm))
+            self.btnCadastrarADM.grid(row=3, column=0, pady=10)
 
     def configurar_fontes(self):
         """Configura todas as fontes para usar Courier"""
@@ -78,6 +110,8 @@ class TelaADM:
     def logout(self):
         resposta = messagebox.askyesno("Logout", "Tem certeza que deseja fazer logout?")
         if resposta:
+            # Limpa os dados do administrador logado
+            TelaADM.set_admin_logado(None)
             for widget in self.janela.winfo_children():
                 widget.destroy()
             telaLogin.Tela(self.janela)

@@ -233,7 +233,7 @@ class Control:
 
         for chapa in chapas:
             chapa_id, nome, slogan, logo = chapa
-            votos = m_voto.Voto.contar_por_chapa(chapa_id)
+            votos = m_voto.Voto.contar_por_chapa(chapa_id, eleicao_id)
             percentual = (votos / total_votos * 100) if total_votos > 0 else 0
             resultado.append({
                 "chapa_id": chapa_id,
@@ -241,8 +241,9 @@ class Control:
                 "slogan": slogan,
                 "logo": logo,
                 "votos": votos,
-                "percentual": percentual
+                "percentual": round(percentual, 2)  # arredonda p/ 2 casas decimais
             })
+
 
         # Ordenar do maior para menor
         resultado.sort(key=lambda x: x['votos'], reverse=True)
@@ -295,7 +296,7 @@ class Control:
     def buscar_chapa_por_nome(self, nome):
         """Busca uma chapa pelo nome"""
         try:
-            sql = f"SELECT * FROM Chapa WHERE nome = '{nome}'"
+            sql = f"SELECT * FROM chapa WHERE nome = '{nome}'"
             return Model().get(sql)
         except Exception as e:
             print(f"Erro ao buscar chapa: {e}")

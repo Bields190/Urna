@@ -24,15 +24,19 @@ class Voto(Model):
         return False
         
     @classmethod
-    def contar_por_chapa(cls, chapa_id):
-        sql = f"SELECT COUNT(*) FROM voto WHERE chapa_id = {chapa_id}"
+    def contar_por_chapa(cls, chapa_id, eleicao_id):
+        """
+        Conta os votos de uma chapa, APENAS para a eleição informada.
+        """
+        sql = f"SELECT COUNT(*) FROM voto v WHERE v.chapa_id = {chapa_id} AND v.eleicao_id = {eleicao_id}"
         result = Model().get(sql)
         return result[0][0] if result else 0
 
     @classmethod
     def contar_total_eleicao(cls, eleicao_id):
+        """
+        Conta o total de votos APENAS para a eleição informada.
+        """
         sql = f"SELECT COUNT(*) FROM voto WHERE eleicao_id = {eleicao_id}"
         result = Model().get(sql)
         return result[0][0] if result else 0
-
-# sem necessidade de criar o resto do crud, uma vez que votos não são alterados ou deletados

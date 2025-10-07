@@ -66,13 +66,11 @@ class Chapa(Model):
     
     @classmethod
     def listar_por_eleicao(cls, eleicao_id):
-        """
-        Retorna todas as chapas que têm candidatos na eleição específica.
-        """
         sql = f"""
-        SELECT DISTINCT c.id, c.nome, c.slogan, c.logo
-        FROM Chapa c
-        JOIN Candidato ca ON ca.chapa_id = c.id
+        SELECT c.id, c.nome, c.slogan, c.logo
+        FROM chapa c
+        JOIN EleicaoChapa ec ON ec.chapa_id = c.id
+        WHERE ec.eleicao_id = {eleicao_id}
         """
         result = Model().get(sql)
         return result if result else []

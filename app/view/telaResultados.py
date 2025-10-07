@@ -24,7 +24,7 @@ class Tela:
         self.lbl_ini = ttk.Label(
             self.janela,
             text=f"Resultados - Eleição #{eleicao_id}",
-            font=("Arial", 35, "bold"),
+            font=("Courier", 35, "bold"),
             bootstyle=DARK
         )
         self.lbl_ini.pack(pady=15)
@@ -45,7 +45,7 @@ class Tela:
         # vencedor
         vencedor = chapas[0] if chapas else None
 
-        self.lbl_vencedor = ttk.Label(self.frm_resultados, text="🏆 Chapa Vencedora", font=("Arial", 25, "bold"), bootstyle=DARK)
+        self.lbl_vencedor = ttk.Label(self.frm_resultados, text="🏆 Chapa Vencedora", font=("Courier", 25, "bold"), bootstyle=DARK)
         self.lbl_vencedor.pack(pady=15)
 
         self.frm_vencedor = ttk.Frame(self.frm_resultados, bootstyle="#ffffff")
@@ -62,10 +62,10 @@ class Tela:
             self.lbl_img = ttk.Label(self.frm_vencedor, image=self.img_vencedor, bootstyle="#ffffff")
             self.lbl_img.grid(row=0, column=0, rowspan=2, padx=20)
 
-            self.lbl_nome_vencedor = ttk.Label(self.frm_vencedor, text=vencedor['nome'], font=("Arial", 30, "bold"), bootstyle=DARK)
+            self.lbl_nome_vencedor = ttk.Label(self.frm_vencedor, text=vencedor['nome'], font=("Courier", 30, "bold"), bootstyle=DARK)
             self.lbl_nome_vencedor.grid(row=0, column=1, sticky="w")
 
-            self.lbl_percent_vencedor = ttk.Label(self.frm_vencedor, text=f"{vencedor['percentual']:.2f}% dos votos", font=("Arial", 22), bootstyle=DARK)
+            self.lbl_percent_vencedor = ttk.Label(self.frm_vencedor, text=f"{vencedor['percentual']:.2f}% dos votos", font=("Courier", 22), bootstyle=DARK)
             self.lbl_percent_vencedor.grid(row=1, column=1, sticky="w")
 
         # demais chapas
@@ -77,7 +77,7 @@ class Tela:
         self.frm_chapas.pack_propagate(False)
 
         for chapa in chapas[1:]:
-            lbl = ttk.Label(self.frm_chapas, text=f"{chapa['nome']} - {chapa['percentual']:.2f}%", font=("Arial", 20), bootstyle=DARK)
+            lbl = ttk.Label(self.frm_chapas, text=f"{chapa['nome']} - {chapa['percentual']:.2f}%", font=("Courier", 20), bootstyle=DARK)
             lbl.pack(anchor="w", padx=30, pady=10)
 
         # total de votos
@@ -85,7 +85,7 @@ class Tela:
         self.frm_votos.pack(side="left", padx=60)
         self.frm_votos.pack_propagate(False)
 
-        self.lbl_total_votos_nmr = ttk.Label(self.frm_votos, text=str(total_votos), font=("Arial", 60, "bold"), bootstyle=DARK)
+        self.lbl_total_votos_nmr = ttk.Label(self.frm_votos, text=str(total_votos), font=("Courier", 60, "bold"), bootstyle=DARK)
         self.lbl_total_votos_nmr.pack(pady=50)
 
     def voltarEleicoes(self):

@@ -195,12 +195,142 @@ class Control:
                     return False
                     
             except Exception as e:
-                print(f"Erro ao encerrar eleição: {e}")
-                return False
-        else:
-            pass
-        return False
+                print(f"Erro ao associar chapas: {e}")
+            return False
     
+    def arquivar_eleicao(self, id):
+        """Arquiva uma eleição (não aparece na tela normal)"""
+        try:
+            sql = f"UPDATE Eleicao SET arquivada = 1 WHERE id = {id}"
+            resultado = Model().update(sql)
+            if resultado:
+                print("Eleição arquivada com sucesso!")
+                return True
+            else:
+                print("Erro ao arquivar eleição.")
+                return False
+        except Exception as e:
+            print(f"Erro ao arquivar eleição: {e}")
+            return False
+    
+    def desarquivar_eleicao(self, id):
+        """Desarquiva uma eleição (volta a aparecer na tela normal)"""
+        try:
+            sql = f"UPDATE Eleicao SET arquivada = 0 WHERE id = {id}"
+            resultado = Model().update(sql)
+            if resultado:
+                print("Eleição desarquivada com sucesso!")
+                return True
+            else:
+                print("Erro ao desarquivar eleição.")
+                return False
+        except Exception as e:
+            print(f"Erro ao desarquivar eleição: {e}")
+            return False
+    
+    def listar_eleicoes_filtradas(self, filtro="todas"):
+        """Lista eleições com filtro aplicado
+        
+        Args:
+            filtro (str): 'todas', 'agendadas', 'ativas', 'finalizadas', 'arquivadas'
+        
+        Returns:
+            list: Lista de eleições filtradas
+        """
+        from datetime import datetime
+        hoje = datetime.now().strftime('%Y-%m-%d')
+        
+        if filtro == "todas":
+            # Todas exceto arquivadas
+            sql = f"""
+            SELECT id, titulo, data_inicio, data_fim, status 
+            FROM Eleicao 
+            WHERE arquivada = 0
+            ORDER BY data_inicio DESC
+            """
+        
+        elif filtro == "agendadas":
+            # Eleições que ainda não começaram
+            sql = f"""
+            SELECT id, titulo, data_inicio, data_fim, status 
+            FROM Eleicao 
+            WHERE status = 1 AND data_inicio > '{hoje}' AND arquivada = 0
+            ORDER BY data_inicio ASC
+            """
+        
+        elif filtro == "ativas":
+            # Eleições em andamento
+            sql = f"""
+            SELECT id, titulo, data_inicio, data_fim, status 
+            FROM Eleicao 
+            WHERE status = 1 AND data_inicio <= '{hoje}' AND data_fim >= '{hoje}' AND arquivada = 0
+            ORDER BY data_inicio ASC
+            """
+        
+        elif filtro == "finalizadas":
+            # Eleições encerradas
+            sql = f"""
+            SELECT id, titulo, data_inicio, data_fim, status 
+            FROM Eleicao 
+            WHERE status = 0 AND arquivada = 0
+            ORDER BY data_fim DESC
+            """
+        
+        elif filtro == "arquivadas":
+            # Eleições arquivadas
+            sql = f"""
+            SELECT id, titulo, data_inicio, data_fim, status 
+            FROM Eleicao 
+            WHERE arquivada = 1
+            ORDER BY data_inicio DESC
+            """
+        
+        else:
+            # Fallback para 'todas'
+            return self.listar_eleicoes_filtradas("todas")
+        
+        try:
+            resultado = Model().get(sql)
+            return resultado if resultado else []
+        except Exception as e:
+            print(f"Erro ao listar eleições filtradas: {e}")
+            return []
+    
+    def obter_estatisticas_filtros(self):
+        """Retorna contadores para cada filtro"""
+        try:
+            from datetime import datetime
+            hoje = datetime.now().strftime('%Y-%m-%d')
+            
+            # Contar cada categoria
+            contadores = {}
+            
+            # Todas (exceto arquivadas)
+            sql_todas = "SELECT COUNT(*) FROM Eleicao WHERE arquivada = 0"
+            contadores['todas'] = Model().get(sql_todas)[0][0]
+            
+            # Agendadas
+            sql_agendadas = f"SELECT COUNT(*) FROM Eleicao WHERE status = 1 AND data_inicio > '{hoje}' AND arquivada = 0"
+            contadores['agendadas'] = Model().get(sql_agendadas)[0][0]
+            
+            # Ativas
+            sql_ativas = f"SELECT COUNT(*) FROM Eleicao WHERE status = 1 AND data_inicio <= '{hoje}' AND data_fim >= '{hoje}' AND arquivada = 0"
+            contadores['ativas'] = Model().get(sql_ativas)[0][0]
+            
+            # Finalizadas
+            sql_finalizadas = f"SELECT COUNT(*) FROM Eleicao WHERE status = 0 AND arquivada = 0"
+            contadores['finalizadas'] = Model().get(sql_finalizadas)[0][0]
+            
+            # Arquivadas
+            sql_arquivadas = "SELECT COUNT(*) FROM Eleicao WHERE arquivada = 1"
+            contadores['arquivadas'] = Model().get(sql_arquivadas)[0][0]
+            
+            return contadores
+            
+        except Exception as e:
+            print(f"Erro ao obter estatísticas: {e}")
+            return {'todas': 0, 'agendadas': 0, 'ativas': 0, 'finalizadas': 0, 'arquivadas': 0}
+
     def _calcular_e_salvar_resultados(self, eleicao_id):
         """Calcula os resultados da eleição e salva na tabela Resultado"""
         try:

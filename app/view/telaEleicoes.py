@@ -26,6 +26,9 @@ class Tela:
         # controlador
         self.control = c_eleicao.Control(self)
         
+        # Filtro atual
+        self.filtro_atual = "todas"
+        
         # Obter dados do administrador logado
         self.admin_data = telaADM.TelaADM.get_admin_logado()
 
@@ -50,7 +53,7 @@ class Tela:
 
     def setup_interface(self):
         self.janela.columnconfigure(2, weight=3)
-        self.janela.rowconfigure(3, weight=1)
+        self.janela.rowconfigure(4, weight=1)  # Mudou de 3 para 4
 
         ttk.Label(
             self.janela, text="Controle de Eleições", font=("Courier", 20, "bold")
@@ -64,13 +67,74 @@ class Tela:
             width=20,
             command=self.criarEleicao,
         )
-        self.btn_criar.grid(row=2, column=0, pady=(30, 60))
+        self.btn_criar.grid(row=2, column=0, pady=(30, 20))
+        
+        # Frame de filtros
+        self.setup_filtros()
 
         # Frame container
         self.frmEleicoes = ttk.Frame(self.janela, padding=10)
         self.frmEleicoes.grid(
-            row=3, column=0, columnspan=3, padx=10, pady=20, sticky="nsew"
+            row=4, column=0, columnspan=3, padx=10, pady=20, sticky="nsew"  # Mudou de row=3 para row=4
         )
+    
+    def setup_filtros(self):
+        """Configura a interface de filtros"""
+        # Frame dos filtros
+        frm_filtros = ttk.LabelFrame(self.janela, text="Filtros", padding=10)
+        frm_filtros.grid(row=3, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
+        
+        # Obter estatísticas para os contadores
+        stats = self.control.obter_estatisticas_filtros()
+        
+        # Botões de filtro
+        filtros_config = [
+            ("todas", "Todas", "secondary"),
+            ("agendadas", "Agendadas", "info"),
+            ("ativas", "Ativas", "success"),
+            ("finalizadas", "Finalizadas", "warning"),
+            ("arquivadas", "Arquivadas", "dark")
+        ]
+        
+        for i, (filtro_key, filtro_nome, estilo) in enumerate(filtros_config):
+            count = stats.get(filtro_key, 0)
+            texto = f"{filtro_nome} ({count})"
+            
+            btn = ttk.Button(
+                frm_filtros,
+                text=texto,
+                bootstyle=estilo if filtro_key != self.filtro_atual else f"{estilo}-outline",
+                command=lambda f=filtro_key: self.aplicar_filtro(f)
+            )
+            btn.grid(row=0, column=i, padx=5, pady=5)
+            
+            # Guardar referência dos botões para atualizar depois
+            if not hasattr(self, 'filtro_buttons'):
+                self.filtro_buttons = {}
+            self.filtro_buttons[filtro_key] = btn
+    
+    def aplicar_filtro(self, filtro):
+        """Aplica um filtro às eleições"""
+        self.filtro_atual = filtro
+        
+        # Atualizar estilo dos botões
+        filtros_estilos = {
+            "todas": "secondary",
+            "agendadas": "info", 
+            "ativas": "success",
+            "finalizadas": "warning",
+            "arquivadas": "dark"
+        }
+        
+        for filtro_key, btn in self.filtro_buttons.items():
+            estilo_base = filtros_estilos[filtro_key]
+            if filtro_key == filtro:
+                btn.configure(bootstyle=f"{estilo_base}-outline")
+            else:
+                btn.configure(bootstyle=estilo_base)
+        
+        # Renderizar eleições com o novo filtro
+        self.renderizar_eleicoes()
 
     def criarEleicao(self):
         for widget in self.janela.winfo_children():
@@ -234,6 +298,43 @@ class Tela:
                 self.renderizar_eleicoes()
             else:
                 messagebox.showerror("Erro", "Erro ao excluir eleição!")
+    
+    def arquivarEleicao(self, id_eleicao):
+        """Arquiva uma eleição"""
+        if messagebox.askyesno(
+            "Confirmação", 
+            "Tem certeza que deseja arquivar esta eleição?\n\nEla não aparecerá na visualização normal, apenas no filtro 'Arquivadas'."
+        ):
+            try:
+                if self.control.arquivar_eleicao(id_eleicao):
+                    messagebox.showinfo("Sucesso", "Eleição arquivada com sucesso!")
+                    self.atualizar_interface()
+                else:
+                    messagebox.showerror("Erro", "Erro ao arquivar eleição!")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro inesperado: {str(e)}")
+    
+    def desarquivarEleicao(self, id_eleicao):
+        """Desarquiva uma eleição"""
+        if messagebox.askyesno(
+            "Confirmação", 
+            "Tem certeza que deseja desarquivar esta eleição?\n\nEla voltará a aparecer na visualização normal."
+        ):
+            try:
+                if self.control.desarquivar_eleicao(id_eleicao):
+                    messagebox.showinfo("Sucesso", "Eleição desarquivada com sucesso!")
+                    self.atualizar_interface()
+                else:
+                    messagebox.showerror("Erro", "Erro ao desarquivar eleição!")
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro inesperado: {str(e)}")
+    
+    def atualizar_interface(self):
+        """Atualiza toda a interface (filtros e eleições)"""
+        # Recriar filtros com novos contadores
+        self.setup_filtros()
+        # Renderizar eleições novamente
+        self.renderizar_eleicoes()
 
     def renderizar_eleicoes(self):
         for widget in self.frmEleicoes.winfo_children():
@@ -243,12 +344,13 @@ class Tela:
         for col in range(4):
             self.frmEleicoes.grid_columnconfigure(col, weight=1)
 
-        eleicoes = self.control.listar_eleicoes()
+        # Usar método filtrado
+        eleicoes = self.control.listar_eleicoes_filtradas(self.filtro_atual)
 
         if not eleicoes:
             ttk.Label(
                 self.frmEleicoes,
-                text="Nenhuma eleição cadastrada",
+                text=f"Nenhuma eleição encontrada para o filtro '{self.filtro_atual.upper()}'",
                 font=("Courier", 16),
                 bootstyle="secondary",
             ).grid(row=0, column=0, columnspan=4, pady=50)
@@ -354,13 +456,34 @@ class Tela:
                     command=lambda id=id_eleicao, t=titulo, di=data_inicio, df=data_fim: 
                         self.verDadosEleicao(id, t, di, df),
                 ).pack(side="left", expand=True, fill="x", padx=2)
+            
+            # Botão de arquivamento (apenas para master)
+            if (self.admin_data and self.admin_data.get('master') == 1):
+                if self.filtro_atual == "arquivadas":
+                    # Botão desarquivar
+                    ttk.Button(
+                        frm_btn,
+                        text="Desarquivar",
+                        bootstyle="warning-outline",
+                        command=lambda id=id_eleicao: self.desarquivarEleicao(id),
+                    ).pack(side="left", expand=True, fill="x", padx=2)
+                else:
+                    # Botão arquivar
+                    ttk.Button(
+                        frm_btn,
+                        text="Arquivar",
+                        bootstyle="dark-outline",
+                        command=lambda id=id_eleicao: self.arquivarEleicao(id),
+                    ).pack(side="left", expand=True, fill="x", padx=2)
 
-            ttk.Button(
-                frm_btn,
-                text="Excluir",
-                bootstyle="danger",
-                command=lambda id=id_eleicao: self.excluirEleicao(id),
-            ).pack(side="left", expand=True, fill="x", padx=2)
+            # Botão excluir (apenas se não for arquivadas)
+            if self.filtro_atual != "arquivadas":
+                ttk.Button(
+                    frm_btn,
+                    text="Excluir",
+                    bootstyle="danger",
+                    command=lambda id=id_eleicao: self.excluirEleicao(id),
+                ).pack(side="left", expand=True, fill="x", padx=2)
 
 def iniciarTela(master=None):
     if master is None:

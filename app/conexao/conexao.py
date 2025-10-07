@@ -4,30 +4,24 @@ import sys
 import os
 
 def resource_path(relative_path):
-    """Obtém o caminho absoluto para recursos, funciona tanto em desenvolvimento quanto em executável"""
-    try:
-        # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
-        base_path = sys._MEIPASS
-        # No PyInstaller, o banco está na raiz não em app/
-        if relative_path.startswith("app/"):
-            relative_path = relative_path[4:]  # Remove "app/"
-    except Exception:
-        # Em desenvolvimento, busca a partir da raiz do projeto
+    """Retorna o caminho absoluto para um recurso.
+
+    - Quando empacotado com PyInstaller, usa sys._MEIPASS.
+    - Em desenvolvimento, resolve a partir da raiz do projeto (duas pastas acima deste arquivo).
+    """
+    # Normalize o relative_path
+    relative_path = relative_path.lstrip("/\\")
+
+    base_path = getattr(sys, '_MEIPASS', None)
+    if not base_path:
+        # raiz do projeto (dois níveis acima de app/conexao)
         base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    
-    return os.path.join(base_path, relative_path)
-    """Obtém o caminho absoluto para recursos, funciona tanto em desenvolvimento quanto em executável"""
-    try:
-        # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    
+
     return os.path.join(base_path, relative_path)
 
 class Conexao:
     def get_conexao(self):
-        caminho = resource_path('db')
+        caminho = resource_path('db.db')
         try:
             con = sqlite3.connect(caminho)
             return con

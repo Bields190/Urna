@@ -26,7 +26,7 @@ class Tela:
         self.janela.bind("<Escape>", lambda e: self.voltarEleicoes())
 
         titulo_tela = "Editar Eleição" if modo_edicao else "Criar Eleição"
-        tb.Label(self.janela, text=titulo_tela, font=("Arial", 35, "bold")).pack(
+        tb.Label(self.janela, text=titulo_tela, font=("Courier", 35, "bold")).pack(
             pady=15
         )
 
@@ -34,17 +34,17 @@ class Tela:
         frm.pack(pady=10)
 
         # ---- Campos da Eleição ----
-        tb.Label(frm, text="Título:", font=("Arial", 20)).pack(pady=(20, 5))
+        tb.Label(frm, text="Título:", font=("Courier", 20)).pack(pady=(20, 5))
         self.entry_titulo = tb.Entry(frm, width=40)
         self.entry_titulo.pack(pady=10)
 
-        tb.Label(frm, text="Data de Início:", font=("Arial", 20)).pack()
+        tb.Label(frm, text="Data de Início:", font=("Courier", 20)).pack()
         self.entry_inicio = tb.DateEntry(
             frm, dateformat="%d-%m-%Y", bootstyle=INFO, width=36
         )
         self.entry_inicio.pack(pady=10)
 
-        tb.Label(frm, text="Data de Encerramento:", font=("Arial", 20)).pack()
+        tb.Label(frm, text="Data de Encerramento:", font=("Courier", 20)).pack()
         self.entry_fim = tb.DateEntry(
             frm, dateformat="%d-%m-%Y", bootstyle=INFO, width=36
         )
@@ -83,7 +83,7 @@ class Tela:
         ).pack(side="left", padx=10)
 
         # ---- Treeview para mostrar chapas selecionadas ----
-        tb.Label(self.janela, text="Chapas Selecionadas:", font=("Arial", 16, "bold")).pack(pady=(10, 5))
+        tb.Label(self.janela, text="Chapas Selecionadas:", font=("Courier", 16, "bold")).pack(pady=(10, 5))
         self.tree_chapas = tb.Treeview(self.janela, columns=("chapa",), show="headings", height=8)
         self.tree_chapas.heading("chapa", text="Chapa")
         self.tree_chapas.column("chapa", width=500)
@@ -212,7 +212,7 @@ class Tela:
         frame = tb.Frame(popup, padding=12)
         frame.pack(fill="both", expand=True)
 
-        tb.Label(frame, text="Selecione a Chapa", font=("Arial", 16, "bold")).pack(pady=(10, 12))
+        tb.Label(frame, text="Selecione a Chapa", font=("Courier", 16, "bold")).pack(pady=(10, 12))
 
         # carregar chapas do BD - apenas chapas com candidatos
         try:
@@ -246,7 +246,7 @@ class Tela:
             cbx.current(0)
         cbx.pack(pady=(5, 10))
 
-        tb.Label(frame, text="Chapas Selecionadas:", font=("Arial", 12, "bold")).pack(pady=(10, 4))
+        tb.Label(frame, text="Chapas Selecionadas:", font=("Courier", 12, "bold")).pack(pady=(10, 4))
 
         tree_popup = tb.Treeview(frame, columns=("chapa",), show="headings", height=8)
         tree_popup.heading("chapa", text="Chapa")

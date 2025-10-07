@@ -50,7 +50,7 @@ class Tela:
         self.lbl.pack()
 
         # Usuário
-        self.lbl1 = ttk.Label(self.frm, text='Usuário(Matrícula):', font=("Arial", 18))
+        self.lbl1 = ttk.Label(self.frm, text='Usuário(Matrícula):', font=("Courier", 18))
         self.lbl1.pack(pady=(40, 0))
 
         self.entry1 = ttk.Entry(self.frm, width=40, bootstyle="info")
@@ -58,7 +58,7 @@ class Tela:
         self.entry1.bind('<Return>', lambda event: event.widget.event_generate("<Tab>"))
 
         # Senha
-        self.lbl2 = ttk.Label(self.frm, text='Senha:', font=("Arial", 18))
+        self.lbl2 = ttk.Label(self.frm, text='Senha:', font=("Courier", 18))
         self.lbl2.pack()
 
         self.entry2 = ttk.Entry(self.frm, show='*', width=40, bootstyle="info")

@@ -4,13 +4,8 @@ import sys, os
 from datetime import datetime
 import threading
 
-# Para envio de email
-try:
-    import yagmail
-    EMAIL_DISPONIVEL = True
-except ImportError:
-    EMAIL_DISPONIVEL = False
-    print("⚠️ yagmail não disponível - funcionalidade de email desabilitada")
+# Para envio de email: não importar yagmail no topo para evitar desabilitar a UI
+EMAIL_DISPONIVEL = None  # valor será avaliado dinamicamente
 
 # importa outras telas
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'view'))
@@ -141,24 +136,42 @@ class TelaCedulaVirtual:
         self.btnNovaVotacao.pack(pady=5)
 
         # Botão para enviar comprovante por email (se disponível)
-        if EMAIL_DISPONIVEL and email_votante:
-            self.btnEnviarEmail = ttk.Button(
-                frmBotoes,
-                text="📧 Enviar Comprovante por Email",
-                bootstyle="info",
-                width=30,
-                command=self.enviar_comprovante_email
-            )
-            self.btnEnviarEmail.pack(pady=5)
-            
-            # Label para status do envio
-            self.lblStatusEmail = ttk.Label(
-                frmBotoes,
-                text="",
-                font=("Courier", 11),
-                anchor="center"
-            )
-            self.lblStatusEmail.pack(pady=5)
+        if email_votante:
+            # checar dinamicamente se yagmail está instalado
+            try:
+                import yagmail  # type: ignore
+                self._yagmail_available = True
+            except Exception:
+                self._yagmail_available = False
+
+            if self._yagmail_available:
+                self.btnEnviarEmail = ttk.Button(
+                    frmBotoes,
+                    text="📧 Enviar Comprovante por Email",
+                    bootstyle="info",
+                    width=30,
+                    command=self.enviar_comprovante_email
+                )
+                self.btnEnviarEmail.pack(pady=5)
+
+                # Label para status do envio
+                self.lblStatusEmail = ttk.Label(
+                    frmBotoes,
+                    text="",
+                    font=("Courier", 11),
+                    anchor="center"
+                )
+                self.lblStatusEmail.pack(pady=5)
+            else:
+                # Mostrar uma label explicando que envio está desabilitado por dependência
+                lblNaoInstalado = ttk.Label(
+                    frmBotoes,
+                    text="⚠️ Envio por email desabilitado (yagmail não instalado)",
+                    font=("Courier", 11),
+                    foreground="orange",
+                    anchor="center"
+                )
+                lblNaoInstalado.pack(pady=5)
 
         # Instrução para voltar manualmente
         self.lblInstrucao = ttk.Label(
@@ -195,11 +208,15 @@ class TelaCedulaVirtual:
             )
             return
             
-        if not EMAIL_DISPONIVEL:
-            self.lblStatusEmail.config(
-                text="❌ yagmail não instalado",
-                foreground="red"
-            )
+        if not getattr(self, '_yagmail_available', False):
+            # Segurança: se por algum motivo a disponibilidade mudou
+            try:
+                self.lblStatusEmail.config(
+                    text="❌ yagmail não instalado",
+                    foreground="red"
+                )
+            except Exception:
+                pass
             return
             
         if not self.email_votante:
@@ -259,6 +276,8 @@ Obrigado por participar do processo democrático!
             sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
             from config_email import EMAIL_SISTEMA, SENHA_EMAIL
             
+            # Importar yagmail localmente (garante que está disponível)
+            import yagmail  # type: ignore
             # Usar configuração específica
             yag = yagmail.SMTP(EMAIL_SISTEMA, SENHA_EMAIL)
             

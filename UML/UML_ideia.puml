@@ -1,92 +1,134 @@
-@startuml SISTEMAS DE URNA ELETRONICA - DIAGRAMA DE CLASSES
+@startuml SISTEMA URNA ELETRÔNICA - DIAGRAMA DE CLASSES SIMPLIFICADO
 left to right direction
+skinparam classAttributeIconSize 0
 
 rectangle "Sistema de Urna Eletrônica" {
+
+    class Administrador {
+        -id: int
+        -usuario: string
+        -senha: string
+        -matricula: string
+        -email_institucional: string
+        -master: int
+        +verificar(): dict
+        +salvar(): boolean
+        +atualizar(): boolean
+        +deletar(): boolean
+    }
 
     class Eleicao {
         -id: int
         -titulo: string
-        -data_inicio: datetime
-        -data_fim: datetime
-
-        +esta_ativa(): bool
-        +ja_iniciou(): bool
-        +ja_terminou(): bool
-        +iniciar()
-        +finalizar()
+        -data_inicio: date
+        -data_fim: date
+        -status: int
+        -arquivada: int
+        +esta_ativa(): boolean
+        +ja_iniciou(): boolean
+        +ja_terminou(): boolean
+        +salvar(): boolean
+        +atualizar(): boolean
+        +deletar(): boolean
     }
 
     class Cargo {
         -id: int
         -nome: string
         -descricao: string
+        +salvar(): boolean
+        +atualizar(): boolean
+        +deletar(): boolean
     }
 
     class Candidato {
         -id: int
         -nome: string
-        -int cargo_id
+        -cargo_id: int
+        -chapa_id: int
+        +salvar(): boolean
+        +atualizar(): boolean
+        +deletar(): boolean
     }
 
-    class Chapa{
+    class Chapa {
         -id: int
         -nome: string
         -slogan: string
-        -logo: picture[?]
+        -numero: string
+        -logo: string
+        +salvar(): boolean
+        +atualizar(): boolean
+        +deletar(): boolean
+        +{static}listar_por_eleicao(): list
     }
 
     class Eleitor {
-        -matricula: int
-        -nome: string
-        -curso: string
-        -data_nasc: datetime
         -email_institucional: string
-        -verificado: bool
-
-        +verificar()
+        -verificado: boolean
+        +verificar_email(): boolean
+        +pode_votar(): boolean
     }
 
     class Voto {
         -id: int
         -chapa_id: int
+        -eleicao_id: int
+        -cedula_id: int
+        +salvar(): boolean
+        +{static}contar_por_chapa(): int
+        +{static}contar_total_eleicao(): int
     }
 
     class Cedula {
         -id: int
         -eleicao_id: int
-        -eleitor_id: int
-        -votado_em: datetime
-        -e_valida: bool
-
-        +registrar_voto(escolha)
+        -email_votante: string
+        -data_emissao: datetime
+        +salvar(): boolean
+        +{static}verificar_voto_existente(): boolean
     }
 
-
-    class Administrador {
+    class Resultado {
         -id: int
-        -usuario: string
-        -senha: string
-
-        +criar_eleicao()
-        +fechar_eleicao()
-        +cadastrar_candidato()
+        -eleicao_id: int
+        -chapa_id: int
+        -total_votos: int
+        +salvar(): boolean
+        +buscar_por_eleicao(): list
     }
 
-    class CalculadorResultados {
-        +calcular_totais(eleicao_id)
-        +obter_vencedor()
-        +exportar_resultados(eleicao_id) : (?)
+    class EleicaoChapa {
+        -id: int
+        -eleicao_id: int
+        -chapa_id: int
+        +salvar(): boolean
+        +listar_por_eleicao(): list
     }
 
-    Chapa "1..*" *-- "1..*" Cargo : > Contem
-    Cargo "1..*" *-- "1..1" Candidato : Candidata-se <
-    Eleicao "1..0" *-- "*..*" Chapa : > Possui
-    Eleitor "1..1" -- "0..1" Cedula : > Emite
-    Cedula "1..1" -- "1..1" Voto : > Contém
-    Administrador "1..*" *-- "1..1" Eleicao : > Gerencia
-    CalculadorResultados "1..*" --> "1..1" Eleicao : > Calcula
-    Administrador "1..1" *-  "1..*" Chapa : > Cadastra
-    Eleicao "1..* " *--  "1..1 " Voto: > Contém
+    class ControlEleicao {
+        +criar_eleicao(): boolean
+        +encerrar_eleicao(): boolean
+        +calcular_resultados(): dict
+        +obter_vencedor(): dict
+        +associar_chapas(): boolean
+        +validar_eleicao_ativa(): boolean
+    }
+
+    ' Relacionamentos principais
+    Chapa "1..*" *-- "1..*" Cargo : > contém
+    Cargo "1..*" *-- "1..1" Candidato : > candidata-se
+    Eleicao "1..0" *-- "*..*" Chapa : > possui
+    Eleitor "1..1" -- "0..1" Cedula : > emite
+    Cedula "1..1" -- "1..1" Voto : > contém
+    Administrador "1..*" *-- "1..1" Eleicao : > gerencia
+    ControlEleicao "1..*" --> "1..1" Eleicao : > calcula
+    Administrador "1..1" *- "1..*" Chapa : > cadastra
+    Eleicao "1..*" *-- "1..1" Voto : > contém
+    Eleicao ||--o{ EleicaoChapa : "possui"
+    Chapa ||--o{ EleicaoChapa : "participa"
+    Eleicao ||--o{ Resultado : "gera"
+    Chapa ||--o{ Resultado : "obtém"
 }
 
 @enduml

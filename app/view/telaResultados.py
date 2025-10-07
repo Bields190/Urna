@@ -93,10 +93,8 @@ class Tela:
             self.lbl_nome_vencedor = ttk.Label(self.frm_vencedor, text=vencedor.get('nome', '—'), font=("Arial", 30, "bold"), bootstyle=DARK)
             self.lbl_nome_vencedor.grid(row=0, column=1, sticky="w")
 
-            votos_vencedor = vencedor.get('votos', 0)
-            perc_vencedor = vencedor.get('percentual', 0)
-            resultado_text = f"{votos_vencedor} votos ({perc_vencedor:.2f}%)"
-            self.lbl_percent_vencedor = ttk.Label(self.frm_vencedor, text=resultado_text, font=("Arial", 22), bootstyle=DARK)
+            perc_text = f"{vencedor.get('percentual', 0):.2f}% dos votos"
+            self.lbl_percent_vencedor = ttk.Label(self.frm_vencedor, text=perc_text, font=("Arial", 22), bootstyle=DARK)
             self.lbl_percent_vencedor.grid(row=1, column=1, sticky="w")
         else:
             lbl = ttk.Label(self.frm_vencedor, text="Nenhuma chapa encontrada para esta eleição.", font=("Arial", 18), bootstyle=DARK)
@@ -126,9 +124,8 @@ class Tela:
         else:
             for chapa in outras:
                 nome = chapa.get('nome', '—')
-                votos = chapa.get('votos', 0)
                 perc = chapa.get('percentual', 0)
-                lbl = ttk.Label(self.frm_chapas, text=f"{nome} - {votos} votos ({perc:.2f}%)", font=("Arial", 20), bootstyle=DARK)
+                lbl = ttk.Label(self.frm_chapas, text=f"{nome} - {perc:.2f}%", font=("Arial", 20), bootstyle=DARK)
                 lbl.pack(anchor="w", padx=30, pady=10)
 
         # Total de votos

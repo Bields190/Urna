@@ -142,7 +142,7 @@ class Control:
         """Verifica se uma eleição está ativa (para operações específicas)"""
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
-            _, _, data_inicio, data_fim, status_bd = eleicao_data[0]  # Incluindo status
+            _, _, data_inicio, data_fim, status_bd, _ = eleicao_data[0]  # Incluindo arquivada
             status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
             return status == "Ativa"
         return False
@@ -151,7 +151,7 @@ class Control:
         """Verifica se uma eleição pode ser editada (apenas agendadas)"""
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
-            _, _, data_inicio, data_fim, status_bd = eleicao_data[0]  # Incluindo status
+            _, _, data_inicio, data_fim, status_bd, _ = eleicao_data[0]  # Incluindo arquivada
             status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
             return status == "Agendada"
         return False
@@ -168,7 +168,7 @@ class Control:
             
         eleicao_data = self.buscar_eleicao(id)
         if eleicao_data:
-            id_el, titulo, data_inicio, _, _ = eleicao_data[0]  # Incluindo status
+            id_el, titulo, data_inicio, _, _, _ = eleicao_data[0]  # Incluindo status e arquivada
             hoje = datetime.now().strftime('%Y-%m-%d')
             
             try:
@@ -195,8 +195,9 @@ class Control:
                     return False
                     
             except Exception as e:
-                print(f"Erro ao associar chapas: {e}")
-            return False
+                print(f"Erro ao encerrar eleição: {e}")
+                return False
+        return False
     
     def arquivar_eleicao(self, id):
         """Arquiva uma eleição (não aparece na tela normal)"""
@@ -388,8 +389,12 @@ class Control:
         
         for eleicao in eleicoes:
             # Verificar se a eleição tem 4, 5 ou 6 campos
-            if len(eleicao) >= 5:
-                # Formato: (id, titulo, data_inicio, data_fim, status_bd, ...)
+            if len(eleicao) >= 6:
+                # Formato: (id, titulo, data_inicio, data_fim, status_bd, arquivada)
+                _, _, data_inicio, data_fim, status_bd, _ = eleicao[:6]
+                status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
+            elif len(eleicao) >= 5:
+                # Formato: (id, titulo, data_inicio, data_fim, status_bd)
                 _, _, data_inicio, data_fim, status_bd = eleicao[:5]
                 status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
             elif len(eleicao) == 4:

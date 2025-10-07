@@ -1,19 +1,119 @@
 # -*- coding: utf-8 -*-
 """
-Configuração de Email para Urna Eletrônica
-=========================================
+Configuração e Sistema de Email para Urna Eletrônica
+===================================================
 
-Este arquivo contém as configurações para envio de comprovantes de votação por email.
+Este arquivo contém as configurações e funcionalidades completas para envio de emails.
+Sistema robusto com fallback automático entre yagmail e smtplib nativo.
 """
 
-import yagmail
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
 
 # Configurações do email (ATENÇÃO: Use variáveis de ambiente em produção!)
 EMAIL_SISTEMA = os.getenv('URNA_EMAIL', 'ufac.urna@gmail.com')
 SENHA_EMAIL = os.getenv('URNA_EMAIL_PASSWORD', 'hanm anjk owxc cdjv')  # Use senha de app do Gmail
 SMTP_SERVER = os.getenv('URNA_SMTP_SERVER', 'smtp.gmail.com')
 SMTP_PORT = int(os.getenv('URNA_SMTP_PORT', '587'))
+
+def _verificar_yagmail():
+    """Verifica se yagmail está disponível"""
+    try:
+        import yagmail
+        return True
+    except ImportError:
+        return False
+
+def enviar_comprovante_voto(email_destino, eleicao_titulo, data_voto, codigo_verificacao):
+    """
+    Envia comprovante de voto por email
+    
+    Args:
+        email_destino (str): Email do eleitor
+        eleicao_titulo (str): Título da eleição
+        data_voto (str): Data e hora do voto
+        codigo_verificacao (str): Código de verificação do voto
+        
+    Returns:
+        bool: True se enviado com sucesso, False caso contrário
+    """
+    
+    assunto = f"Comprovante de Voto - {eleicao_titulo}"
+    
+    conteudo = f"""🗳️ COMPROVANTE DE VOTO ELETRÔNICO
+
+Eleição: {eleicao_titulo}
+Data/Hora: {data_voto}
+Código de Verificação: {codigo_verificacao}
+
+✅ Seu voto foi registrado com sucesso!
+
+Este comprovante confirma que você participou do processo eleitoral.
+O anonimato do seu voto está garantido pelo sistema.
+
+=== IMPORTANTE ===
+• Guarde este comprovante para seus registros
+• O código de verificação pode ser usado para auditoria
+• Seu voto é secreto e não pode ser identificado
+
+=== SISTEMA DE URNA ELETRÔNICA ===
+Data de geração: {datetime.now().strftime('%d/%m/%Y às %H:%M:%S')}
+
+Obrigado por participar do processo democrático!
+"""
+    
+    # Tentar enviar com yagmail primeiro (mais simples)
+    if _verificar_yagmail():
+        if _enviar_com_yagmail(email_destino, assunto, conteudo):
+            return True
+    
+    # Fallback para smtplib nativo
+    return _enviar_com_smtplib(email_destino, assunto, conteudo)
+
+def _enviar_com_yagmail(email_destino, assunto, conteudo):
+    """Envia email usando yagmail"""
+    try:
+        import yagmail
+        yag = yagmail.SMTP(EMAIL_SISTEMA, SENHA_EMAIL)
+        yag.send(
+            to=email_destino,
+            subject=assunto,
+            contents=conteudo
+        )
+        print(f"✅ Email enviado via yagmail para: {email_destino}")
+        return True
+    except Exception as e:
+        print(f"❌ Erro com yagmail: {e}")
+        return False
+
+def _enviar_com_smtplib(email_destino, assunto, conteudo):
+    """Envia email usando smtplib nativo"""
+    try:
+        # Criar mensagem
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_SISTEMA
+        msg['To'] = email_destino
+        msg['Subject'] = assunto
+        
+        # Adicionar conteúdo
+        msg.attach(MIMEText(conteudo, 'plain', 'utf-8'))
+        
+        # Conectar e enviar
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_SISTEMA, SENHA_EMAIL)
+            texto = msg.as_string()
+            server.sendmail(EMAIL_SISTEMA, email_destino, texto)
+        
+        print(f"✅ Email enviado via smtplib para: {email_destino}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Erro com smtplib: {e}")
+        return False
 
 def configurar_email_sistema():
     """
@@ -27,10 +127,15 @@ def configurar_email_sistema():
     configurar_email_sistema()
     ```
     """
-    try:     
-        # Registrar credenciais no yagmail
-        yagmail.register(EMAIL_SISTEMA, SENHA_EMAIL)
-        print(f"✅ Email configurado: {EMAIL_SISTEMA}")
+    try:
+        if _verificar_yagmail():
+            import yagmail
+            # Registrar credenciais no yagmail
+            yagmail.register(EMAIL_SISTEMA, SENHA_EMAIL)
+            print(f"✅ Email configurado: {EMAIL_SISTEMA}")
+        else:
+            print(f"⚠️ Yagmail não disponível, usando smtplib nativo")
+            print(f"✅ Email configurado: {EMAIL_SISTEMA}")
         return True
         
     except Exception as e:
@@ -43,26 +148,58 @@ def testar_envio_email(email_teste="teste@exemplo.com"):
     
     Args:
         email_teste (str): Email para teste
-    """
-    try:
-        yag = yagmail.SMTP(EMAIL_SISTEMA)
         
+    Returns:
+        bool: True se teste passou, False caso contrário
+    """
+    print(f"🧪 Testando envio de email para: {email_teste}")
+    
+    if _verificar_yagmail():
+        print("📧 Testando com yagmail...")
+        if _testar_yagmail(email_teste):
+            return True
+    
+    print("📧 Testando com smtplib...")
+    return _testar_smtplib(email_teste)
+
+def _testar_yagmail(email_teste):
+    """Testa envio com yagmail"""
+    try:
+        import yagmail
+        yag = yagmail.SMTP(EMAIL_SISTEMA, SENHA_EMAIL)
         yag.send(
             to=email_teste,
-            subject="Teste - Sistema de Urna Eletrônica",
-            contents="""Este é um email de teste do sistema de urna eletrônica.
-            
-Se você recebeu esta mensagem, o sistema de email está funcionando corretamente.
-
-Urna Eletrônica - Sistema Eleitoral
-"""
+            subject="Teste - Sistema de Urna Eletrônica (yagmail)",
+            contents="Este é um teste do sistema de email usando yagmail.\n\nSe você recebeu esta mensagem, o sistema está funcionando!"
         )
+        print("✅ Teste com yagmail: SUCESSO")
+        return True
+    except Exception as e:
+        print(f"❌ Teste com yagmail: FALHA - {e}")
+        return False
+
+def _testar_smtplib(email_teste):
+    """Testa envio com smtplib"""
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_SISTEMA
+        msg['To'] = email_teste
+        msg['Subject'] = "Teste - Sistema de Urna Eletrônica (smtplib)"
         
-        print(f"✅ Email de teste enviado para: {email_teste}")
+        conteudo = "Este é um teste do sistema de email usando smtplib nativo.\n\nSe você recebeu esta mensagem, o sistema está funcionando!"
+        msg.attach(MIMEText(conteudo, 'plain', 'utf-8'))
+        
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_SISTEMA, SENHA_EMAIL)
+            texto = msg.as_string()
+            server.sendmail(EMAIL_SISTEMA, email_teste, texto)
+        
+        print("✅ Teste com smtplib: SUCESSO")
         return True
         
     except Exception as e:
-        print(f"❌ Erro no teste de email: {e}")
+        print(f"❌ Teste com smtplib: FALHA - {e}")
         return False
 
 def obter_configuracao_email():
@@ -76,6 +213,7 @@ def obter_configuracao_email():
         'email_sistema': EMAIL_SISTEMA,
         'smtp_server': SMTP_SERVER,
         'smtp_port': SMTP_PORT,
+        'yagmail_disponivel': _verificar_yagmail(),
         'configurado': bool(EMAIL_SISTEMA and SENHA_EMAIL)
     }
 

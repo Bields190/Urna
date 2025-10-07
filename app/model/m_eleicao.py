@@ -62,4 +62,3 @@ class Eleicao(Model):
         if result:
             return result
         return []
-

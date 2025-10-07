@@ -7,10 +7,12 @@ import c_eleicao #type: ignore
 
 import telaEleicoes
 
+
 class Tela:
     def __init__(self, master, eleicao_id):
         self.janela = master
         self.janela.title("Tela de Resultados")
+        # Ajuste de resolução — opcional, você pode alterar
         self.janela.geometry("1920x1080")
         self.eleicao_id = eleicao_id
 
@@ -38,11 +40,29 @@ class Tela:
         self.dados = self.control.resultado_eleicao(eleicao_id)
         self.mostrar_resultados()
 
-    def mostrar_resultados(self):
-        chapas = self.dados['chapas']
-        total_votos = self.dados['total_votos']
+    def _resolve_path(self, p):
+        """Resolve caminhos relativos/absolutos para a logo."""
+        if not p:
+            return None
+        # Se já for absoluto
+        if os.path.isabs(p):
+            return p if os.path.exists(p) else None
+        # Tenta candidatos comuns
+        candidates = [
+            os.path.abspath(p),
+            os.path.join(os.path.dirname(__file__), p),
+            os.path.join(os.getcwd(), p)
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                return c
+        return None
 
-        # vencedor
+    def mostrar_resultados(self):
+        chapas = self.dados.get('chapas', []) if isinstance(self.dados, dict) else []
+        total_votos = self.dados.get('total_votos', 0) if isinstance(self.dados, dict) else 0
+
+        # vencedor (primeiro da lista ordenada)
         vencedor = chapas[0] if chapas else None
 
         self.lbl_vencedor = ttk.Label(self.frm_resultados, text="🏆 Chapa Vencedora", font=("Arial", 25, "bold"), bootstyle=DARK)
@@ -51,36 +71,64 @@ class Tela:
         self.frm_vencedor = ttk.Frame(self.frm_resultados, bootstyle="#ffffff")
         self.frm_vencedor.pack(pady=10)
 
+        # Limpar possíveis widgets anteriores
+        for w in self.frm_vencedor.winfo_children():
+            w.destroy()
+
         if vencedor:
-            # imagem
-            if vencedor['logo'] and os.path.exists(vencedor['logo']):
-                img = Image.open(vencedor['logo']).resize((150,150))
-            else:
+            logo_path = self._resolve_path(vencedor.get('logo'))
+            try:
+                if logo_path:
+                    img = Image.open(logo_path).resize((150,150))
+                else:
+                    img = Image.new("RGB", (150, 150), color="gray")
+            except Exception:
                 img = Image.new("RGB", (150, 150), color="gray")
+
             self.img_vencedor = ImageTk.PhotoImage(img)
 
             self.lbl_img = ttk.Label(self.frm_vencedor, image=self.img_vencedor, bootstyle="#ffffff")
             self.lbl_img.grid(row=0, column=0, rowspan=2, padx=20)
 
-            self.lbl_nome_vencedor = ttk.Label(self.frm_vencedor, text=vencedor['nome'], font=("Arial", 30, "bold"), bootstyle=DARK)
+            self.lbl_nome_vencedor = ttk.Label(self.frm_vencedor, text=vencedor.get('nome', '—'), font=("Arial", 30, "bold"), bootstyle=DARK)
             self.lbl_nome_vencedor.grid(row=0, column=1, sticky="w")
 
-            self.lbl_percent_vencedor = ttk.Label(self.frm_vencedor, text=f"{vencedor['percentual']:.2f}% dos votos", font=("Arial", 22), bootstyle=DARK)
+            perc_text = f"{vencedor.get('percentual', 0):.2f}% dos votos"
+            self.lbl_percent_vencedor = ttk.Label(self.frm_vencedor, text=perc_text, font=("Arial", 22), bootstyle=DARK)
             self.lbl_percent_vencedor.grid(row=1, column=1, sticky="w")
+        else:
+            lbl = ttk.Label(self.frm_vencedor, text="Nenhuma chapa encontrada para esta eleição.", font=("Arial", 18), bootstyle=DARK)
+            lbl.pack()
 
-        # demais chapas
+        # área inferior (demais chapas + total de votos)
+        # limpar antes
+        for w in getattr(self, 'frm_inferior', []):
+            try:
+                w.destroy()
+            except Exception:
+                pass
+
         self.frm_inferior = ttk.Frame(self.frm_resultados, bootstyle="#ffffff")
         self.frm_inferior.pack(pady=60)
 
+        # Demais chapas
         self.frm_chapas = ttk.Labelframe(self.frm_inferior, text="Demais Chapas", bootstyle=DARK, width=500, height=350)
         self.frm_chapas.pack(side="left", padx=60)
         self.frm_chapas.pack_propagate(False)
 
-        for chapa in chapas[1:]:
-            lbl = ttk.Label(self.frm_chapas, text=f"{chapa['nome']} - {chapa['percentual']:.2f}%", font=("Arial", 20), bootstyle=DARK)
+        # Exibir outras chapas (exceto o vencedor)
+        outras = chapas[1:] if len(chapas) > 1 else []
+        if not outras:
+            lbl = ttk.Label(self.frm_chapas, text="Nenhuma outra chapa cadastrada.", font=("Arial", 16), bootstyle=DARK)
             lbl.pack(anchor="w", padx=30, pady=10)
+        else:
+            for chapa in outras:
+                nome = chapa.get('nome', '—')
+                perc = chapa.get('percentual', 0)
+                lbl = ttk.Label(self.frm_chapas, text=f"{nome} - {perc:.2f}%", font=("Arial", 20), bootstyle=DARK)
+                lbl.pack(anchor="w", padx=30, pady=10)
 
-        # total de votos
+        # Total de votos
         self.frm_votos = ttk.Labelframe(self.frm_inferior, text="Total de Votos", bootstyle=DARK, width=500, height=350)
         self.frm_votos.pack(side="left", padx=60)
         self.frm_votos.pack_propagate(False)
@@ -92,6 +140,7 @@ class Tela:
         for widget in self.janela.winfo_children():
             widget.destroy()
         telaEleicoes.iniciarTela(self.janela)
+
 
 def iniciarTela(master=None, eleicao_id=None):
     if master is None:

@@ -2,9 +2,21 @@ PRAGMA foreign_keys = ON;
 
 -- ===============================
 -- BANCO DE DADOS: URNA ELETRÔNICA
+-- Versão atualizada baseada no estado atual
 -- ===============================
 
-CREATE TABLE Administrador (
+-- LIMPAR BANCO (opcional - descomente se quiser resetar)
+-- DROP TABLE IF EXISTS EleicaoChapa;
+-- DROP TABLE IF EXISTS Resultado;
+-- DROP TABLE IF EXISTS Voto;
+-- DROP TABLE IF EXISTS Cedula;
+-- DROP TABLE IF EXISTS Candidato;
+-- DROP TABLE IF EXISTS Chapa;
+-- DROP TABLE IF EXISTS Cargo;
+-- DROP TABLE IF EXISTS Eleicao;
+-- DROP TABLE IF EXISTS Administrador;
+
+CREATE TABLE IF NOT EXISTS Administrador (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario TEXT UNIQUE NOT NULL,
     senha TEXT NOT NULL,
@@ -13,21 +25,22 @@ CREATE TABLE Administrador (
     master INTEGER DEFAULT 0
 );
 
-CREATE TABLE Eleicao (
+CREATE TABLE IF NOT EXISTS Eleicao (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
     data_inicio DATE NOT NULL,
     data_fim DATE NOT NULL,
-    status INTEGER DEFAULT 1
+    status INTEGER DEFAULT 1,
+    arquivada INTEGER DEFAULT 0
 );
 
-CREATE TABLE Cargo (
+CREATE TABLE IF NOT EXISTS Cargo (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     descricao TEXT
 );
 
-CREATE TABLE Chapa (
+CREATE TABLE IF NOT EXISTS Chapa (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     slogan TEXT,
@@ -35,7 +48,7 @@ CREATE TABLE Chapa (
     logo TEXT
 );
 
-CREATE TABLE Candidato (
+CREATE TABLE IF NOT EXISTS Candidato (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     cargo_id INTEGER NOT NULL,
@@ -44,25 +57,25 @@ CREATE TABLE Candidato (
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
 );
 
-CREATE TABLE Voto (
+CREATE TABLE IF NOT EXISTS Voto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chapa_id INTEGER NOT NULL,
     eleicao_id INTEGER NOT NULL,
-    cedula_id INTEGER NOT NULL,
+    cedula_id INTEGER,
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id),
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id),
     FOREIGN KEY (cedula_id) REFERENCES Cedula(id)
 );
 
-CREATE TABLE Cedula (
+CREATE TABLE IF NOT EXISTS Cedula (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
-    email_votante TEXT NOT NULL,
     data_emissao DATETIME NOT NULL,
+    email_votante TEXT NOT NULL,
     FOREIGN KEY (eleicao_id) REFERENCES Eleicao(id)
 );
 
-CREATE TABLE Resultado (
+CREATE TABLE IF NOT EXISTS Resultado (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
     chapa_id INTEGER NOT NULL,
@@ -71,9 +84,8 @@ CREATE TABLE Resultado (
     FOREIGN KEY (chapa_id) REFERENCES Chapa(id)
 );
 
--- INTERMEDIO ENTRE ELEICAO E CHAPA:
-
-CREATE TABLE EleicaoChapa (
+-- TABELA INTERMEDIÁRIA ENTRE ELEICAO E CHAPA:
+CREATE TABLE IF NOT EXISTS EleicaoChapa (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     eleicao_id INTEGER NOT NULL,
     chapa_id INTEGER NOT NULL,
@@ -83,38 +95,97 @@ CREATE TABLE EleicaoChapa (
 );
 
 -- ===============================
--- DADOS FICTÍCIOS PARA TESTE
+-- DADOS DE EXEMPLO PARA DESENVOLVIMENTO
 -- ===============================
 
--- Administrador
-INSERT INTO Administrador (usuario, senha, matricula, email_institucional, master)
-VALUES ('limeira', 'tesi25', '2025001', 'limeira@ufac.br', 1),
-        ('root', 'root', 'root', 'root', '1');
+-- Administradores de exemplo
+INSERT OR IGNORE INTO Administrador (id, usuario, senha, matricula, email_institucional, master)
+VALUES 
+    (1, 'limeira', 'tesi25', '2025001', 'limeira@ufac.br', 1),
+    (2, 'root', 'root', 'root', 'root@ufac.br', 1),
+    (3, 'admin', 'admin123', '2025002', 'admin@ufac.br', 1);
 
--- Eleição
-INSERT INTO Eleicao (titulo, data_inicio, data_fim)
-VALUES ('Eleição CASI 2025', '2025-10-01', '2025-10-05');
+-- Cargos básicos
+INSERT OR IGNORE INTO Cargo (id, nome, descricao) 
+VALUES
+    (1, 'Presidente', 'Responsável geral pelo Centro Acadêmico'),
+    (2, 'Vice-Presidente', 'Substitui o presidente quando necessário'),
+    (3, 'Diretor de Cultura', 'Coordena atividades culturais e eventos'),
+    (4, 'Tesoureiro', 'Responsável pelas finanças do centro acadêmico');
 
--- Cargos
-INSERT INTO Cargo (nome, descricao) VALUES
-('Presidente', 'Responsável geral pelo Centro Acadêmico'),
-('Vice-Presidente', 'Substitui o presidente quando necessário'),
-('Diretor de Cultura', 'Coordena atividades culturais e eventos');
+-- Chapas de exemplo
+INSERT OR IGNORE INTO Chapa (id, nome, slogan, numero, logo) 
+VALUES
+    (1, 'Renovação Universitária', 'Juntos por uma universidade melhor', '10', ''),
+    (2, 'Estudantes Unidos', 'A força da união estudantil', '20', ''),
+    (3, 'Nova Geração', 'Inovando o futuro acadêmico', '30', '');
 
--- Chapas
-INSERT INTO Chapa (nome, slogan, logo) VALUES
-('Core 2 Quad', 'Renovar com atitude', '/images/core2quad.png'),
-('Nova Ordem', 'Juntos pelo futuro', '/images/nova_ordem.png');
+-- Eleições de exemplo
+INSERT OR IGNORE INTO Eleicao (id, titulo, data_inicio, data_fim, status, arquivada)
+VALUES
+    (1, 'Eleição CASI 2025', '2025-10-01', '2025-10-31', 1, 0),
+    (2, 'Eleição Diretório Estudantil', '2025-11-01', '2025-11-30', 1, 0);
 
--- Candidatos
-INSERT INTO Candidato (nome, cargo_id, chapa_id) VALUES
-('Ana Souza', 1, 1),
-('Bruno Silva', 1, 2),
-('Carla Mendes', 2, 1),
-('Diego Ramos', 2, 2),
-('Eduardo Lima', 3, 1);
+-- Candidatos de exemplo
+INSERT OR IGNORE INTO Candidato (nome, cargo_id, chapa_id) 
+VALUES
+    ('João Silva', 1, 1),        -- Presidente - Chapa 1
+    ('Maria Santos', 2, 1),      -- Vice-Presidente - Chapa 1
+    ('Pedro Costa', 1, 2),       -- Presidente - Chapa 2
+    ('Ana Oliveira', 2, 2),      -- Vice-Presidente - Chapa 2
+    ('Carlos Lima', 3, 1),       -- Diretor de Cultura - Chapa 1
+    ('Lucia Mendes', 4, 1);      -- Tesoureiro - Chapa 1
 
--- Associação entre eleição e chapas
-INSERT INTO EleicaoChapa (eleicao_id, chapa_id) VALUES
-(1, 1),
-(1, 2);
+-- Associações entre eleições e chapas
+INSERT OR IGNORE INTO EleicaoChapa (eleicao_id, chapa_id) 
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 1),
+    (2, 3);
+
+-- ===============================
+-- CONSULTAS ÚTEIS PARA DEBUG
+-- ===============================
+
+-- Verificar dados do sistema:
+-- SELECT 'Administradores:' as tabela, COUNT(*) as total FROM Administrador
+-- UNION ALL
+-- SELECT 'Eleições:', COUNT(*) FROM Eleicao  
+-- UNION ALL
+-- SELECT 'Cargos:', COUNT(*) FROM Cargo
+-- UNION ALL
+-- SELECT 'Chapas:', COUNT(*) FROM Chapa
+-- UNION ALL
+-- SELECT 'Candidatos:', COUNT(*) FROM Candidato
+-- UNION ALL
+-- SELECT 'Votos:', COUNT(*) FROM Voto
+-- UNION ALL
+-- SELECT 'Cédulas:', COUNT(*) FROM Cedula;
+
+-- Verificar eleições ativas:
+-- SELECT * FROM Eleicao WHERE status = 1 AND DATE('now') BETWEEN data_inicio AND data_fim;
+
+-- Verificar chapas por eleição:
+-- SELECT e.titulo, c.nome, c.slogan 
+-- FROM Eleicao e 
+-- JOIN EleicaoChapa ec ON e.id = ec.eleicao_id 
+-- JOIN Chapa c ON ec.chapa_id = c.id;
+
+-- Verificar votos por eleição:
+-- SELECT e.titulo, c.nome, COUNT(v.id) as total_votos
+-- FROM Eleicao e
+-- JOIN Voto v ON e.id = v.eleicao_id
+-- JOIN Chapa c ON v.chapa_id = c.id
+-- GROUP BY e.id, c.id;
+
+-- ===============================
+-- ÍNDICES PARA PERFORMANCE
+-- ===============================
+
+CREATE INDEX IF NOT EXISTS idx_voto_eleicao ON Voto(eleicao_id);
+CREATE INDEX IF NOT EXISTS idx_voto_chapa ON Voto(chapa_id);
+CREATE INDEX IF NOT EXISTS idx_cedula_eleicao ON Cedula(eleicao_id);
+CREATE INDEX IF NOT EXISTS idx_candidato_chapa ON Candidato(chapa_id);
+CREATE INDEX IF NOT EXISTS idx_eleicaochapa_eleicao ON EleicaoChapa(eleicao_id);
+CREATE INDEX IF NOT EXISTS idx_eleicaochapa_chapa ON EleicaoChapa(chapa_id);

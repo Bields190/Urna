@@ -387,13 +387,16 @@ class Control:
         }
         
         for eleicao in eleicoes:
-            # Verificar se a eleição tem 4 ou 5 campos (com ou sem status)
-            if len(eleicao) == 5:
-                _, _, data_inicio, data_fim, status_bd = eleicao
+            # Verificar se a eleição tem 4, 5 ou 6 campos
+            if len(eleicao) >= 5:
+                # Formato: (id, titulo, data_inicio, data_fim, status_bd, ...)
+                _, _, data_inicio, data_fim, status_bd = eleicao[:5]
                 status = self.obter_status_eleicao(data_inicio, data_fim, status_bd)
-            else:
+            elif len(eleicao) == 4:
                 _, _, data_inicio, data_fim = eleicao
                 status = self.obter_status_eleicao(data_inicio, data_fim)
+            else:
+                continue  # Pular eleições com formato inválido
             
             if status == "Ativa":
                 stats['ativas'] += 1

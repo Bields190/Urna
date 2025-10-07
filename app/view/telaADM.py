@@ -145,22 +145,24 @@ class TelaADM:
         total_chapas = 0
         votos_ultima = 0
 
-        #-------dados eleições dahsboard-------
+        #-------dados eleições dashboard-------
         try:
             if self.control:
                 stats = self.control.obter_estatisticas_eleicoes()
                 total_eleicoes = stats.get('total', 0)
                 eleicoes_ativas = stats.get('ativas', 0)
-        except Exception:
-            
+        except Exception as e:
+            print(f"Erro ao obter estatísticas de eleições: {e}")
             pass
 
         #--------total de chapas----------
         try:
             chapas = m_chapa.Chapa.listar()  
             total_chapas = len(chapas)
-        except Exception:
+        except Exception as e:
+            print(f"Erro ao listar chapas (método principal): {e}")
             try:
+                # Fallback: contar chapas por eleição
                 todas_eleicoes = []
                 if self.control:
                     todas_eleicoes = self.control.listar_eleicoes()
@@ -170,23 +172,26 @@ class TelaADM:
                     try:
                         chapas_el = m_chapa.Chapa.listar_por_eleicao(el_id)
                         count += len(chapas_el)
-                    except Exception:
+                    except Exception as ex:
+                        print(f"Erro ao listar chapas da eleição {el_id}: {ex}")
                         pass
-                if count > 0:
-                    total_chapas = count
-            except Exception:
+                total_chapas = count
+            except Exception as e2:
+                print(f"Erro no fallback de chapas: {e2}")
                 pass
 
+        #--------votos da última eleição----------
         try:
             if self.control:
                 eleicoes = self.control.listar_eleicoes()
                 if eleicoes:
-                    # cada eleicao parece ser (id, titulo, data_inicio, data_fim)
+                    # Ordenar por data de fim para encontrar a última
                     ultima = max(eleicoes, key=lambda e: e[3] if len(e) > 3 else "")
                     ultima_id = ultima[0]
                     resultado = self.control.resultado_eleicao(ultima_id)
                     votos_ultima = resultado.get('total_votos', 0)
-        except Exception:
+        except Exception as e:
+            print(f"Erro ao obter votos da última eleição: {e}")
             pass
 
         #----------cria os frames---------- 

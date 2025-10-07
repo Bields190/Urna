@@ -223,6 +223,8 @@ class TelaCedulaVirtual:
     
     def _enviar_email_thread(self):
         """Thread para envio do email"""
+        yag = None
+        
         try:
             # Configurar dados do email
             data_hora_atual = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
@@ -252,19 +254,13 @@ Obrigado por participar do processo democrático!
 """
             
             # Configuração do email
-            try:
-                # Importar configurações do sistema
-                import sys, os
-                sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-                from config_email import EMAIL_SISTEMA, SENHA_EMAIL
-                
-                # Usar configuração específica
-                yag = yagmail.SMTP(EMAIL_SISTEMA, SENHA_EMAIL)
-            except Exception as config_error:
-                print(f"Erro na configuração do email: {config_error}")
-                # Atualizar interface no thread principal
-                self.janela.after(0, lambda: self._email_erro("Configuração de email não encontrada"))
-                return
+            # Importar configurações do sistema
+            import sys, os
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+            from config_email import EMAIL_SISTEMA, SENHA_EMAIL
+            
+            # Usar configuração específica
+            yag = yagmail.SMTP(EMAIL_SISTEMA, SENHA_EMAIL)
             
             # Enviar email
             yag.send(
@@ -276,10 +272,15 @@ Obrigado por participar do processo democrático!
             # Atualizar interface no thread principal
             self.janela.after(0, self._email_enviado_sucesso)
             
-        except Exception as e:
-            print(f"Erro ao enviar email: {e}")
+        except ImportError:
+            print("Erro: Configuração de email não encontrada")
             # Atualizar interface no thread principal
-            self.janela.after(0, lambda: self._email_erro(str(e)))
+            self.janela.after(0, lambda: self._email_erro("Configuração de email não encontrada"))
+        except Exception as error:
+            print(f"Erro ao enviar email: {error}")
+            # Atualizar interface no thread principal
+            erro_msg = str(error)
+            self.janela.after(0, lambda: self._email_erro(erro_msg))
     
     def _email_enviado_sucesso(self):
         """Callback quando email é enviado com sucesso"""

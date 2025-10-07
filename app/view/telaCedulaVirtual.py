@@ -2,6 +2,15 @@ import ttkbootstrap as tb
 from ttkbootstrap import ttk
 import sys, os
 from datetime import datetime
+import threading
+
+# Para envio de email
+try:
+    import yagmail
+    EMAIL_DISPONIVEL = True
+except ImportError:
+    EMAIL_DISPONIVEL = False
+    print("⚠️ yagmail não disponível - funcionalidade de email desabilitada")
 
 # importa outras telas
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'view'))
@@ -16,6 +25,7 @@ class TelaCedulaVirtual:
         self.cedula_id = cedula_id
         self.email_votante = email_votante
         self.espaco_contador = 0  # Contador para tecla espaço
+        self.email_enviado = False  # Flag para controlar se já foi enviado
 
         try:
             self.janela.title('Urna Eletrônica - Cédula Virtual')
@@ -128,7 +138,27 @@ class TelaCedulaVirtual:
             width=20,
             command=self.voltar_para_entrada
         )
-        self.btnNovaVotacao.pack()
+        self.btnNovaVotacao.pack(pady=5)
+
+        # Botão para enviar comprovante por email (se disponível)
+        if EMAIL_DISPONIVEL and email_votante:
+            self.btnEnviarEmail = ttk.Button(
+                frmBotoes,
+                text="📧 Enviar Comprovante por Email",
+                bootstyle="info",
+                width=30,
+                command=self.enviar_comprovante_email
+            )
+            self.btnEnviarEmail.pack(pady=5)
+            
+            # Label para status do envio
+            self.lblStatusEmail = ttk.Label(
+                frmBotoes,
+                text="",
+                font=("Courier", 11),
+                anchor="center"
+            )
+            self.lblStatusEmail.pack(pady=5)
 
         # Instrução para voltar manualmente
         self.lblInstrucao = ttk.Label(
@@ -155,6 +185,131 @@ class TelaCedulaVirtual:
             usuario_mascarado = usuario[:2] + '*' * (len(usuario) - 4) + usuario[-2:]
         
         return f"{usuario_mascarado}@{dominio}"
+
+    def enviar_comprovante_email(self):
+        """Envia o comprovante de votação por email"""
+        if self.email_enviado:
+            self.lblStatusEmail.config(
+                text="✅ Comprovante já foi enviado!",
+                foreground="green"
+            )
+            return
+            
+        if not EMAIL_DISPONIVEL:
+            self.lblStatusEmail.config(
+                text="❌ yagmail não instalado",
+                foreground="red"
+            )
+            return
+            
+        if not self.email_votante:
+            self.lblStatusEmail.config(
+                text="❌ Email do votante não disponível",
+                foreground="red"
+            )
+            return
+        
+        # Desabilitar botão durante envio
+        self.btnEnviarEmail.config(state="disabled")
+        self.lblStatusEmail.config(
+            text="📤 Enviando comprovante...",
+            foreground="blue"
+        )
+        
+        # Enviar em thread separada para não travar a interface
+        thread = threading.Thread(target=self._enviar_email_thread)
+        thread.daemon = True
+        thread.start()
+    
+    def _enviar_email_thread(self):
+        """Thread para envio do email"""
+        yag = None
+        
+        try:
+            # Configurar dados do email
+            data_hora_atual = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
+            
+            assunto = f"Comprovante de Votação - {self.titulo}"
+            
+            conteudo = f"""Prezado(a) eleitor(a),
+
+Seu voto foi registrado com sucesso!
+
+=== DETALHES DA VOTAÇÃO ===
+Eleição: {self.titulo}
+Data/Hora: {data_hora_atual}
+Cédula ID: {self.cedula_id or 'N/A'}
+Votante: {self.mascarar_email(self.email_votante)}
+
+=== IMPORTANTE ===
+• Este é um comprovante de PARTICIPAÇÃO na votação
+• O voto é secreto e foi registrado de forma anônima
+• Este comprovante NÃO revela em qual candidato/chapa você votou
+• Guarde este comprovante para seus registros
+
+=== SISTEMA DE URNA ELETRÔNICA ===
+Data de geração: {data_hora_atual}
+
+Obrigado por participar do processo democrático!
+"""
+            
+            # Configuração do email
+            # Importar configurações do sistema
+            import sys, os
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+            from config_email import EMAIL_SISTEMA, SENHA_EMAIL
+            
+            # Usar configuração específica
+            yag = yagmail.SMTP(EMAIL_SISTEMA, SENHA_EMAIL)
+            
+            # Enviar email
+            yag.send(
+                to=self.email_votante,
+                subject=assunto,
+                contents=conteudo
+            )
+            
+            # Atualizar interface no thread principal
+            self.janela.after(0, self._email_enviado_sucesso)
+            
+        except ImportError:
+            print("Erro: Configuração de email não encontrada")
+            # Atualizar interface no thread principal
+            self.janela.after(0, lambda: self._email_erro("Configuração de email não encontrada"))
+        except Exception as error:
+            print(f"Erro ao enviar email: {error}")
+            # Atualizar interface no thread principal
+            erro_msg = str(error)
+            self.janela.after(0, lambda: self._email_erro(erro_msg))
+    
+    def _email_enviado_sucesso(self):
+        """Callback quando email é enviado com sucesso"""
+        self.email_enviado = True
+        self.btnEnviarEmail.config(state="normal")
+        self.lblStatusEmail.config(
+            text="✅ Comprovante enviado com sucesso!",
+            foreground="green"
+        )
+    
+    def _email_erro(self, erro):
+        """Callback quando há erro no envio"""
+        self.btnEnviarEmail.config(state="normal")
+        
+        # Mensagens de erro mais amigáveis
+        if "authentication" in erro.lower() or "password" in erro.lower():
+            mensagem = "❌ Erro de autenticação"
+        elif "connection" in erro.lower() or "network" in erro.lower():
+            mensagem = "❌ Erro de conexão"
+        elif "recipient" in erro.lower() or "address" in erro.lower():
+            mensagem = "❌ Email inválido"
+        else:
+            mensagem = "❌ Erro ao enviar comprovante"
+            
+        self.lblStatusEmail.config(
+            text=mensagem,
+            foreground="red"
+        )
+        print(f"Erro detalhado: {erro}")
 
     def contar_espaco(self, event=None):
         """Conta as vezes que a tecla espaço foi pressionada"""

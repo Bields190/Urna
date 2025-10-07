@@ -3,3 +3,5 @@ ttkbootstrap
 ttkthemes
 pillow
 pyinstaller
+yagmail
+keyring

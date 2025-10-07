@@ -83,13 +83,9 @@ class TelaVotacao:
 
         #Frame de informações da chapa
         frmChapa = ttk.Frame(frmPrincipal)
-        frmChapa.pack(pady=5, expand=True, fill="both")
+        frmChapa.pack(pady=5, expand=True)
 
-        # Frame esquerdo (chapa selecionada)
-        frmChapaEsquerda = ttk.Frame(frmChapa)
-        frmChapaEsquerda.pack(side="left", fill="both", expand=True)
-
-        self.frmFoto = ttk.Labelframe(frmChapaEsquerda, text="Logo da Chapa", bootstyle="secondary", width=400, height=400)
+        self.frmFoto = ttk.Labelframe(frmChapa, text="Logo da Chapa", bootstyle="secondary", width=400, height=400)
         self.frmFoto.pack(side="left", padx=50, pady=10)
         self.frmFoto.pack_propagate(False)
 
@@ -97,7 +93,7 @@ class TelaVotacao:
         self.lblFoto = ttk.Label(self.frmFoto)
         self.lblFoto.pack(expand=True, fill="both", padx=10, pady=10)
 
-        frmInformacoes = ttk.Frame(frmChapaEsquerda)
+        frmInformacoes = ttk.Frame(frmChapa)
         frmInformacoes.pack(side="left", padx=20)
 
         self.frmSlogan = ttk.Frame(frmInformacoes, width=600, height=80, relief="ridge")
@@ -114,17 +110,6 @@ class TelaVotacao:
         self.lblInfo = ttk.Label(self.frmInfoChapa, text="", font=("Courier", 18,"bold"), wraplength=580, justify="left")
         self.lblInfo.pack(expand=True)
 
-        # Frame direito (lista de chapas disponíveis)
-        frmChapasDireita = ttk.Frame(frmChapa)
-        frmChapasDireita.pack(side="right", fill="y", padx=(20, 50))
-
-        self.frmChapasDisponiveis = ttk.Labelframe(frmChapasDireita, text="Chapas Disponíveis", bootstyle="info", width=300, height=400)
-        self.frmChapasDisponiveis.pack(fill="both", expand=True)
-        self.frmChapasDisponiveis.pack_propagate(False)
-
-        # Carregar e exibir chapas disponíveis
-        self.carregar_chapas_disponiveis()
-
         #Botões
         frmConfirmacao = ttk.Frame(frmPrincipal)
         frmConfirmacao.pack(pady=(30, 150))
@@ -134,78 +119,6 @@ class TelaVotacao:
 
         self.btnCancelar = ttk.Button(frmConfirmacao, text="Cancelar",bootstyle="danger", width=20,command=self.cancelar_voto, state="disabled")
         self.btnCancelar.pack(side="left", padx=40)
-
-    def carregar_chapas_disponiveis(self):
-        """Carrega e exibe todas as chapas disponíveis para a eleição"""
-        try:
-            chapas = self.control.listar_chapas_por_eleicao(self.eleicao_id) or []
-            
-            # Limpar widgets anteriores
-            for widget in self.frmChapasDisponiveis.winfo_children():
-                widget.destroy()
-            
-            if chapas:
-                # Criar um frame com scroll para as chapas
-                canvas = tk.Canvas(self.frmChapasDisponiveis, highlightthickness=0)
-                scrollbar = ttk.Scrollbar(self.frmChapasDisponiveis, orient="vertical", command=canvas.yview)
-                scrollable_frame = ttk.Frame(canvas)
-                
-                scrollable_frame.bind(
-                    "<Configure>",
-                    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-                )
-                
-                canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-                canvas.configure(yscrollcommand=scrollbar.set)
-                
-                # Adicionar cada chapa
-                for i, chapa in enumerate(chapas):
-                    _, nome, slogan, logo, numero = chapa
-                    
-                    # Frame para cada chapa
-                    frame_chapa = ttk.Frame(scrollable_frame, relief="ridge", padding=5)
-                    frame_chapa.pack(fill="x", pady=2, padx=5)
-                    
-                    # Número da chapa (destacado)
-                    lbl_numero = ttk.Label(frame_chapa, text=f"#{numero}", 
-                                         font=("Courier", 16, "bold"), 
-                                         bootstyle="warning")
-                    lbl_numero.pack(anchor="w")
-                    
-                    # Nome da chapa
-                    lbl_nome = ttk.Label(frame_chapa, text=nome, 
-                                       font=("Arial", 12, "bold"),
-                                       wraplength=250)
-                    lbl_nome.pack(anchor="w")
-                    
-                    # Slogan (opcional, menor)
-                    if slogan:
-                        lbl_slogan = ttk.Label(frame_chapa, text=slogan, 
-                                             font=("Arial", 10),
-                                             foreground="gray",
-                                             wraplength=250)
-                        lbl_slogan.pack(anchor="w")
-                
-                canvas.pack(side="left", fill="both", expand=True)
-                scrollbar.pack(side="right", fill="y")
-                
-            else:
-                # Se não há chapas
-                lbl_vazio = ttk.Label(self.frmChapasDisponiveis, 
-                                    text="Nenhuma chapa\ncadastrada para\nesta eleição", 
-                                    font=("Arial", 12),
-                                    justify="center")
-                lbl_vazio.pack(expand=True)
-                
-        except Exception as e:
-            print(f"Erro ao carregar chapas disponíveis: {e}")
-            # Em caso de erro, mostrar mensagem
-            lbl_erro = ttk.Label(self.frmChapasDisponiveis, 
-                               text="Erro ao carregar\nchapas disponíveis", 
-                               font=("Arial", 12),
-                               foreground="red",
-                               justify="center")
-            lbl_erro.pack(expand=True)
 
     def limpar_campo(self):
         """Limpa o campo de entrada"""
